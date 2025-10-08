@@ -57,14 +57,14 @@ public class HomeController : Controller
     [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<IActionResult> IndexAdmin() // Admin dashboard view
-    { 
+    {
         return View();
     }
     [HttpGet]
     public async Task<IActionResult> GetAllTrips() // Fetch all trips as JSON
     {
         var trips = await _tripService.GetAllTripsAsync(); // Fetch all trips
-        return Json(trips); 
+        return Json(trips);
     }
 
     [HttpPost("create-or-update-trip")]
@@ -79,7 +79,7 @@ public class HomeController : Controller
             result = await _tripService.UpdateTripAsync(vm.Id.Value, vm, CurrentUserId); // Update existing trip
         }
         else
-        { 
+        {
             result = await _tripService.CreateTripAsync(vm, CurrentUserId); // Create new trip
         }
 
@@ -129,5 +129,11 @@ public class HomeController : Controller
         }
 
         return Json(new { isSuccess = true, message = "Thank you! Your message has been sent successfully." });
+    }
+
+    [HttpGet]
+    public IActionResult Services() // Contact Us form view
+    {
+        return View();
     }
 }

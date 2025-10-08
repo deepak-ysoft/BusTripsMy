@@ -1,0 +1,219 @@
+﻿@{
+    ViewBag.Title = "Services";
+}
+
+<h1 class="text-center ">Our Services</h1>
+<hr class="hr mb-5" />
+<div class="container-fluid my-5">
+
+    <!-- ORGANIZATION SECTION -->
+    <div class="row align-items-center mb-5">
+        <div class="col-md-6">
+            <h2>Organizations</h2>
+            <p>
+                An <strong>Organization</strong> is the top-level entity in our system.
+                Think of it as a club or company managing multiple groups or teams.
+                For example, <em>Kelowna Hockey</em> could be an organization with several age-based teams.
+            </p>
+            <p>
+                <strong>Users:</strong> Can create, edit, view, and manage organizations.
+                They can assign teams, trips, and roles within the organization.
+                <strong>Drivers:</strong> Usually do not manage organizations but can view trips associated with them.
+            </p>
+        </div>
+        <div class="col-md-6">
+            <div class="image-stack">
+                <div class="stack-img-container">
+                    <img src="/assets/images/services-img/org-1.jpg" class="stack-img" alt="Organization Image 1">
+                    <div class="overlay">Top-level Organization</div>
+                </div>
+                <div class="stack-img-container">
+                    <img src="/assets/images/services-img/org-2.jpg" class="stack-img" alt="Organization Image 2">
+                    <div class="overlay">User Permissions & Roles</div>
+                </div>
+                <div class="stack-img-container">
+                    <img src="/assets/images/services-img/org-3.jpg" class="stack-img" alt="Organization Image 3">
+                    <div class="overlay">Multiple Groups / Teams</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GROUP / TEAM SECTION -->
+    <div class="row align-items-center mb-5 pt-5">
+        <div class="col-md-6 order-md-2">
+            <h2>Groups / Teams</h2>
+            <p>
+                A <strong>Group</strong> or <strong>Team</strong> is a subset of an organization.
+                Each team can have multiple trips and participants.
+                Example: <em>Kelowna Hockey → U14 Female</em>.
+            </p>
+            <p>
+                <strong>Users:</strong> Can create, edit, assign trips, and manage team members.
+                <strong>Drivers:</strong> Can view assigned trips and access driver-specific notes for the team.
+            </p>
+        </div>
+        <div class="col-md-6 order-md-1">
+            <div class="image-stack">
+                <div class="stack-img-container">
+                    <img src="/assets/images/services-img/g-1.webp" class="stack-img" alt="Group Image 1">
+                    <div class="overlay">Team Overview</div>
+                </div>
+                <div class="stack-img-container">
+                    <img src="/assets/images/services-img/g-2.jpg" class="stack-img" alt="Group Image 2">
+                    <div class="overlay">Trips & Schedules</div>
+                </div>
+                <div class="stack-img-container">
+                    <img src="/assets/images/services-img/g-3.webp" class="stack-img" alt="Group Image 3">
+                    <div class="overlay">Participants & Roles</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TRIP SECTION -->
+    <div class="row align-items-center mb-5 pb-5 ">
+        <div class="col-md-6">
+            <h2>Trips</h2>
+            <p>
+                A <strong>Trip</strong> is an event or journey undertaken by a team.
+                Each trip contains detailed information such as:
+            </p>
+            <ul>
+                <li>Departure & Return Date/Time</li>
+                <li>Status (To Quote, Committed, Draft, Cancelled)</li>
+                <li>Assigned Driver(s) and Bus/Equipment</li>
+                <li>Trip Notes & Documents</li>
+            </ul>
+            <p>
+                <strong>Users:</strong> Can create, edit, assign drivers, and upload documents.
+                <strong>Drivers:</strong> Can view trips, request assignment, see private notes, but must request removal if needed.
+            </p>
+        </div>
+        <div class="col-md-6">
+            <div class="image-stack">
+                <div class="stack-img-container">
+                    <img src="/assets/images/services-img/tr-1.jpg" class="stack-img" alt="Trip Image 1">
+                    <div class="overlay">Departure & Return Info</div>
+                </div>
+                <div class="stack-img-container">
+                    <img src="/assets/images/services-img/tr-2.jpg" class="stack-img" alt="Trip Image 2">
+                    <div class="overlay">Drivers & Equipment</div>
+                </div>
+                <div class="stack-img-container">
+                    <img src="/assets/images/services-img/tr-3.jpg" class="stack-img" alt="Trip Image 3">
+                    <div class="overlay">Trip Notes & Docs</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Base stack for desktop */
+    .image-stack {
+        position: relative;
+        height: 250px;
+        cursor: pointer;
+        display: flex;
+        justify-content: center; /* center the stack horizontally */
+    }
+
+    .stack-img-container {
+        position: absolute;
+        max-width: 380px;
+        border-radius: 10px;
+        transition: transform 0.4s, z-index 0.4s;
+    }
+
+    .stack-img {
+        width: 100%;
+        border-radius: 10px;
+        box-shadow: 0 15px 25px rgba(0,0,0,0.3);
+    }
+
+    /* Overlay */
+    .stack-img-container .overlay {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        color: white;
+        font-weight: bold;
+        background: rgba(0,0,0,0.5);
+        padding: 5px 10px;
+        border-radius: 5px;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .stack-img-container:hover .overlay {
+        opacity: 1;
+    }
+
+    /* Initial offsets for desktop */
+    .image-stack .stack-img-container:nth-child(1) {
+        top: 0;
+        left: 0;
+        transform: rotate(-5deg);
+        z-index: 3;
+    }
+
+    .image-stack .stack-img-container:nth-child(2) {
+        top: 20px;
+        left: 180px;
+        transform: rotate(3deg);
+        z-index: 2;
+    }
+
+    .image-stack .stack-img-container:nth-child(3) {
+        top: 40px;
+        left: 40px;
+        transform: rotate(-2deg);
+        z-index: 1;
+    }
+
+    /* Hover effect */
+    .stack-img-container:hover {
+        transform: scale(1.07) rotate(0deg);
+        z-index: 10;
+    }
+
+    @@media (max-width: 768px) {
+        .image-stack {
+            height: 350px;
+        }
+
+            .image-stack .stack-img-container:nth-child(1) {
+                left: 5px;
+                top: 0px;
+            }
+
+            .image-stack .stack-img-container:nth-child(2) {
+                left: 15px;
+                top: 120px;
+            }
+
+            .image-stack .stack-img-container:nth-child(3) {
+                left: 5px;
+                top: 180px;
+            }
+    }
+</style>
+
+<script>
+    document.querySelectorAll('.image-stack').forEach(stack => {
+        const items = stack.querySelectorAll('.stack-img-container');
+        items.forEach(item => {
+            item.addEventListener('click', () => {
+                // Find max z-index
+                let maxZ = 0;
+                items.forEach(i => maxZ = Math.max(maxZ, parseInt(window.getComputedStyle(i).zIndex)));
+                item.style.zIndex = maxZ + 1;
+
+                // Magical bounce effect
+                item.style.transform = "scale(1.1) rotate(0deg)";
+                setTimeout(() => item.style.transform = "", 300);
+            });
+        });
+    });
+</script>
