@@ -200,15 +200,19 @@
 
             // Cancel loader immediately if validation fails
             document.addEventListener('invalid', function (e) {
-                clearTimeout(submitLoaderTimer);
-                loader.classList.remove('active');
-                loader.classList.add('loader-hidden');
+                setTimeout(() => {
+                    clearTimeout(submitLoaderTimer);
+                    loader.classList.remove('active');
+                    loader.classList.add('loader-hidden');
+                },200);
             }, true);
 
             // ---------------- Navigation and link clicks ----------------
             window.addEventListener('beforeunload', () => {
-                loader.classList.remove('loader-hidden');
-                loader.classList.add('active');
+                setTimeout(() => {
+                    loader.classList.remove('loader-hidden');
+                    loader.classList.add('active');  
+                },200);
             });
 
             document.addEventListener('click', function (e) {
@@ -238,15 +242,15 @@
                 });
 
                 $(document).ajaxStop(function() {
-                    clearTimeout(ajaxTimer);
+                    clearTimeout(ajaxTimer);setTimeout(() => {
                     loader.classList.remove('active');
-                    loader.classList.add('loader-hidden')
+                    loader.classList.add('loader-hidden')  },200);
                 });
 
                 $(document).ajaxError(function() {
-                    clearTimeout(ajaxTimer);
+                    clearTimeout(ajaxTimer);setTimeout(() => {
                     loader.classList.remove('active');
-                    loader.classList.add('loader-hidden')
+                    loader.classList.add('loader-hidden')  },200);
                 });
             }
         })();

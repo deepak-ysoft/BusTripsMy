@@ -280,8 +280,10 @@
                     complete: function () {
                         // Always hide loader when done
                         const loader = document.getElementById('body-loader');
-                        loader.classList.remove('active');
-                        loader.classList.add('loader-hidden');
+                        setTimeout(() => {
+                            loader.classList.remove('active');
+                            loader.classList.add('loader-hidden');  
+                        },200);
                     }
                 });
             });
@@ -312,8 +314,10 @@
                     }
                 }).always(function () {
                     const loader = document.getElementById('body-loader');
-                    loader.classList.remove('active');
-                    loader.classList.add('loader-hidden');
+                    setTimeout(() => {
+                        loader.classList.remove('active');
+                        loader.classList.add('loader-hidden'); 
+                    },200);
                 });
             });
         });
