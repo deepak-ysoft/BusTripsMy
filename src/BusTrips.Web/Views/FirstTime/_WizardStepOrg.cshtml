@@ -1,0 +1,51 @@
+﻿@using BusTrips.Web.Models
+@model CreateOrganizationVm
+
+<div id="wizard-step" data-step="organization">
+    <div class="modal-header border-0 pb-4">
+        <h5 class="modal-title fw-semibold">Let's Set Up Your Organization</h5>
+        <small class="text-muted">Provide your organization details below</small>
+    </div>
+
+    <div class="modal-body">
+        <form id="wizardForm" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="step" value="organization" />
+            <input type="hidden" name="Id" />
+
+            <!-- Organization Name -->
+            <div class="mb-4">
+                <label asp-for="OrgName" class="form-label fw-semibold"></label>
+                <div class="input-group shadow-sm rounded-3">
+                    <span class="input-group-text bg-light text-muted">
+                        <i class="bi bi-building"></i>
+                    </span>
+                    <input asp-for="OrgName" class="form-control border-start-0" placeholder="Enter full organization name" value="@Model?.OrgName" />
+                </div>
+                <span class="text-danger small">@Html.ValidationMessageFor(m => m.OrgName)</span>
+            </div>
+
+            <!-- Short Name -->
+            <div class="mb-4">
+                <label asp-for="ShortName" class="form-label fw-semibold"></label>
+                <div class="input-group shadow-sm rounded-3">
+                    <span class="input-group-text bg-light text-muted">
+                        <i class="bi bi-tag"></i>
+                    </span>
+                    <input asp-for="ShortName" class="form-control border-start-0" placeholder="Short name (max 5 letters)" value="@Model?.ShortName" maxlength="5" />
+                </div>
+                <span class="text-danger small">@Html.ValidationMessageFor(m => m.ShortName)</span>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-outline-secondary px-4" id="backToChoiceBtn">
+                    <i class="bi bi-arrow-left me-1"></i> Back
+                </button>
+                <button type="submit" class="btn btn-primary px-4">
+                    Next <i class="bi bi-arrow-right ms-1"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

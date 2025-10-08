@@ -1,0 +1,290 @@
+﻿@using BusTrips.Domain.Entities
+@using BusTrips.Web.Models;
+@{
+    ViewData["Title"] = "Organization Details";
+}
+
+<div id="orgDetailsWrapper" data-org-id="@Model.Id">
+    <a class="text-dark mb-2 cursor-pointer" href="/Organizations/Index">⬅ Back</a>
+
+    <div class="profile-foreground position-relative mx-n4 mt-1">
+        <div class="profile-wid-bg">
+            <img src="~/assets/images/profile-bg.jpg" alt="" class="profile-wid-img" />
+        </div>
+    </div>
+
+    <div class="pt-5 mt-4 mb-4 profile-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <!-- Overview -->
+                <div id="overviewContent" class="mb-3">
+                    <div class="row">
+                        <!-- Organization Info -->
+                        <div class="col-lg-6 mb-3">
+                            <div class="card h-100 shadow-sm border-0 rounded-3">
+                                <div class="card-body d-flex justify-content-between">
+                                    <div>
+                                        <h5 class="mb-3" id="creatorId" data-user-id="@Model.UserId"> <i class="ri-building-line me-2 text-primary"></i> Organization Info</h5>
+                                        <ul class="list-unstyled mb-0">
+                                            <li class="mb-2">
+                                                <i class="ri-building-2-line text-secondary me-2"></i>
+                                                <strong>Name:</strong> <span id="orgName" class="text-dark fw-semibold"></span>
+                                            </li>
+                                            <li class="mb-2">
+                                                <i class="ri-hashtag text-secondary me-2"></i>
+                                                <strong>Short Name:</strong> <span id="orgShortName" class="text-dark"></span>
+                                            </li>
+                                            <li class="mb-2">
+                                                <i class="ri-checkbox-circle-line text-secondary me-2"></i>
+                                                <strong>Status:</strong>
+                                                <span id="orgStatus" class="badge bg-success-subtle text-success"></span>
+                                            </li>
+                                            <li>
+                                                <i class="ri-star-line text-secondary me-2"></i>
+                                                <strong>Primary:</strong>
+                                                <span id="orgPrimary" class="badge bg-info-subtle text-info"></span>
+                                            </li>
+
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-outline-primary waves-effect waves-primary leaveBtn memberTypeDisplay"
+                                                data-org-id="@Model.Id"
+                                                data-member-type="@Model.MemberType">
+                                            Leave as @Model.MemberType
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Creator Info -->
+                        <div class="col-lg-6 mb-3">
+                            <div class="card h-100 shadow-sm border-0 rounded-3">
+                                <div class="card-body">
+                                    <h5 class="mb-3"><i class="ri-user-line me-2 text-primary"></i> Creator Info</h5>
+                                    <ul class="list-unstyled mb-0">
+                                        <li class="mb-2">
+                                            <i class="ri-user-3-line text-secondary me-2"></i>
+                                            <strong>Name:</strong> <span id="creatorName" class="text-dark fw-semibold"></span>
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="ri-mail-line text-secondary me-2"></i>
+                                            <strong>Email:</strong> <span id="creatorEmail" class="text-dark"></span>
+                                        </li>
+                                        <li>
+                                            <i class="ri-phone-line text-secondary me-2"></i>
+                                            <strong>Phone:</strong> <span id="creatorPhone" class="text-dark"></span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nav tabs -->
+                <div class="row pt-4">
+                    <div class="col-md-8 col-lg-5">
+                        <ul class="nav nav-pills animation-nav nav-justified gap-2 rounded-3 shadow-lg bg-white bg-opacity-25" role="tablist">
+                            @* <li class="nav-item"><a class="nav-link py-2 d-flex justify-content-center active" data-bs-toggle="tab" href="#groups"><i class="ri-group-line me-1"></i> Groups</a></li> *@
+                            <li class="nav-item"><a class="nav-link py-2 d-flex justify-content-center active" data-bs-toggle="tab" href="#members"><i class="ri-user-3-line me-1"></i> Members</a></li>
+                            <li class="nav-item"><a class="nav-link py-2 d-flex justify-content-center" data-bs-toggle="tab" href="#permissions"><i class="ri-shield-check-line me-1"></i> Permissions</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Tab panes -->
+                <div class="tab-content mt-2 text-muted">
+                   
+                    <!-- Members -->
+                    <div class="tab-pane active" id="members">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between">
+                                <h5>Manage Members</h5>
+                                <a class="btn btn-sm btn-primary" href="/Account/AddUser?orgId=@Model.Id">Add Member</a>
+                            </div>
+                            <div class="card-body">
+                                <table id="membersTable" class=" table table-bordered table-hover  dt-responsive nowrap w-100 customTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Member Type</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Permissions -->
+                    <div class="tab-pane" id="permissions">
+                        <div class="card">
+                            <div class="card-header"><h5>Manage Permissions</h5></div>
+                            <div class="card-body">
+                                <table id="permissionsTable" class=" table table-bordered table-hover  w-100 m-n3">
+                                    <thead>
+                                        <tr>
+                                            <th>Member Type</th>
+                                            <th class="text-center">View</th>
+                                            <th class="text-center">Create</th>
+                                            <th class="text-center">Edit</th>
+                                            <th class="text-center">Deactivate</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Member Details Modal -->
+<div class="modal fade" id="memberDetailsModal" tabindex="-1" aria-labelledby="memberDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header pb-4 ">
+                <h5 class="modal-title" id="memberDetailsModalLabel">
+                    <i class="ri-user-3-line me-2"></i> Member Details
+                </h5>
+                <span data-bs-dismiss="modal" class="btn">
+                    <i class="ri-close-line me-1 fs-2 border border-1"></i>
+                </span>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="p-3 bg-white rounded shadow-lg">
+                            <small class="text-muted">Name</small>
+                            <p class="fw-bold mb-0" id="detailUserName"></p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-white rounded shadow-lg">
+                            <small class="text-muted">Email</small>
+                            <p class="fw-bold mb-0" id="detailEmail"></p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-white rounded shadow-lg">
+                            <small class="text-muted">Phone</small>
+                            <p class="fw-bold mb-0" id="detailPhone"></p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-white rounded shadow-lg">
+                            <small class="text-muted">Member Type</small>
+                            <p class="fw-bold mb-0">
+                                <span id="detailMemberType" class="badge bg-success"></span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-white rounded shadow-lg">
+                            <small class="text-muted">Organization</small>
+                            <p class="fw-bold mb-0" id="detailOrgName"></p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-white rounded shadow-lg">
+                            <small class="text-muted">Status</small>
+                            <p class="fw-bold mb-0">
+                                <span id="detailOrgStatus" class="badge bg-success"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="mt-5">
+                    <div class="hstack gap-4 mb-3 mb-lg-0 flex-wrap justify-content-center">
+                        <!-- Make Creator -->
+                        <button type="button" class="btn btn-outline-primary btn-border action-btn"
+                                data-action="Creator"
+                                data-title="Make Creator"
+                                data-message="Are you sure you want to transfer creator rights to this member?">
+                            Make Creator
+                        </button>
+
+                        <!-- Toggle Admin -->
+                        <button type="button" class="btn btn-outline-success btn-border action-btn"
+                                data-action="Admin"
+                                data-title="Change Admin Role"
+                                data-message="Are you sure you want to toggle admin role for this member?">
+                            Make Admin
+                        </button>
+
+                        <!-- Remove Member -->
+                        <button type="button" class="btn btn-outline-warning btn-border action-btn"
+                                data-action="Member"
+                                data-title="Make Member"
+                                data-message="Are you sure you want to set this user as a Member?">
+                            Make Member
+                        </button>
+
+                        <!-- Make ReadOnly -->
+                        <button type="button" class="btn btn-outline-danger btn-border action-btn"
+                                data-action="ReadOnly"
+                                data-title="Make Readonly"
+                                data-message="Are you sure you want to restrict this member to Read Only?">
+                            Make Readonly
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Action Modal -->
+<div class="modal fade" id="confirmActionModal" tabindex="-1" aria-labelledby="confirmActionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-1 border-warning shadow-lg">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalActionTitle">Confirm Action</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="modalActionMessage">Are you sure you want to perform this action?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmModalActionBtn">Yes, Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm leave Confirm Modal -->
+<div class="modal fade" id="leaveConfirmModal" tabindex="-1" aria-labelledby="leaveConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="leaveConfirmModalLabel">Confirm Leave</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="leaveModalDescription">
+                <!-- Dynamic text set by JS -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmLeaveBtn" class="btn btn-danger">Leave</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script src="~/assets/CustomJs/orgJs/orgDetailsForUser.js"></script>
+
+}

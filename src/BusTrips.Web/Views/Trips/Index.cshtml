@@ -1,0 +1,256 @@
+﻿@using BusTrips.Domain.Entities
+@using BusTrips.Web.Models
+@model GroupDetailsResponseVM
+@{
+    ViewData["Title"] = "Manage Trips";
+}
+@await Html.PartialAsync("_Alert", new AlertViewModel { IsSuccess = ViewBag.IsSuccess ?? false, Message = ViewBag.Message as string })
+
+<a class="text-dark mb-2 cursor-pointer" href="/Organizations/Index">
+    ⬅ Back
+</a>
+<div class="profile-foreground position-relative mx-n4 mt-1">
+    <div class="profile-wid-bg">
+        <img src="~/assets/images/profile-bg.jpg" alt="" class="profile-wid-img" />
+    </div>
+</div>
+<div class="pt-4 mb-4 mb-lg-3 pb-lg-4 profile-wrapper">
+    <div class="row g-4">
+        <!--end col-->
+        <div class="col-xxl-4">
+            <div class="card bg-light">
+                <div class=" card-header">Organization  </div>
+                <div class="card-body">
+                    <h3 class=" mb-1 d-flex justify-content-between">
+                        <span>@Model.Org.OrgName (@Model.Org.ShortName)</span>
+                        <span>
+                            @if (@Model.Org.IsActive)
+                            {
+                                <span class="ms-5 border border-1 border-warning px-3 rounded-pill "> Active</span>
+                            }
+                            else
+                            {
+                                <span class="ms-5  border border-1 border-danger px-3 rounded-pill">Inactive</span>
+                            }
+                        </span>
+                    </h3>
+
+                    <div class="hstack gap-1 mt-2">Created :  <span class="text-muted">@Model.Org.CreatedDate.ToString("dd-MMM-yyyy")</span></div>
+                    <div class="hstack mt-2">
+                        <div class="me-2 d-flex gap-4">
+                            <div>
+                                <label class="form-label fw-semibold me-1">Your Role:</label>
+                                @if (Model.Org.MemberType == "Creator")
+                                {
+                                    <span class="border border-1 border-success px-3 rounded-pill fw-semibold">Creator</span>
+                                }
+                                else if (Model.Org.MemberType == "Admin")
+                                {
+                                    <span class="border border-1 border-primary px-3 rounded-pill fw-semibold">Admin</span>
+                                }
+                                else if (Model.Org.MemberType == "Member")
+                                {
+                                    <span class="border border-1 border-info px-3 rounded-pill fw-semibold">Member</span>
+                                }
+                                else if (Model.Org.MemberType == "ReadOnly")
+                                {
+                                    <span class="border border-1 border-secondary px-3 rounded-pill fw-semibold">Read Only</span>
+                                }
+                            </div>
+                            <div>
+                                @if (Model.Org.IsPrimary)
+                                {
+                                    <label class="form-label fw-semibold me-1">Primary Status:</label>
+                                    <span class=" border border-1 border-warning px-3 rounded-pill ">Primary</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xxl-8">
+            <div class="card bg-light">
+                <div class=" card-header">Group  </div>
+                <div class="card-body">
+                    <h3 class=" mb-1 d-flex justify-content-between">
+                        <span>@Model.Group.GroupName (@Model.Group.ShortName)</span>
+                        <span>
+                            @if (@Model.Group.IsActive)
+                            {
+                                <span class="ms-5 border border-1 border-warning px-3 rounded-pill "> Active</span>
+                            }
+                            else
+                            {
+                                <span class="ms-5  border border-1 border-danger px-3 rounded-pill">Inactive</span>
+                            }
+                        </span>
+
+
+                    </h3>
+                    <div class="hstack gap-1 mt-2">Created : @Model.Group.CreatedDate.ToString("dd-MMM-yyyy")</div>
+                    <div class="hstack  gap-3 mt-2">
+                        <div>
+                            Description :  <span class="text-muted">@Model.Group.Description</span>
+                        </div>
+                    </div>
+                    @if (!Model.Group.IsActive)
+                    {
+                        <div class="hstack gap-1 mt-2">
+
+                            <div class="me-2">
+                                <span class="">  Inactive Description :  <span class="text-muted">@Model.Group.DeActiveDiscription</span></span>
+                            </div>
+
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end row-->
+</div>
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Manage Trips</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <div class="d-flex justify-content-between gap-2 mb-3">
+                        @{
+                            var selectedBucket = Context.Request.Query["bucket"].ToString();
+                        }
+                        <div>
+                            <select class="form-select" onchange="location = this.value;">
+                                <option value="/Trips/Index?groupId=@Model.Group.Id" selected="@(string.IsNullOrEmpty(selectedBucket))">All</option>
+                                <option value="/Trips/Index?groupId=@Model.Group.Id&bucket=Draft" selected="@(selectedBucket == "Draft")">Draft</option>
+                                <option value="/Trips/Index?groupId=@Model.Group.Id&bucket=Quoted" selected="@(selectedBucket == "Quoted")">Quoted</option>
+                                <option value="/Trips/Index?groupId=@Model.Group.Id&bucket=Approved" selected="@(selectedBucket == "Approved")">Approved</option>
+                                <option value="/Trips/Index?groupId=@Model.Group.Id&bucket=Rejected" selected="@(selectedBucket == "Rejected")">Rejected</option>
+                                <option value="/Trips/Index?groupId=@Model.Group.Id&bucket=Upcoming" selected="@(selectedBucket == "Upcoming")">Upcoming</option>
+                                <option value="/Trips/Index?groupId=@Model.Group.Id&bucket=InProgress" selected="@(selectedBucket == "InProgress")">In Progress</option>
+                                <option value="/Trips/Index?groupId=@Model.Group.Id&bucket=Past" selected="@(selectedBucket == "Past")">Past</option>
+                            </select>
+                        </div>  <div>
+                            @if (Model.Org.MemberType == "Creator" || Model.Org.Permissions.IsCreate)
+                            {
+                                @* <div> <a class="btn btn-sm btn-primary ms-auto" >Create Trip</a></div> *@
+                                if (Model.Org.IsActive)
+                                {
+                                    <a class="btn btn-sm btn-primary ms-auto" href="/Trips/CreateTrip?groupId=@Model.Group.Id&controller=Admin">
+                                        Create Trip
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span data-bs-toggle="tooltip" title="You cannot create a trip in an inactive organization">
+                                        <button type="button" class="btn btn-sm btn-soft-secondary cursor-not-allowed " disabled>
+                                            Create Trip
+                                        </button>
+                                    </span>
+                                }
+                            }
+
+                        </div>
+                    </div>
+                    <table id="Trip-List" class=" table table-bordered table-hover  dt-responsive nowrap align-middle customTable" style="width:100%">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Trip Name</th>
+                                <th>Status</th>
+                                <th>Departure Date</th>
+                                <th>Departure Time</th>
+                                <th>Arrival Date </th>
+                                <th>Arrival Time </th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var t in Model.Trips)
+                            {
+                                <tr>
+                                    <td>@t.TripName</td>
+                                    <td>@t.Status</td>
+                                    <td>@t.DepartureDate</td>
+                                    <td>@t.DepartureTime</td>
+                                    <td>@t.DestinationArrivalDate</td>
+                                    <td>@t.DestinationArrivalTime</td>
+                                    <td class=" gap-3 text-center">
+                                        @* @if (@t.Status == "Draft")
+                                        {
+                                            <a href="/Trips/SubmitForQuote?id=@t.Id&groupId=@orgId" class="btn btn-sm btn-soft-success">Quote</a>
+                                        } *@
+                                        @if (@t.Status == "Quoted" || @t.Status == "Draft")
+                                        {
+                                            @* <form method="post" action="/Trips/Activate/@t.Id"><button class="btn btn-sm btn-success">Activate</button></form> *@
+                                            @if (Model.Org.MemberType == "Creator" || Model.Org.Permissions.IsView)
+                                            {
+                                                <a href="/Trips/TripDetails?tripId=@t.Id" class="btn btn-sm btn-soft-primary">
+                                                    <i class="ri-eye-fill"></i>
+                                                </a>
+                                            }
+                                            @if (Model.Org.MemberType == "Creator" || Model.Org.Permissions.IsEdit)
+                                            {
+                                                if (Model.Org.IsActive)
+                                                {
+                                                    <a href="/Trips/Edit?id=@t.Id&groupId=@Model.Group.Id&controller=Admin" class="btn btn-sm btn-soft-success">
+                                                        <i class="ri-edit-2-line"></i>
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <span data-bs-toggle="tooltip" title="You cannot edit a trip in an inactive organization">
+                                                        <button type="button" class="btn btn-sm btn-soft-secondary cursor-not-allowed " disabled>
+                                                            <i class="ri-edit-2-line"></i>
+                                                        </button>
+                                                    </span>
+                                                }
+                                            }
+                                        }
+                                        else if ((@t.Status != "Quoted" && @t.Status != "Draft" && @t.Status != "Canceled") && (Model.Org.MemberType == "Creator" || Model.Org.Permissions.IsDeactive))
+                                        {
+                                            if (Model.Org.IsActive)
+                                            {
+                                                <a href="/Trips/CancelTrip?id=@t.Id&groupId=@Model.Group.Id" class="btn btn-sm btn-soft-danger">Cancel<i class=" align-middle"></i></a>
+                                            }
+                                            else
+                                            {
+                                                <span data-bs-toggle="tooltip" title="You cannot Cancel a trip in an inactive organization">
+                                                    <button type="button" class="btn btn-sm btn-soft-danger cursor-not-allowed " disabled>
+                                                        Cancel
+                                                    </button>
+                                                </span>
+                                            }
+                                        }
+                                        @if (Model.Org.MemberType == "Creator" || Model.Org.Permissions.IsCreate)
+                                        {
+
+                                            if (Model.Org.IsActive)
+                                            {
+                                                <a href="/Trips/GetTripForCopyTrip?id=@t.Id&groupId=@Model.Group.Id" class="btn btn-sm btn-soft-secondary">
+                                                    <i class=" ri-file-copy-line"></i>
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <span data-bs-toggle="tooltip" title="You cannot copy a trip in an inactive organization">
+                                                    <button type="button" class="btn btn-sm btn-soft-secondary cursor-not-allowed " disabled>
+                                                        <i class=" ri-file-copy-line"></i>
+                                                    </button>
+                                                </span>
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

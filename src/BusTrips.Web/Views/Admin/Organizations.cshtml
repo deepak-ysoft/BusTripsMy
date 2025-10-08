@@ -1,0 +1,89 @@
+﻿@using BusTrips.Web.Models
+@model IEnumerable<BusTrips.Web.Models.OrgListItemVm>
+
+@{
+    ViewData["Title"] = "Organizations";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Manage Organization</h5>
+            </div>
+
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="organizationsTable" class=" table table-bordered table-hover  dt-responsive nowrap align-middle customTable" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Organization Name</th>
+                                <th>Creator</th>
+                                <th>Groups</th>
+                                <th className="text-center">Active Status</th>
+                                <th className="text-center">Primary Status</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Organization Modal (Edit Only) -->
+<div class="modal fade" id="organizationModal" tabindex="-1" aria-labelledby="organizationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-light pb-2">
+                <h5 class="modal-title" id="organizationModalLabel">Edit Organization</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="organizationForm" method="post">
+                    <input type="hidden" id="OrganizationId" name="Id" />
+                    <input type="hidden" id="UserId" name="userId" />
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="OrgName" class="form-label">Organization Name</label>
+                            <input type="text" class="form-control" id="OrgName" name="OrgName" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="OrgShortName" class="form-label">Short Name</label>
+                            <input type="text" class="form-control" id="OrgShortName" name="ShortName" maxlength="5" required />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label d-block">Status</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="OrgIsActiveToggle">
+                                <label class="form-check-label" for="OrgIsActiveToggle" id="OrgIsActiveToggleLabel">Active</label>
+                            </div>
+                            <input type="hidden" id="OrgIsActive" name="IsActive" value="true" />
+                        </div>
+
+                        <div class="col-md-9" id="deactiveReasonWrapperOrg" style="display:none;">
+                            <label for="OrgDeActiveDiscription" class="form-label">Inactive Reason</label>
+                            <textarea rows="4" class="form-control" id="OrgDeActiveDiscription" name="DeActiveDiscription"  placeholder="Enter reason"> </textarea>
+                        </div>
+                        <div class="col-md-12 ms-2 mt-4">
+                            <label for="OrgIsPrimary" class="form-label">Primary</label>
+                            <input type="hidden" id="OrgIsPrimary" name="IsPrimary" />
+                            <span id="OrgIsPrimaryDisplay"></span>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="organizationForm" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+   <script src="~/assets/CustomJs/orgJs/orgs.js"></script>
+}

@@ -1,0 +1,94 @@
+﻿@using BusTrips.Web.Models
+@model PermissionPageVM
+
+@{
+    ViewData["Title"] = "Organization Permissions";
+}
+
+<a class="text-dark mb-2 cursor-pointer" href="/Organizations/OrganizationDetails?id=@Model.OrgId">
+    ⬅ Back
+</a>
+<div class="row">
+    <div class="col-12 col-lg-6">
+        <div class="card mt-1">
+            <div class="card-header"><h4>Organization permissions</h4></div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class=" table table-bordered table-hover " id="permissionTable">
+                        <thead>
+                            <tr>
+                                <th>Member Type</th>
+                                <th class="text-center">View</th>
+                                <th class="text-center">Create</th>
+                                <th class="text-center">Edit</th>
+                                <th class="text-center">Deactivate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var p in Model.Permissions)
+                            {
+                                <tr data-id="@p.PId">
+                                    <td>@p.MemberType</td>
+                                    <td>
+                                        <div class="form-check form-switch text-center">
+                                            <input type="checkbox" class="form-check-input perm-switch" data-field="IsView" @(p.IsView ? "checked" : "") />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check form-switch text-center">
+                                            <input type="checkbox" class="form-check-input perm-switch" data-field="IsCreate" @(p.IsCreate ? "checked" : "") />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check form-switch text-center">
+                                            <input type="checkbox" class="form-check-input perm-switch" data-field="IsEdit" @(p.IsEdit ? "checked" : "") />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check form-switch text-center">
+                                            <input type="checkbox" class="form-check-input perm-switch" data-field="IsDeactive" @(p.IsDeactive ? "checked" : "") />
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        // Handle switch toggle
+             $(document).on("change", ".perm-switch", function () {
+            var checkbox = $(this);
+            var row = checkbox.closest("tr");
+            var pid = row.data("id");
+
+            var request = {
+                isView: row.find('[data-field="IsView"]').is(':checked'),
+                isCreate: row.find('[data-field="IsCreate"]').is(':checked'),
+                isEdit: row.find('[data-field="IsEdit"]').is(':checked'),
+                isDeactive: row.find('[data-field="IsDeactive"]').is(':checked')
+            };
+
+            $.ajax({
+                url: "/Organizations/UpdatePermission/" + pid,
+                type: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify(request),
+                success: function () {
+                    console.log("Permission updated successfully");
+                },
+               error: function (xhr) {
+                    console.error("Error:", xhr.status, xhr.responseText);
+                    alert("Failed to update permission: " + xhr.status + " - " + xhr.responseText);
+                    checkbox.prop("checked", !checkbox.is(":checked")); // revert
+                }
+            });
+        });
+    </script>
+}

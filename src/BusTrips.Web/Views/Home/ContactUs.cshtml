@@ -1,0 +1,107 @@
+﻿@model BusTrips.Web.Models.ContactUsVM
+
+@{
+    ViewData["Title"] = "Contact Us";
+}
+
+<div class="container-fluid py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-5">
+                    <h2 class="mb-4 fw-bold text-center text-primary">Contact Us</h2>
+                    <p class="text-center text-muted mb-5">
+                        Have a question or need support? Fill out the form below and we'll get back to you promptly.
+                    </p>
+
+                    <!-- Validation summary (optional) -->
+                    <div id="validationSummary" class="mb-3"></div>
+
+                    <form id="contactForm" novalidate>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Name" class="form-label"></label>
+                                <input asp-for="Name" class="form-control" placeholder="Your Name">
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Email" class="form-label"></label>
+                                <input asp-for="Email" type="email" class="form-control" placeholder="Your Email">
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label asp-for="Subject" class="form-label"></label>
+                                <input asp-for="Subject" class="form-control" placeholder="Subject">
+                                <span asp-validation-for="Subject" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label asp-for="Message" class="form-label"></label>
+                                <textarea asp-for="Message" class="form-control" placeholder="Your Message" style="height:150px;"></textarea>
+                                <span asp-validation-for="Message" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 btn-lg fw-semibold">Send Message</button>
+                    </form>
+
+                    <!-- Validation summary (optional) -->
+                    <div id="validationSummary" class="mt-3"></div>
+
+
+                    <div class="mt-5 border-top pt-4 d-flex flex-column flex-md-row justify-content-between align-items-center text-muted">
+                        <div class="mb-2 mb-md-0">
+                            <i class="ri-mail-line me-2"></i> info@example.com
+                        </div>
+                        <div class="mb-2 mb-md-0">
+                            <i class="ri-phone-line me-2"></i> +1 234 567 890
+                        </div>
+                        <div>
+                            <i class="ri-map-pin-line me-2"></i> 123 Main Street, City, Country
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#contactForm").submit(function (e) {
+                e.preventDefault();
+
+                $.ajax({
+                    url: '@Url.Action("SubmitContactUs", "Home")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (res) {
+                        $("#validationSummary").html("");
+                        $("span[data-valmsg-for]").text(""); // clear old errors
+
+                        if (res.isSuccess) {
+                            showAlert(res.message, true);
+                            $("#contactForm")[0].reset();
+                        }
+                        else {
+                            focusFirstInvalidField(res.errors, "#contactForm");
+
+                            if (res.message) {
+                                showAlert(res.message, false);
+                            }
+                        }
+                    },
+                    error: function () {
+                        showAlert("Something went wrong! Please try again.", false);
+                    }
+                });
+            });
+        });
+    </script>
+}

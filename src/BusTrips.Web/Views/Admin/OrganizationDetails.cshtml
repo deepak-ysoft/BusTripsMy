@@ -1,0 +1,177 @@
+﻿@using BusTrips.Domain.Entities
+@using BusTrips.Web.Models;
+@model OrgDetailsResponseVM
+
+@{
+    ViewData["Title"] = "Organization Details";
+    var userId = ViewBag.DetailsUserId;
+}
+
+<a class="text-dark mb-2 cursor-pointer"
+   href="/Admin/UserDetails?userId=@userId&tab=more_info">
+    ⬅ Back
+</a>
+
+<div class="profile-foreground position-relative mx-n4 mt-1">
+    <div class="profile-wid-bg">
+        <img src="~/assets/images/profile-bg.jpg" alt="" class="profile-wid-img" />
+    </div>
+</div>
+
+<div class="pt-4 mb-4 mb-lg-3 pb-lg-4 profile-wrapper">
+    <div class="row g-4">
+        <!--end col-->
+        <div class="col-xxl-8">
+            <div class="p-2 text-white">
+                <h3 class=" mb-1 text-white">
+                    @Model.Org.OrgName (@Model.Org.ShortName)
+                    @if (@Model.Org.IsActive)
+                    {
+                        <span class="ms-5 border border-1 border-warning px-3 rounded-pill text-warning fw-semibold "> Active</span>
+                    }
+                    else
+                    {
+                        <span class="ms-5  border border-1 border-warning px-3 rounded-pill text-warning fw-semibold">Inactive</span>
+                    }
+                </h3>
+                <div class="hstack text-white  gap-3 mt-2">
+                    <div class="me-2">
+                        Total Groups : @Model.Org.groupCount
+                    </div>
+                    <div>
+                        Total Trips : @Model.Org.tripCount
+                    </div>
+                </div>
+                <div class="hstack gap-1 mt-2 text-white">Created : @Model.Org.CreatedDate.ToString("dd-MMM-yyyy")</div>
+                <div class="hstack mt-2">
+                    <div class="me-2 d-flex gap-4">
+                        <div>
+                            <label class="form-label fw-semibold me-1">Your Role:</label>
+                            @if (Model.Org.MemberType == "Creator")
+                            {
+                                <span class="border border-1 border-success px-3 rounded-pill  fw-semibold">Creator</span>
+                            }
+                            else if (Model.Org.MemberType == "Admin")
+                            {
+                                <span class="border border-1 border-primary px-3 rounded-pill  fw-semibold">Admin</span>
+                            }
+                            else if (Model.Org.MemberType == "Member")
+                            {
+                                <span class="border border-1 border-info px-3 rounded-pill fw-semibold">Member</span>
+                            }
+                            else if (Model.Org.MemberType == "ReadOnly")
+                            {
+                                <span class="border border-1 border-secondary px-3 rounded-pill  fw-semibold">Read Only</span>
+                            }
+                        </div>
+                        <div>
+                            @if (Model.Org.IsPrimary)
+                            {
+                                <label class="form-label fw-semibold me-1">Primary Status:</label>
+                                <span class=" border border-1 border-warning px-3 rounded-pill ">Primary</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @if (Model.Org.MemberType == "Creator")
+        {
+            <div class="mt-2  d-flex justify-content-end">
+                <a href="/Admin/GetPermission?orgId=@Model.Org.Id" class="btn btn-outline-light waves-effect waves-light">Permissions</a>
+            </div>
+        }
+    </div>
+    <!--end row-->
+</div>
+<div class="row">
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header align-items-center d-flex justify-content-between">
+                <h4 class="card-title mb-0 flex-grow-1">Members</h4>
+            </div><!-- end card header -->
+
+            <div class="card-body">
+                <div class="live-preview">
+                    <div class="table-responsive">
+                        <table class="table align-middle table-nowrap mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">User Name</th>
+                                    <th scope="col">Phone Number</th>
+                                    @if (Model.Org.Permissions.MemberType == "Creator" || Model.Org.Permissions.IsView)
+                                    {
+                                        <th scope="col">Action</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var o in Model.Members)
+                                {
+                                    <tr>
+                                        <th scope="row"><a href="#" class="fw-medium">@o.UserName</a></th>
+                                        <td>@o.PhoneNumber</td>
+                                        @if (Model.Org.Permissions.MemberType == "Creator" || Model.Org.Permissions.IsView)
+                                        {
+                                            <td>
+                                                <a href="/Admin/MemberDetails?userId=@o.AppUserId&orgId=@Model.Org.Id
+                                                                                                                                            " class="link-success">View More <i class="ri-arrow-right-line align-middle"></i></a>
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div><!-- end card-body -->
+        </div><!-- end card -->
+    </div>
+    <!-- end col -->
+
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header align-items-center d-flex">
+                <h4 class="card-title mb-0 flex-grow-1">Admin</h4>
+                <div class="flex-shrink-0">
+                    <div class="form-check form-switch form-switch-right form-switch-md">
+                    </div>
+                </div>
+            </div><!-- end card header -->
+
+            <div class="card-body">
+                <div class="live-preview">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-nowrap align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">User Name</th>
+                                    <th scope="col">Phone Number</th>
+                                    @if (Model.Org.Permissions.MemberType == "Creator" || Model.Org.Permissions.IsView)
+                                    {
+                                        <th scope="col">Action</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var o in Model.Admins)
+                                {
+                                    <tr>
+                                        <th scope="row"><a href="#" class="fw-medium">@o.UserName</a></th>
+                                        <td>@o.PhoneNumber</td>
+                                        @if (Model.Org.Permissions.MemberType == "Creator" || Model.Org.Permissions.IsView)
+                                        {
+                                            <td><a href="/Admin/MemberDetails?userId=@o.AppUserId&orgId=@Model.Org.Id" class="link-success">View More <i class="ri-arrow-right-line align-middle"></i></a></td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div><!-- end card-body -->
+        </div><!-- end card -->
+    </div>
+    <!-- end col -->
+</div>
+

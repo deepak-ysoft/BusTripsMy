@@ -1,0 +1,207 @@
+﻿@using BusTrips.Domain.Entities
+@using BusTrips.Web.Models
+@model GroupDetailsResponseVM
+@{
+    ViewData["Title"] = "Manage Trips";
+
+    // Fallback if userId is null
+    var safeUserId = Model.userId ?? Guid.Empty;
+    var returnUrl = Url.Action("GroupDetails", "Admin", new { groupId = Model.Group.Id, userId = safeUserId });
+    var createTripUrl = Url.Action("CreateTrip", "Admin", new { groupId = Model.Group.Id, userId = safeUserId, returnUrl, controller = "Admin" });
+}
+<a class="text-dark mb-2 cursor-pointer" href="/Admin/GetOrgDetails?orgId=@Model.Org.Id&tab=more_info">
+    ⬅ Back
+</a>
+
+<div class="profile-foreground position-relative mx-n4 mt-1">
+    <div class="profile-wid-bg">
+        <img src="~/assets/images/profile-bg.jpg" alt="" class="profile-wid-img" />
+    </div>
+</div>
+
+<div class="pt-4 mb-4 mb-lg-3 pb-lg-4 profile-wrapper">
+    <div class="row g-4">
+        <!-- Organization -->
+        <div class="col-xxl-5">
+            <div class="card bg-light">
+                <div class="card-header">Organization </div>
+                <div class="card-body">
+                    <h3 class="mb-1 d-flex justify-content-between">
+                        <span>@Model.Org.OrgName (@Model.Org.ShortName)</span>
+                        <span>
+                            @if (Model.Org.IsActive)
+                            {
+                                <span class="ms-5 border border-1 border-warning px-3 rounded-pill">Active</span>
+                            }
+                            else
+                            {
+                                <span class="ms-5 border border-1 border-danger px-3 rounded-pill">Inactive</span>
+                            }
+                        </span>
+                    </h3>
+                    <div class="hstack gap-1 mt-2">
+                        Created :
+                        <span class="text-muted">@Model.Org.CreatedDate.ToString("dd-MMM-yyyy")</span>
+                    </div>
+                    <div class="hstack mt-2">
+                        <div class="me-2 d-flex gap-4">
+                            <div>
+                                <label class="form-label fw-semibold me-1">Your Role:</label>
+                                @if (Model.Org.MemberType == "Creator")
+                                {
+                                    <span class="border border-1 border-success px-3 rounded-pill fw-semibold">Creator</span>
+                                }
+                                else if (Model.Org.MemberType == "Admin")
+                                {
+                                    <span class="border border-1 border-primary px-3 rounded-pill fw-semibold">Admin</span>
+                                }
+                                else if (Model.Org.MemberType == "Member")
+                                {
+                                    <span class="border border-1 border-info px-3 rounded-pill fw-semibold">Member</span>
+                                }
+                                else if (Model.Org.MemberType == "ReadOnly")
+                                {
+                                    <span class="border border-1 border-secondary px-3 rounded-pill fw-semibold">Read Only</span>
+                                }
+                            </div>
+                            <div>
+                                @if (Model.Org.IsPrimary)
+                                {
+                                    <label class="form-label fw-semibold me-1">Primary Status:</label>
+                                    <span class="border border-1 border-warning px-3 rounded-pill">Primary</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Group -->
+        <div class="col-xxl-7">
+            <div class="card bg-light">
+                <div class="card-header">Group </div>
+                <div class="card-body">
+                    <h3 class="mb-1 d-flex justify-content-between">
+                        <span>@Model.Group.GroupName (@Model.Group.ShortName)</span>
+                        <span>
+                            @if (Model.Group.IsActive)
+                            {
+                                <span class="ms-5 border border-1 border-warning px-3 rounded-pill">Active</span>
+                            }
+                            else
+                            {
+                                <span class="ms-5 border border-1 border-danger px-3 rounded-pill">Inactive</span>
+                            }
+                        </span>
+                    </h3>
+                    <div class="hstack gap-1 mt-2">
+                        Created : @Model.Group.CreatedDate.ToString("dd-MMM-yyyy")
+                    </div>
+                    <div class="hstack gap-3 mt-2">
+                        <div>
+                            Description :
+                            <span class="text-muted">@Model.Group.Description</span>
+                        </div>
+                    </div>
+                    @if (!Model.Group.IsActive)
+                    {
+                        <div class="hstack gap-1 mt-2">
+                            <div class="me-2">
+                                <span>
+                                    Inactive Description :
+                                    <span class="text-muted">@Model.Group.DeActiveDiscription</span>
+                                </span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Manage Trips -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Manage Trips</h5>
+
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between gap-2 mb-3">
+                    @{
+                        var selectedBucket = Context.Request.Query["bucket"].ToString();
+                    }
+                    <div>
+                        <select class="form-select" onchange="location = this.value;">
+                            <option value="/Admin/GroupDetails?groupId=@Model.Group.Id&userId=@Model.userId"
+                                    selected="@(string.IsNullOrEmpty(selectedBucket))">All</option>
+                            <option value="/Admin/GroupDetails?groupId=@Model.Group.Id&userId=@Model.userId&bucket=Draft"
+                                    selected="@(selectedBucket == "Draft")">Draft</option>
+                            <option value="/Admin/GroupDetails?groupId=@Model.Group.Id&userId=@Model.userId&bucket=Quoted"
+                                    selected="@(selectedBucket == "Quoted")">Quoted</option>
+                            <option value="/Admin/GroupDetails?groupId=@Model.Group.Id&userId=@Model.userId&bucket=Approved"
+                                    selected="@(selectedBucket == "Approved")">Approved</option>
+                            <option value="/Admin/GroupDetails?groupId=@Model.Group.Id&userId=@Model.userId&bucket=Rejected"
+                                    selected="@(selectedBucket == "Rejected")">Rejected</option>
+                            <option value="/Admin/GroupDetails?groupId=@Model.Group.Id&userId=@Model.userId&bucket=Upcoming"
+                                    selected="@(selectedBucket == "Upcoming")">Upcoming</option>
+                            <option value="/Admin/GroupDetails?groupId=@Model.Group.Id&userId=@Model.userId&bucket=InProgress"
+                                    selected="@(selectedBucket == "InProgress")">In Progress</option>
+                            <option value="/Admin/GroupDetails?groupId=@Model.Group.Id&userId=@Model.userId&bucket=Past"
+                                    selected="@(selectedBucket == "Past")">Past</option>
+                        </select>
+                    </div>
+                    @if (Model.Org.MemberType == "Creator" || Model.Org.Permissions.IsCreate)
+                    {
+                        <div>
+                            @if (Model.Org.IsActive)
+                            {
+                                <a class="btn btn-sm btn-primary" href="@createTripUrl">
+                                    Create Trip
+                                </a>
+                            }
+                            else
+                            {
+                                <span data-bs-toggle="tooltip" title="You cannot create a trip in an inactive organization">
+                                    <button type="button" class="btn btn-sm btn-soft-secondary cursor-not-allowed" disabled>
+                                        Create Trip
+                                    </button>
+                                </span>
+                            }
+                        </div>
+                    }
+                </div>
+
+                <div class="table-responsive">
+                    <table id="trip-table" class=" table table-bordered table-hover  dt-responsive nowrap align-middle customTable" style="width:100%">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Trip Name</th>
+                                <th>Departure Date</th>
+                                <th>Departure Time</th>
+                                <th>Arrival Date</th>
+                                <th>Arrival Time</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var groupId = '@Model.Group.Id';
+        var safeUserId = '@safeUserId';
+        var returnUrl = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(returnUrl));
+    </script>
+
+    <script src="~/assets/CustomJs/groupJs/groupDetails.js"></script>
+}

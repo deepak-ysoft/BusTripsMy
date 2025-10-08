@@ -1,0 +1,153 @@
+﻿@model BusTrips.Web.Models.EquipmentVM
+
+@{
+    ViewData["Title"] = "Equipment Details";
+}
+
+<a asp-action="Equipments" class="text-dark  cursor-pointer"> ⬅ Back</a>
+
+<input type="hidden" id="equipmentId" value="@Model.Id" />
+
+<div id="equipmentDetailsContainer">
+    @await Html.PartialAsync("_EquipmentDetails", Model)
+</div>
+
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-light pb-2">
+                <!-- Close Button -->
+                <button type="button" class="btn-close"
+                        data-bs-dismiss="modal" style="z-index:1051;">
+                </button>
+            </div>
+            <!-- Image -->
+               <!-- Image -->
+            <div class="modal-body p-0 d-flex justify-content-center align-items-center my-2" style="height:70vh;">
+                <img id="modalImage" src="" class="img-fluid" style="width:70vw; height:70vh; object-fit:contain;" />
+            </div>
+
+          <!-- Delete Button -->
+            <button id="deleteImageBtn" type="button"
+                    class="btn btn-danger"
+                    style="z-index:1051; font-weight:bold;">
+                <i class="ri-delete-bin-6-line"></i> Delete
+            </button>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentImageUrl = "";
+        let currentEquipmentId = $("#equipmentId").val(); // Equipment ID
+
+        const imageModalEl = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const deleteImageBtn = document.getElementById('deleteImageBtn');
+
+        // Reset modal on close
+        imageModalEl.addEventListener('hidden.bs.modal', function () {
+            modalImage.src = "";
+            currentImageUrl = "";
+        });
+
+        // Function to attach click handlers to images
+        function attachImageClickHandlers() {
+            document.querySelectorAll('.preview-image').forEach(img => {
+                img.addEventListener('click', function () {
+                    currentImageUrl = this.getAttribute('data-bs-img');
+                    modalImage.src = currentImageUrl;
+
+                    deleteImageBtn.dataset.url = `/Admin/DeleteEquipmentImage?id=${currentEquipmentId}&imgUrl=${encodeURIComponent(currentImageUrl)}`;
+                    deleteImageBtn.dataset.name = "this image";
+
+                    bootstrap.Modal.getOrCreateInstance(imageModalEl).show();
+                });
+            });
+        }
+
+        attachImageClickHandlers(); // Initial attach
+
+        // Image deletion
+        deleteImageBtn.addEventListener('click', function () {
+            const deleteUrl = this.dataset.url;
+            const deleteName = this.dataset.name || "this image";
+
+            if (!deleteUrl) return;
+
+            $("#deleteModalBody").text(`Are you sure you want to delete "${deleteName}"?`);
+            const confirmModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+            confirmModal.show();
+
+            $("#confirmDeleteBtn").off('click').on('click', function () {
+                $.ajax({
+                    url: deleteUrl,
+                    type: "DELETE",
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function (res) {
+                        if (res.isSuccess) {
+                            showAlert(res.message, true);
+
+                            // Remove deleted image from gallery
+                            document.querySelectorAll('.preview-image').forEach(img => {
+                                if (img.getAttribute('data-bs-img') === currentImageUrl) {
+                                    const wrapper = img.closest('.col-lg-3, .col-md-6');
+                                    if (wrapper) wrapper.remove();
+                                }
+                            });
+
+                            confirmModal.hide();
+                            bootstrap.Modal.getInstance(imageModalEl)?.hide();
+                        } else {
+                            showAlert(res.message, false);
+                        }
+                    },
+                    error: function () {
+                        showAlert("Error deleting " + deleteName, false);
+                    }
+                });
+            });
+        });
+
+        // Document deletion
+        $(document).on("click", ".delete-item", function () {
+            const btn = $(this);
+            const deleteUrl = btn.data("url");
+            const deleteName = btn.data("name") || "this document";
+
+            $("#deleteModalBody").text(`Are you sure you want to delete "${deleteName}"?`);
+            const confirmModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+            confirmModal.show();
+
+            $("#confirmDeleteBtn").off('click').on('click', function () {
+                $.ajax({
+                    url: deleteUrl,
+                    type: "DELETE",
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function (res) {
+                        if (res.isSuccess) {
+                            showAlert(res.message, true);
+
+                            // Remove document from DOM
+                            btn.closest(".document-item").remove();
+
+                            confirmModal.hide();
+                        } else {
+                            showAlert(res.message, false);
+                        }
+                    },
+                    error: function () {
+                        showAlert("Error deleting " + deleteName, false);
+                    }
+                });
+            });
+        });
+    </script>
+}
+

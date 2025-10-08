@@ -1,0 +1,238 @@
+﻿@{
+    Layout = null;
+}
+<!doctype html>
+<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="light" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable">
+<head>
+    <meta charset="utf-8" />
+    <title>Welcome In Chartered Bus </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+    <meta content="Themesbrand" name="author" />
+    <link rel="shortcut icon" href="~/assets/images/favicon.ico">
+
+    <!-- Choices & Flatpickr (Chartered_Bus libs) -->
+    <link href="~/assets/libs/choices.js/public/~/styles/choices.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/flatpickr/flatpickr.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Layout config Js -->
+    <script src="~/assets/js/layout.js" defer></script>
+    <!-- Bootstrap Css -->
+    <link href="~/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <!-- Icons Css -->
+    <link href="~/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <!-- App Css-->
+    <link href="~/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+    <!-- custom Css-->
+    <link href="~/assets/css/custom.min.css" rel="stylesheet" type="text/css" />
+
+    <style>
+        /* Booking widget polish + hero alignment */
+        .booking-card.card {
+            border-radius: 1rem;
+        }
+
+        #busBookingForm .form-control, #busBookingForm .form-select {
+            border-radius: .75rem;
+        }
+
+        .booking-card.glass {
+            background: rgba(255,255,255,.82);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+        /* keep the widget compact on lg+ while full-width on mobile */
+        .booking-wrap {
+            max-width: 1140px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        /* icon-only rounded button size aligned with inputs */
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* tighten labels like your screenshot */
+        #busBookingForm .form-label {
+            font-weight: 600;
+            color: var(--vz-heading-color);
+        }
+        /* space hero title + widget nicely */
+        .hero-section .booking-wrap {
+            margin-top: 20px;
+        }
+        @@media (min-width: 992px) {
+            .hero-section .booking-wrap
+            {
+                margin-top: 28px;
+            }
+        }
+        /* Allow caret only for input and textarea */
+        input, textarea {
+            caret-color: auto !important;
+        }
+
+        /* Hide caret for all other elements */
+        *:not(input):not(textarea) {
+            caret-color: transparent !important;
+        }
+
+        .custom-caret {
+            caret-color: transparent !important;
+        }
+    </style>
+</head>
+
+<body data-bs-spy="scroll" data-bs-target="#navbar-example">
+
+    <div class="layout-wrapper landing">
+        <nav class="navbar navbar-expand-lg navbar-landing fixed-top" id="navbar">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                  Chartered Bus Trip
+                </a>
+                <button class="navbar-toggler py-0 fs-20 text-body" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="mdi mdi-menu"></i>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mx-auto mt-2 mt-lg-0" id="navbar-example">
+                        <li class="nav-item"><a class="nav-link fs-15 active" href="#hero">Home</a></li>
+                        <li class="nav-item"><a class="nav-link fs-15" href="#services">Services</a></li>
+                        <li class="nav-item"><a class="nav-link fs-15" href="#features">Features</a></li>
+                        <li class="nav-item"><a class="nav-link fs-15" href="#plans">Plans</a></li>
+                        <li class="nav-item"><a class="nav-link fs-15" href="#reviews">Reviews</a></li>
+                        <li class="nav-item"><a class="nav-link fs-15" href="#team">Team</a></li>
+                        <li class="nav-item"><a class="nav-link fs-15" href="#contact">Contact</a></li>
+                    </ul>
+                    <div class="">
+                        <a href="/Account/LoginUser" class="btn btn-link fw-medium text-decoration-none text-dark">Sign in</a>
+                        <a href="/Account/RegisterUser" class="btn btn-primary">Sign Up</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="vertical-overlay" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent.show"></div>
+
+        <!-- start hero section -->
+        <section class="section pb-0 hero-section" id="hero">
+            <div class="bg-overlay bg-overlay-pattern"></div>
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-12 col-xl-12">
+                        <div class="text-center mt-lg-5 pt-5">
+                            <h1 class="display-6 fw-semibold mb-3 lh-base">Find & book your next <span class="text-success">bus trip</span> with ease</h1>
+                            <p class="lead text-muted lh-base">Search routes, pick your travel dates, and go. Built on Chartered Bus for speed and clarity.</p>
+
+                       
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- end hero section -->
+
+    </div>
+    <!-- Add error message div inside booking widget -->
+    <div id="errorMsg" class="text-danger mt-2"></div>
+
+    @section Scripts {
+        <!-- Core JS -->
+        <script src="~/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+        <!-- Choices & Flatpickr (must load BEFORE our custom script) -->
+        <script src="~/assets/libs/choices.js/public/~/scripts/choices.min.js"></script>
+        <script src="~/assets/libs/flatpickr/flatpickr.min.js"></script>
+
+        <!-- Custom Booking Script -->
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // Init Choices
+                const fromChoices = new Choices('#fromSelect', {
+                    searchEnabled: true,
+                    itemSelectText: '',
+                    shouldSort: false,
+                    placeholder: true
+                });
+                const toChoices = new Choices('#toSelect', {
+                    searchEnabled: true,
+                    itemSelectText: '',
+                    shouldSort: false,
+                    placeholder: true
+                });
+
+                // Init Flatpickr
+                const fpDepart = flatpickr("#departDate", {
+                    dateFormat: "d/m/Y",
+                    minDate: "today",
+                    defaultDate: new Date(),
+                    disableMobile: true,
+                    onChange: function (selectedDates) {
+                        if (selectedDates?.[0]) fpReturn.set('minDate', selectedDates[0]);
+                    }
+                });
+                const fpReturn = flatpickr("#returnDate", {
+                    dateFormat: "d/m/Y",
+                    minDate: "today",
+                    disableMobile: true
+                });
+
+                // Error message element
+                const errorMsg = document.getElementById("errorMsg");
+
+                // Swap From/To
+                document.getElementById("swapBtn").addEventListener("click", function () {
+                    const fVal = fromChoices.getValue(true);
+                    const tVal = toChoices.getValue(true);
+
+                    if (tVal) fromChoices.setChoiceByValue(tVal);
+                    if (fVal) toChoices.setChoiceByValue(fVal);
+
+                    validateSelection();
+                });
+
+                // Prevent same city selection
+                function validateSelection() {
+                    const fVal = fromChoices.getValue(true);
+                    const tVal = toChoices.getValue(true);
+
+                    if (fVal && tVal && fVal === tVal) {
+                        errorMsg.textContent = "From and To cannot be the same city!";
+                        return false;
+                    } else {
+                        errorMsg.textContent = "";
+                        return true;
+                    }
+                }
+
+                document.querySelector("#fromSelect").addEventListener("change", validateSelection);
+                document.querySelector("#toSelect").addEventListener("change", validateSelection);
+
+                // Form submit
+                document.getElementById("busBookingForm").addEventListener("submit", function (e) {
+                    e.preventDefault();
+
+                    if (!validateSelection()) return;
+
+                    const payload = {
+                        from: fromChoices.getValue(true),
+                        to: toChoices.getValue(true),
+                        depart: document.querySelector("#departDate").value,
+                        returnDate: document.querySelector("#returnDate").value
+                    };
+                    console.log("Search payload:", payload);
+                    alert("Searching trips...\n" + JSON.stringify(payload, null, 2));
+                });
+            });
+        </script>
+
+        <!-- App JS -->
+        <script src="~/assets/js/app.js"></script>
+    }
+
+</body>
+</html>

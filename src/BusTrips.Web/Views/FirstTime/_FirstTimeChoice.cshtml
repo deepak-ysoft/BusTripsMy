@@ -1,0 +1,74 @@
+﻿@* Step 1: Choose Purpose *@
+<div id="wizard-step" data-step="choice">
+    <div class="modal-header border-0 mb-2">
+        <h5 class="modal-title fw-semibold">Why are you here today?</h5>
+    </div>
+
+    <div class="modal-body">
+        <!-- Intro card -->
+        <div class="p-4 mb-4 rounded-3 bg-light shadow-sm">
+            <p class="mb-3 text-muted fs-6">
+                👋 Hello and welcome! To get started, you can manage your organization and teams,
+                or jump straight into planning trips.
+            </p>
+            <ul class="list-unstyled mb-0 small">
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Set up your organization and groups efficiently</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Plan trips with full details</li>
+                <li><i class="bi bi-check-circle-fill text-success me-2"></i> Oversee everything from one organization</li>
+            </ul>
+        </div>
+
+        <!-- Choice cards -->
+        <div class="row g-3">
+            <div class="col-12 col-lg-6">
+                <div class="choice-btn choice-card h-100 p-4 border rounded-3 shadow-sm bg-white text-start" role="button" data-choice="org">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="icon-circle bg-primary bg-opacity-10 text-primary me-3">
+                            <i class="bi bi-building fs-4"></i>
+                        </div>
+                        <h6 class="fw-bold mb-0">I manage an organization</h6>
+                    </div>
+                    <p class="text-muted small mb-0">
+                        Provide organization details and list your groups and teams.
+                    </p>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class=" choice-btn choice-card h-100 p-4 border rounded-3 shadow-sm bg-white text-start" role="button" data-choice="trip">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="icon-circle bg-success bg-opacity-10 text-success me-3">
+                            <i class="bi bi-bus-front fs-4"></i>
+                        </div>
+                        <h6 class="fw-bold mb-0">I only manage trips</h6>
+                    </div>
+                    <p class="text-muted small mb-0">
+                        Go directly to the trips section and start planning.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    .choice-card {
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+    }
+
+        .choice-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,.1);
+            border-color: #7F56D9;
+        }
+
+    .icon-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>

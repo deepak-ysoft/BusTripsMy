@@ -1,0 +1,128 @@
+.pnr-wrapper {
+    min-height: calc(100vh - 320px);
+    display: grid;
+    place-items: center;
+    padding: 2rem;
+}
+
+.pnr-card {
+    max-width: 620px;
+    width: 100%;
+    border-radius: 1.25rem;
+    padding: 2.25rem;
+    text-align: center;
+}
+
+.pnr-icon {
+    display: inline-flex;
+    padding: .9rem;
+    border-radius: 999px;
+    background: rgba(0,0,0,0.04);
+    margin-bottom: 1rem;
+}
+
+.pnr-title {
+    font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+    margin: 0.25rem 0 0.5rem;
+    letter-spacing: .2px;
+}
+
+.pnr-lead {
+    color: #555;
+    margin: 0 0 1rem;
+    font-size: 1.05rem;
+}
+
+.pnr-note {
+    background: #f7f7f9;
+    border: 1px solid #eee;
+    padding: .75rem 1rem;
+    border-radius: .75rem;
+    margin: 0 auto 1.25rem;
+    color: #333;
+}
+
+.pnr-actions {
+    display: flex;
+    gap: .75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: .5rem;
+    margin-bottom: .75rem;
+}
+
+.pnr-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: .7rem 1.1rem;
+    border-radius: .75rem;
+    border: 1px solid #e2e2e2;
+    text-decoration: none;
+    font-weight: 600;
+    transition: transform .06s ease, box-shadow .2s ease, background .2s ease;
+}
+
+    .pnr-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    }
+
+.pnr-btn-primary {
+    background: #111827;
+    color: #fff;
+    border-color: #111827;
+}
+
+.pnr-btn-outline {
+    background: #fff;
+    color: #111827;
+}
+
+.pnr-tiny {
+    color: #888;
+    font-size: .85rem;
+    margin-top: .75rem;
+}
+
+/*@media (prefers-color-scheme: dark) {
+    .pnr-card {
+        background: #0f172a;
+        color: #e5e7eb;
+    }
+
+    .pnr-icon {
+        background: rgba(255,255,255,0.08);
+        color: #e5e7eb;
+    }
+
+    .pnr-lead {
+        color: #cbd5e1;
+    }
+
+    .pnr-note {
+        background: #0b1220;
+        border-color: #1f2937;
+        color: #e5e7eb;
+    }
+
+    .pnr-btn-outline {
+        background: transparent;
+        color: #e5e7eb;
+        border-color: #374151;
+    }
+
+    .pnr-btn-primary {
+        background: #2563eb;
+        border-color: #2563eb;
+    }
+
+    .pnr-tiny {
+        color: #a3a3a3;
+    }
+
+    .pnr-wrapper {
+        background: radial-gradient(80rem 40rem at 10% -10%, rgba(255,255,255,0.03), transparent 40%), radial-gradient(80rem 40rem at 110% 110%, rgba(255,255,255,0.03), transparent 40%);
+    }
+}
+*/

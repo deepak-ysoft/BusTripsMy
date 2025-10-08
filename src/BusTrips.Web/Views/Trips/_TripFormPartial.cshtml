@@ -1,0 +1,111 @@
+﻿@using BusTrips.Web.Models
+@model CreateTripVm
+@{
+    var isEdit = ViewBag.IsEdit != null && (bool)ViewBag.IsEdit;
+    ViewData["Title"] = isEdit ? "Edit Trip" : "Create Trip";
+    var controllerName = ViewData["ControllerName"]?.ToString();
+    var groupid = Model.groupId;
+}
+@await Html.PartialAsync("_Alert", new AlertViewModel { IsSuccess = ViewBag.IsSuccess ?? false, Message = ViewBag.Message as string })
+
+<div id="trip-form-container">
+
+    <form id="tripForm" method="post" data-isedit="@isEdit" data-controller="@controllerName">
+        <input type="hidden" asp-for="groupId" />
+        <input type="hidden" asp-for="OrganizationId" />
+        <input type="hidden" asp-for="userId" />
+        <input type="hidden" asp-for="returnUrl" />
+        <input type="hidden" asp-for="controller" />
+
+        @if (isEdit)
+        {
+            <input type="hidden" asp-for="Id" />
+        }
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label asp-for="TripName" class="form-label"></label>
+                <input asp-for="TripName" class="form-control" placeholder="Enter trip name" />
+                <span asp-validation-for="TripName" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label asp-for="DepartureDate" class="form-label"></label>
+                <input asp-for="DepartureDate" type="date" class="form-control" placeholder="Select departure date" />
+                <span asp-validation-for="DepartureDate" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label asp-for="DepartureTime" class="form-label"></label>
+                <input asp-for="DepartureTime" type="time" class="form-control" placeholder="Select departure time" />
+                <span asp-validation-for="DepartureTime" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label asp-for="StartCity" class="form-label"></label>
+                <input asp-for="StartCity" class="form-control" placeholder="Enter starting city" />
+                <span asp-validation-for="StartCity" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-8 mb-3">
+                <label asp-for="StartLocation" class="form-label"></label>
+                <input asp-for="StartLocation" class="form-control" placeholder="Enter starting location/address" />
+                <span asp-validation-for="StartLocation" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <label asp-for="TripDays" class="form-label"></label>
+                <input asp-for="TripDays" class="form-control" placeholder="Enter number of days" />
+                <span asp-validation-for="TripDays" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <label asp-for="DestinationArrivalDate" class="form-label"></label>
+                <input asp-for="DestinationArrivalDate" type="date" class="form-control" placeholder="Select arrival date" />
+                <span asp-validation-for="DestinationArrivalDate" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <label asp-for="DestinationArrivalTime" class="form-label"></label>
+                <input asp-for="DestinationArrivalTime" type="time" class="form-control" placeholder="Select arrival time" />
+                <span asp-validation-for="DestinationArrivalTime" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <label asp-for="NumberOfPassengers" class="form-label"></label>
+                <input asp-for="NumberOfPassengers" class="form-control" placeholder="No. of passengers" />
+                <span asp-validation-for="NumberOfPassengers" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label asp-for="DestinationCity" class="form-label"></label>
+                <input asp-for="DestinationCity" class="form-control" placeholder="Enter destination city" />
+                <span asp-validation-for="DestinationCity" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-8 mb-3">
+                <label asp-for="DestinationLocation" class="form-label"></label>
+                <input asp-for="DestinationLocation" class="form-control" placeholder="Enter destination location/address" />
+                <span asp-validation-for="DestinationLocation" class="text-danger"></span>
+            </div>
+
+            <div class="col-12 mb-3">
+                <label asp-for="Notes" class="form-label"></label>
+                <textarea asp-for="Notes" class="form-control" placeholder="Additional notes or instructions"></textarea>
+                <span asp-validation-for="Notes" class="text-danger"></span>
+            </div>
+
+            <div class="col-12 mb-3">
+                <div class="form-check">
+                    <input asp-for="SaveAsDraft" class="form-check-input" type="checkbox" />
+                    <label asp-for="SaveAsDraft" class="form-check-label">Save as draft</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+            <button type="submit" class="btn btn-sm btn-primary">@(isEdit ? "Update" : "Create")</button>
+            <a onclick="window.history.back();" class="btn btn-sm btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>

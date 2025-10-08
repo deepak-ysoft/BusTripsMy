@@ -1,0 +1,208 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using BusTrips.Domain.Entities
+@inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager
+@inject Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper Html
+
+@{
+    string? role = ""; 
+
+    if (SignInManager.IsSignedIn(User))
+    {
+        var user = await UserManager.GetUserAsync(User);
+        if (user != null)
+        {
+            var roles = await UserManager.GetRolesAsync(user);
+            role = roles.FirstOrDefault() ?? "";
+        }
+    }
+
+    // Parent active based on ViewData
+    Func<string, bool> isParentActive = (menuId) =>
+    {
+        return Html.ViewData["ActiveMenu"]?.ToString() == menuId;
+    };
+
+    // Child active based on ViewData
+    Func<string, string, string> isChildActive = (parent, child) =>
+    {
+        return (Html.ViewData["ActiveMenu"]?.ToString() == parent &&
+                Html.ViewData["ActiveChild"]?.ToString() == child)
+                ? "active" : "";
+    };
+}
+<style>
+    .nav-link.active {
+        background-color: #e7e7e7 !important;
+        font-weight: 600;
+        border-radius: 4px;
+    }
+</style>
+
+<div class="app-menu navbar-menu">
+    <div class="navbar-brand-box">
+        @if(role=="Admin")
+        {
+            <a href="@Url.Action("IndexAdmin", "Home")" class="logo logo-dark">
+                <span class="logo-sm">CharteredBus</span>
+                <span class="logo-lg">CharteredBus</span>
+            </a>
+            <a href="@Url.Action("IndexAdmin", "Home")" class="logo logo-light">
+                <span class="logo-sm">CharteredBus</span>
+                <span class="logo-lg">CharteredBus</span>
+            </a>
+        }
+        @if(role=="User")
+        {
+            <a href="@Url.Action("Index", "Home")" class="logo logo-dark">
+                <span class="logo-sm">CharteredBus</span>
+                <span class="logo-lg">CharteredBus</span>
+            </a>
+            <a href="@Url.Action("Index", "Home")" class="logo logo-light">
+                <span class="logo-sm">CharteredBus</span>
+                <span class="logo-lg">CharteredBus</span>
+            </a>
+        }
+        <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
+            <i data-feather="circle"></i>
+        </button>
+    </div>
+
+    <div id="scrollbar">
+        <div class="container-fluid">
+            <ul class="navbar-nav" id="navbar-nav">
+                <li class="menu-title"><span data-key="t-menu">Menu</span></li>
+
+                @* ======================= ADMIN MENU ======================= *@
+                @if (role == "Admin")
+                {
+                    <li class="nav-item">
+                        <a class="nav-link menu-link @(isParentActive("Dashboard") ? "active" : "")" 
+                           asp-action="IndexAdmin" asp-controller="Home">
+                            <i data-feather="home"></i> <span>Dashboard</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link menu-link @(isParentActive("Users") ? "active" : "")"
+                           href="#sidebarUsers" data-bs-toggle="collapse" role="button"
+                           aria-expanded="@(isParentActive("Users").ToString().ToLower())"
+                           aria-controls="sidebarUsers">
+                            <i data-feather="users"></i><span>User Management</span>
+                        </a>
+                        <div class="collapse menu-dropdown @(isParentActive("Users") ? "show" : "")" id="sidebarUsers">
+                            <ul class="nav nav-sm flex-column mt-1">
+                                <li class="nav-item">
+                                    <a href="/Admin/Users" class="nav-link @(isChildActive("Users", "Users"))">Users</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/Admin/Drivers" class="nav-link @(isChildActive("Users", "Drivers"))">Drivers</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link menu-link @(isParentActive("Trips") ? "active" : "")"
+                           href="#sidebarTrips" data-bs-toggle="collapse" role="button"
+                           aria-expanded="@(isParentActive("Trips").ToString().ToLower())"
+                           aria-controls="sidebarTrips">
+                            <i data-feather="map"></i> <span>Trip Management</span>
+                        </a>
+                        <div class="collapse menu-dropdown @(isParentActive("Trips") ? "show" : "")" id="sidebarTrips">
+                            <ul class="nav nav-sm flex-column mt-1">
+                                <li class="nav-item">
+                                    <a href="/Admin/Trips" class="nav-link @(isChildActive("Trips", "Trips"))">Trips</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link @(isChildActive("Trips", "Assign"))">Assign Trips</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link @(isChildActive("Trips", "Cancel"))">Cancel Trips</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link menu-link @(isParentActive("Organizations") ? "active" : "")"
+                           asp-action="Organizations" asp-controller="Admin">
+                            <i data-feather="briefcase"></i> <span>Organizations</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link menu-link @(isParentActive("Equipments") ? "active" : "")"
+                           asp-action="Equipments" asp-controller="Admin">
+                            <i data-feather="tool"></i> <span>Equipment</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link menu-link @(isParentActive("Notifications") ? "active" : "")" href="#">
+                            <i data-feather="bell"></i> <span>Notifications</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link menu-link @(isParentActive("Settings") ? "active" : "")" href="#">
+                            <i data-feather="settings"></i> <span>Settings</span>
+                        </a>
+                    </li>
+                }
+
+                @* ======================= USER MENU ======================= *@
+                @if(role == "User")
+                {
+                    <li class="nav-item">
+                        <a class="nav-link menu-link @(isParentActive("Dashboard") ? "active" : "")"
+                           asp-action="Index" asp-controller="Home">
+                            <i data-feather="home"></i> <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link menu-link @(isParentActive("Organizations") ? "active" : "")"
+                           asp-action="Index" asp-controller="Organizations">
+                            <i data-feather="users"></i> <span>Organizations</span>
+                        </a>
+                    </li>
+                }
+
+                @* ======================= DRIVER MENU ======================= *@
+                @if (role == "Driver")
+                {
+                    <li class="nav-item">
+                        <a class="nav-link menu-link @(isParentActive("Dashboard") ? "active" : "")"
+                           asp-action="Index" asp-controller="Home">
+                            <i data-feather="home"></i> <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link menu-link @(isParentActive("MyTrips") ? "active" : "")" href="#">
+                            <i data-feather="navigation"></i> <span>My Trips</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link menu-link @(isParentActive("AvailableTrips") ? "active" : "")" href="#">
+                            <i data-feather="check-circle"></i> <span>Available Trips</span>
+                        </a>
+                    </li>
+                } 
+                 @if (role != "Admin")
+                {
+                    <li class="nav-item">
+                        <a class="nav-link menu-link @(isParentActive("Services") ? "active" : "")" href="#">
+                            <i data-feather="briefcase"></i> <span>Services</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link menu-link @(isParentActive("ContactUs") ? "active" : "")" href="/Home/ContactUs">
+                            <i data-feather="mail"></i> <span>Contact Us</span>
+                        </a>
+                    </li>}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="vertical-overlay"></div>

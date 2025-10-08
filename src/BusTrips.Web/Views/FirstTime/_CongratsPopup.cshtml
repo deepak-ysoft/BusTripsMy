@@ -1,0 +1,96 @@
+﻿<!-- CDN for confetti.js -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<div id="wizard-step" data-step="success">
+    <div class="modal-body text-center py-5 rounded-4"
+         style="min-height: 420px; background-color: #F9FAFB; position: relative; overflow: visible;">
+
+        <!-- Icon circle -->
+        <div class="mb-4">
+            <div class="success-icon mx-auto d-flex align-items-center justify-content-center animate-bounce">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#7F56D9" viewBox="0 0 16 16">
+                    <path d="M13.485 1.929a.75.75 0 0 1 1.06 1.06l-8.25 8.25a.75.75 0 0 1-1.06 0L1.455 7.27a.75.75 0 1 1 1.06-1.06l3.72 3.72 7.25-7.25z" />
+                </svg>
+            </div>
+        </div>
+
+        <h1 class="fw-bold m-2 rounded-pill" style="color:#7F56D9; background-color:antiquewhite; animation: fadeInScale 1s ease-in-out;">
+            <span class="cursor-pointer btn" style="font-size:2rem;" onclick="launchConfetti()">🎉</span>
+            Congratulations!
+        </h1>
+        <p class="text-muted mb-4 px-3 fs-6" style="animation: fadeIn 1.5s ease-in-out;">
+            Your setup is complete. You can now manage trips, groups, and teams efficiently.
+        </p>
+
+        <button class="btn btn-primary mt-4 px-5 shadow-sm animate-pulse" id="goToDashboard">
+            Go to Organizations →
+        </button>
+    </div>
+</div>
+
+<style>
+    .animate-bounce {
+        animation: bounce 1s infinite;
+    }
+    @@keyframes bounce {
+        0%,100%
+
+    {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    }
+
+    .animate-pulse {
+        animation: pulse 2s infinite;
+    }
+    @@keyframes pulse {
+        0%,100%
+
+    {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    }
+</style>
+
+<script>
+    document.getElementById("goToDashboard")
+        .addEventListener("click", () => window.location.href = '@Url.Action("Index", "Organizations")');
+
+    // Confetti logic for 3 seconds
+    function launchConfetti() {
+        var duration = 3 * 1000;
+        var animationEnd = Date.now() + duration;
+        var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
+
+        function randomInRange(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        var interval = setInterval(function() {
+            var timeLeft = animationEnd - Date.now();
+
+            if (timeLeft <= 0) {
+                clearInterval(interval);
+                return;
+            }
+
+            var particleCount = 100 * (timeLeft / duration);
+            // Two bursts from left and right sides
+            confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+            confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+        }, 250);
+    }
+
+    // Trigger confetti when modal is shown
+    launchConfetti();
+</script>

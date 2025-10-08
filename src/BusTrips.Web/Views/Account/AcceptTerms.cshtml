@@ -1,0 +1,9 @@
+@{
+    bool isDriver = (bool)(ViewBag.Driver ?? false);
+}
+<h2>@(isDriver ? "Driver Agreement" : "User Terms & Conditions")</h2>
+<p>Please review and accept the @(isDriver ? "driver agreement" : "terms & conditions") to continue.</p>
+<form method="post" asp-action="AcceptTermsPost">
+    <input type="hidden" name="driver" value="@(isDriver ? "true" : "false")" />
+    <button class="btn btn-sm btn-success" type="submit">I Accept</button>
+</form>

@@ -1,0 +1,77 @@
+﻿@using BusTrips.Web.Models;
+@model OrgMemberDetailsResponseVM
+@using Microsoft.AspNetCore.Identity
+@using BusTrips.Domain.Entities
+@inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager
+
+@{
+    Guid? userId = null; // Make it nullable
+
+    if (SignInManager.IsSignedIn(User))
+    {
+        var user = await UserManager.GetUserAsync(User);
+        if (user != null)
+        {
+            userId = user.Id;
+        }
+    }
+
+    ViewData["Title"] = "Member Details";
+}
+
+@await Html.PartialAsync("_BackButton")
+<div class="profile-foreground position-relative mx-n4 mt-1">
+    <div class="profile-wid-bg">
+        <img src="~/assets/images/profile-bg.jpg" alt="" class="profile-wid-img" />
+    </div>
+</div>
+
+<div class="pt-4  mb-lg-3  profile-wrapper">
+    <div class="row">
+        <div class="card w-25 border border-primary bg-transparent shadow-none">
+            <div class="card-header bg-transparent text-light fw-bold">
+                Organization
+            </div>
+            <div class="card-body">
+                <h3 class="text-light mb-1">@Model.Org.OrgName</h3>
+                <p class="text-white-50">@Model.Org.Id</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-4">
+        <!-- Tab panes -->
+        <div class="tab-content pt-4">
+            <div class="tab-pane active" id="overview-tab" role="tabpanel">
+                <div class="row">
+                    <div class="col-xxl-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">Info</h5>
+                                <div class="row mb-3">
+                                    <div class="col-6 mt-4 fw-medium" scope="row">Member Name :</div>
+                                    <div class="col-6 mt-4 text-muted">@Model.Member.UserName</div>
+                                    <div class="col-6 mt-4 fw-medium" scope="row">E-mail :</div>
+                                    <div class="col-6 mt-4 text-muted">@Model.Member.Email</div>
+                                    <div class="col-6 mt-4 fw-medium" scope="row">Phone Number :</div>
+                                    <div class="col-6 mt-4 text-muted">@Model.Member.PhoneNumber</div>
+                                    <div class="col-6 mt-4 fw-medium" scope="row">Member Type :</div>
+                                    <div class="col-6 mt-4 text-muted">@Model.Member.MemberType</div>
+                                </div>
+                            </div><!-- end card body -->
+                        </div><!-- end card -->
+                    </div>
+                    <!--end col-->
+                </div>
+                <!--end row-->
+            </div>
+            <!--end tab-pane-->
+        </div>
+        <!--end tab-content-->
+    </div>
+    <!--end col-->
+</div>
+<!--end row-->

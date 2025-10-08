@@ -1,0 +1,144 @@
+﻿@using BusTrips.Web.Models
+@model TripDashboardVM
+
+<div class="table-responsive">
+    <table class=" table table-bordered table-hover  dt-responsive nowrap align-middle customTable" style="width:100%">
+        <thead class="table-light">
+            <tr>
+                @* <th >Trip Id</th> *@
+                <th>Trip Name</th>
+                <th>Organization</th>
+                <th>Org Creator Name</th>
+                <th>Group</th>
+                <th>Status</th>
+                <th>Departure Date</th>
+                <th>Arrival Date</th>
+                <th>Driver</th>
+                <th>Bus Number</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Trips.Any())
+            {
+                foreach (var trip in Model.Trips)
+                {
+                    var badgeClass = trip.Status switch
+                    {
+                        "Draft" => "bg-secondary",
+                        "Quoted" => "bg-info",
+                        "Approved" => "bg-primary",
+                        "Rejected" => "bg-danger",
+                        "Live" => "bg-success",
+                        "Completed" => "bg-dark",
+                        "Canceled" => "bg-warning text-dark",
+                        _ => "bg-light text-dark"
+                    };
+                    <tr>
+                        @* <td>@trip.Id</td> *@
+                        <td>@trip.TripName</td>
+                        <td>@trip.OrganizationName</td>
+                        <td>@trip.OrganizationCreatorName</td>
+                        <td>@trip.GroupName</td>
+                        <td><span class="badge @badgeClass">@trip.Status</span></td>
+                        <td>@trip.DepartureDate</td>
+                        <td>@trip.DestinationArrivalDate</td>
+                        <td>@trip.Driver</td>
+                        <td>@trip.BusNumber</td>
+                        <td class="text-center"><a href="/Home/TripDetails?tripId=@trip.Id" class="btn btn-sm btn-soft-primary"><i class="ri-eye-fill"></i></a></td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="9" class="text-center text-muted">No trips found</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Page Size -->
+<div class="d-flex justify-content-between">
+    <div class="mt-2 text-center">
+        <label>Show</label>
+        <select id="pageSizeSelect" class="form-select d-inline w-auto">
+            <option value="5" selected="@(Model.Filter.PageSize == 5)">5</option>
+            <option value="10" selected="@(Model.Filter.PageSize == 10)">10</option>
+            <option value="25" selected="@(Model.Filter.PageSize == 25)">25</option>
+            <option value="50" selected="@(Model.Filter.PageSize == 50)">50</option>
+        </select>
+        <label>entries</label>
+    </div>
+
+    <!-- Pagination -->
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+
+        <!-- Previous button -->
+        <li class="page-item @(Model.Trips.PageIndex == 1 ? "disabled" : "")">
+            <a href="javascript:void(0);" class="page-link trip-page-link"
+               data-page="@(Model.Trips.PageIndex - 1)">Previous</a>
+        </li>
+
+        @{
+            int totalPages = Model.Trips.TotalPages;
+            int currentPage = Model.Trips.PageIndex;
+
+            if (totalPages <= 3)
+            {
+                // Show all pages if 3 or less
+                for (int i = 1; i <= totalPages; i++)
+                {
+                    <li class="page-item @(i == currentPage ? "active" : "")">
+                        <a href="javascript:void(0);" class="page-link trip-page-link" data-page="@i">@i</a>
+                    </li>
+                }
+            }
+            else
+            {
+                // Always show first page
+                <li class="page-item @(1 == currentPage ? "active" : "")">
+                    <a href="javascript:void(0);" class="page-link trip-page-link" data-page="1">1</a>
+                </li>
+
+                // Ellipsis before middle pages
+                if (currentPage > 2)
+                {
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                }
+
+                // Middle pages (current ±1)
+                int start = Math.Max(2, currentPage - 1);
+                int end = Math.Min(totalPages - 1, currentPage + 1);
+
+                for (int i = start; i <= end; i++)
+                {
+                    <li class="page-item @(i == currentPage ? "active" : "")">
+                        <a href="javascript:void(0);" class="page-link trip-page-link" data-page="@i">@i</a>
+                    </li>
+                }
+
+                // Ellipsis after middle pages
+                if (currentPage < totalPages - 1)
+                {
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                }
+
+                // Always show last page
+                <li class="page-item @(totalPages == currentPage ? "active" : "")">
+                    <a href="javascript:void(0);" class="page-link trip-page-link" data-page="@totalPages">@totalPages</a>
+                </li>
+            }
+        }
+
+        <!-- Next button -->
+        <li class="page-item @(Model.Trips.PageIndex == totalPages ? "disabled" : "")">
+            <a href="javascript:void(0);" class="page-link trip-page-link"
+               data-page="@(Model.Trips.PageIndex + 1)">Next</a>
+        </li>
+    </ul>
+</nav>
+
+</div>

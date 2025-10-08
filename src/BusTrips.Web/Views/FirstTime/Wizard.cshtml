@@ -1,0 +1,184 @@
+﻿@{
+    Layout = null;
+}
+<!doctype html>
+<html lang="en">
+<head>
+    @Html.Partial("~/Views/Shared/_title_meta.cshtml")
+    @Html.Partial("~/Views/Shared/_head_css.cshtml")
+</head>
+<body>
+    <div class="card col-xl-8 mx-auto mt-5 p-4 pb-0">
+        <div class="d-flex justify-content-center  pb-2">
+            <h5 class=" mb-5 text-center text-primary"><u>Welcome to Chartered Bus Trips App!</u></h5>
+        </div>
+
+        <!-- Step Tracker -->
+        <!-- Step Tracker (75% width, centered) -->
+        <div class="mb-5 text-center position-relative w-75 mx-auto">
+            <div class="progress" style="height: 4px;">
+                <div class="progress-bar" id="wizard-progress" role="progressbar" style="width: 0%;"></div>
+            </div>
+
+            <!-- Steps -->
+            <ul id="wizard-steps"
+                class="position-absolute top-50 start-50 translate-middle d-flex w-100 align-items-center justify-content-between p-0"
+                style="list-style:none;">
+                <li class="nav-item">
+                    <span class="nav-link rounded-pill always-active active fs-10">Steps</span>
+                </li>
+                <li class="nav-item">
+                    <span class="nav-link rounded-pill" data-step="choice">1</span>
+                </li>
+                <li class="nav-item">
+                    <span class="nav-link rounded-pill" data-step="organization">2</span>
+                </li>
+                <li class="nav-item">
+                    <span class="nav-link rounded-pill" data-step="group">3</span>
+                </li>
+                <li class="nav-item">
+                    <span class="nav-link rounded-pill fs-10" data-step="success">Done</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Card (100% width inside col-xl-8) -->
+        <div class="card">
+            <div class="card-body">
+                <div id="wizard-container"></div>
+            </div>
+        </div>
+
+        <p class="d-flex justify-content-end p-0"> Back to &nbsp; <a href="/Account/Logout"><u>Login</u></a></p>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+            $(function () {
+
+            let userChoice = null; // stores the initial choice (org/trip)
+
+            function setStepTracker(step) {
+                $('#wizard-steps .nav-link[data-step]').removeClass('active');
+                const stepOrder = ['choice', 'organization', 'group', 'success'];
+                let index = stepOrder.indexOf(step);
+                stepOrder.forEach((s, i) => {
+                    if (i <= index) {
+                        $('#wizard-steps .nav-link[data-step="'+s+'"]').addClass('active');
+                    }
+                });
+            }
+
+            function updateProgress(step) {
+                let percentage = 0;
+                switch(step) {
+                    case 'choice': percentage = 25; break;
+                    case 'organization': percentage = 50; break;
+                    case 'group': percentage = 75; break;
+                    case 'success': percentage = 100; break;
+                }
+                $('#wizard-progress').css('width', percentage + '%');
+            }
+
+            function loadStep(step, formData = {}) {
+                // Always send the correct step
+                formData.step = step;
+                if(userChoice) formData.choice = userChoice;
+
+                $.ajax({
+                    url: '@Url.Action("WizardStep", "FirstTime")',
+                    type: 'POST',
+                    data: formData,
+                    success: function(res) {
+                        $('#wizard-container').html(res);
+                        let loadedStep = $('#wizard-container').find('[data-step]').data('step');
+                        setStepTracker(loadedStep);
+                        updateProgress(loadedStep);
+
+                        // Focus first input for convenience
+                        $('#wizard-container').find('input:first').focus();
+                    }
+                });
+            }
+
+            // Initial load
+            loadStep('choice');
+
+            // Step 1: Choice buttons
+            $(document).on('click', '.choice-btn', function() {
+                userChoice = $(this).data('choice'); // store user choice
+
+                // Decide next step
+                let nextStep = (userChoice === 'org') ? 'organization' : 'group';
+                loadStep(nextStep, { clearValidation: true, isSubmit: false });
+            });
+
+            // Form submission (Next/Submit)
+            $(document).on('submit', '#wizardForm', function(e) {
+                e.preventDefault();
+                let form = $(this);
+                let currentStep = form.find('input[name="step"]').val();
+
+                let formData = form.serializeArray().reduce((obj, item) => {
+                    obj[item.name] = item.value;
+                    return obj;
+                }, {});
+
+                formData.isSubmit = true; // only validate on submit
+                loadStep(currentStep, formData);
+            });
+
+            // Back buttons
+            $(document).on('click', '#backToChoiceBtn', function(){
+                loadStep('choice', { clearValidation: true, isSubmit: false });
+            });
+
+            $(document).on('click', '#backToOrgBtn', function(){
+                let prevStep = (userChoice === 'trip') ? 'choice' : 'organization';
+                loadStep(prevStep, { clearValidation: true, isSubmit: false });
+            });
+
+            // Go to dashboard
+            $(document).on('click', '#goToDashboard', function(){
+                window.location.href='@Url.Action("Index", "Organizations")';
+            });
+
+        });
+
+
+    </script>
+
+    <style>
+        /* CSS */
+        #wizard-steps {
+            /* position handled by utilities; keep no extra width so group is centered */
+            transform: translate(-50%, -50%); /* safe double-centering */
+            z-index: 2;
+        }
+
+            /* Make each nav-link a true circle and center its text */
+            #wizard-steps .nav-link {
+                width: 40px;
+                height: 40px;
+                padding: 0; /* remove default nav-link padding */
+                border-radius: 50%; /* make perfect circle */
+                display: inline-flex; /* center content horizontally/vertically */
+                align-items: center;
+                justify-content: center;
+                background: #e9ecef;
+                color: #6c757d;
+                cursor: default;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            }
+
+                /* Always-active style for the "Steps" label */
+                #wizard-steps .nav-link.always-active,
+                #wizard-steps .nav-link.active {
+                    background: #7F56D9;
+                    color: #fff;
+                }
+
+    </style>
+</body>
+</html>

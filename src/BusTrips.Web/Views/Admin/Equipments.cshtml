@@ -1,0 +1,40 @@
+﻿@using BusTrips.Web.Models
+@{
+    ViewData["Title"] = "Equipments";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between">
+                    <h5 class="card-title mb-0">Manage Equipment</h5>
+                    <p><a class="btn btn-sm btn-primary" href="/Admin/AddEquipment">Create Equipment</a></p>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="equipmentsTable" class=" table table-bordered table-hover  dt-responsive nowrap align-middle customTable" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Bus Number</th>
+                                <th>License Plate</th>
+                                <th>Issuing Province</th>
+                                <th>Manufacturer</th>
+                                <th>Model</th>
+                                <th>Year</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/assets/CustomJs/equipmentJs/equipmentsDataTable.js"></script>
+}

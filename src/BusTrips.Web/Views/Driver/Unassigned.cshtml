@@ -1,0 +1,31 @@
+@model IEnumerable<dynamic>
+@{
+        ViewData["Title"] = "Unassigned Trips";
+}
+
+<h2>Unassigned Trips</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>TripId</th>
+            <th>Assignments</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var t in Model)
+        {
+            <tr>
+                <td>@t.TripId</td>
+                <td>@t.Assignments</td>
+                <td>@t.Status</td>
+                <td>
+                    <form method="post" asp-action="RequestAssignment" asp-controller="Driver" asp-route-tripId="@t.Id">
+                        <button class="btn btn-sm btn-outline-danger">Request</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

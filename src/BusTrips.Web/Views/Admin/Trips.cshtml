@@ -1,0 +1,57 @@
+﻿@using BusTrips.Web.Models
+@model IEnumerable<BusTrips.Web.Models.TripListItemVm>
+
+@{
+    ViewData["Title"] = "Trips";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Manage Trips</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <div class="d-flex gap-2 mb-3">
+                        <a class="btn btn-outline-secondary" href="/Admin/Trips">All</a>
+                        <a class="btn btn-outline-secondary" href="/Admin/Trips?bucket=Quoted">New</a>
+                        <a class="btn btn-outline-secondary" href="/Admin/Trips?bucket=Draft">Draft</a>
+                        <a class="btn btn-outline-secondary" href="/Admin/Trips?bucket=Upcoming">Upcoming</a>
+                        <a class="btn btn-outline-secondary" href="/Admin/Trips?bucket=InProgress">In Progress</a>
+                        <a class="btn btn-outline-secondary" href="/Admin/Trips?bucket=Rejected">Rejected</a>
+                        <a class="btn btn-outline-secondary" href="/Admin/Trips?bucket=Past">Past</a>
+                    </div>
+                    <table id="TripTable" class=" table table-bordered table-hover  dt-responsive nowrap align-middle groupTable customTable" style="width:100%">
+                        <thead><tr><th>Trip Name</th><th>User Name</th><th>Organization Name</th><th>Status</th><th>Departure</th><th>Arrival</th><th class=" text-center">Actions</th></tr></thead>
+                        <tbody>
+                            @foreach (var t in Model)
+                            {
+                                <tr>
+                                    <td>@t.TripName</td>
+                                    <td>@t.UserName</td>
+                                    <td>@t.OrganizationName</td>
+                                    <td>@t.Status</td>
+                                    <td>@t.DepartureDate</td>
+                                    <td>@t.DestinationArrivalDate</td>
+                                    <td class="text-center">
+                                        <a href="/Admin/TripDetails?tripId=@t.Id&reqFrom=Trips" class="btn btn-sm btn-soft-primary me-3"><i class="ri-eye-fill"></i></a>
+                                        <a href="/Admin/EditTrip?id=@t.Id&userId=&returnUrl=/Admin/Trips&controller=Admin" class="btn btn-sm btn-soft-success"><i class="ri-edit-2-line"></i></a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $('#TripTable_filter input')
+            .attr('placeholder', 'Search here...')
+            .addClass('form-control');
+    </script>
+}

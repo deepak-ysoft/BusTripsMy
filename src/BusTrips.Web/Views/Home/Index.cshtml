@@ -1,0 +1,114 @@
+@using BusTrips.Domain.Entities
+@using BusTrips.Web.Models
+@model TripDashboardVM
+@{
+    ViewData["Title"] = "Dashboard - User";
+    var filter = ViewBag.Filter as TripFilterVM ?? new TripFilterVM();
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Upcoming Trips</h5>
+            </div>
+            <div class="card-body border-bottom">
+
+                <!-- Filters -->
+                <form id="tripFilterForm" class="row g-5 mb-3">
+                    <input type="hidden" name="Page" value="@filter.Page" />
+                    <input type="hidden" name="PageSize" value="@filter.PageSize" />
+
+                    <div class="col-md-3">
+                        <input type="text" name="Search" value="@filter.Search"
+                               class="form-control" placeholder="Search by Trip or User..." />
+                    </div>
+
+                    <div class="col-md-2">
+                        <input type="date" name="TripDate"
+                               value="@(filter.TripDate.HasValue? filter.TripDate.Value.ToString("yyyy-MM-dd") : "")"
+                               class="form-control" />
+                    </div>
+
+                    <div class="col-md-3">
+                        <select name="OrganizationId" class="form-select">
+                            <option value="">-- All Organizations --</option>
+                            @foreach (var org in Model.Organizations)
+                            {
+                                <option value="@org.Id" selected="@(filter.OrganizationId == org.Id)">
+                                    @org.Name
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <select name="Status" class="form-select">
+                            <option value="All">-- All Statuses --</option>
+                            @foreach (var s in Model.Statuses)
+                            {
+                                <option value="@s.Key" selected="@(filter.Status == s.Key)">
+                                    @s.Value
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 d-flex align-items-center">
+                        <i class="las la-undo-alt fs-20" id="clearFilters" style="cursor:pointer;"></i>
+                    </div>
+                </form>
+
+                <!-- Table placeholder -->
+                <div id="tripsTableContainer">
+                    @await Html.PartialAsync("_TripsTablePartial", Model)
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function loadTrips() {
+            $.ajax({
+                url: '@Url.Action("LoadTripsPartial", "Home")',
+                type: 'GET',
+                data: $("#tripFilterForm").serialize(),
+                success: function (result) {
+                    $("#tripsTableContainer").html(result);
+                }
+            });
+        }
+
+        // Auto-submit on dropdown, search, or date
+        $("#tripFilterForm").on("change keyup", "input, select", function () {
+            $("input[name='Page']").val(1); // reset to first page on filter change
+            loadTrips();
+        });
+
+        // Pagination click
+        $(document).on("click", ".trip-page-link", function () {
+            var page = $(this).data("page");
+            $("input[name='Page']").val(page);
+            loadTrips();
+        });
+
+        // PageSize change
+        $(document).on("change", "#pageSizeSelect", function () {
+            $("input[name='PageSize']").val($(this).val());
+            $("input[name='Page']").val(1);
+            loadTrips();
+        });
+
+        // Clear filters
+        $("#clearFilters").on("click", function () {
+            $("#tripFilterForm").find("input[type=text], input[type=date]").val("");
+            $("#tripFilterForm").find("select").prop("selectedIndex", 0);
+            $("input[name='Page']").val(1);
+            loadTrips();
+        });
+    </script>
+}
+

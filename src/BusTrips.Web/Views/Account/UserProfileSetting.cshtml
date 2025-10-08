@@ -1,0 +1,231 @@
+﻿@using BusTrips.Web.Models
+@model UserResponseVm
+
+@using Microsoft.AspNetCore.Identity
+@using BusTrips.Domain.Entities
+@inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager
+
+@{
+    string? role = "";
+
+    if (SignInManager.IsSignedIn(User))
+    {
+        var user = await UserManager.GetUserAsync(User);
+        if (user != null)
+        {
+            var roles = await UserManager.GetRolesAsync(user);
+            role = roles.FirstOrDefault() ?? "";
+        }
+    }
+    ViewData["Title"] = "My Profile";
+}
+
+
+<div class="profile-foreground position-relative  mt-n3 mx-n4">
+    <div class="profile-wid-bg">
+        <img src="~/assets/images/profile-bg.jpg" alt="" class="profile-wid-img" />
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="d-flex profile-wrapper">
+            <!-- Nav tabs -->
+            <ul class="nav nav-pills animation-nav profile-nav gap-2 gap-lg-3 flex-grow-1" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link fs-14 active" data-bs-toggle="tab" href="#overview-tab" role="tab">
+                        <i class="ri-airplay-fill d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">Overview</span>
+                    </a>
+                </li>
+                @if (role == "Driver")
+                {
+                    <li class="nav-item">
+                        <a class="nav-link fs-14" data-bs-toggle="tab" href="#documents" role="tab">
+                            <i class="ri-folder-4-line d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">Documents</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+
+        </div>
+        <!-- Tab panes -->
+        <div class="tab-content pt-4 text-muted">
+            <div class="tab-pane active" id="overview-tab" role="tabpanel">
+                <div class="row g-4">
+                    <!-- Profile Image -->
+                    <div class="col-md-4">
+                        <div class="card shadow-sm border-0 rounded-3">
+                            <div class="card-header p-2 text-end">
+                                <a href="/Account/EditUser" class="btn btn-sm btn-success">
+                                    <i class="ri-edit-box-line me-1"></i> Edit Profile
+                                </a>
+                            </div>
+                            <div class="card-body text-center">
+                                <div class="avatar-lg mx-auto mb-4">
+                                    <img src="@(!string.IsNullOrEmpty(Model.PhotoUrl) ? Model.PhotoUrl : Url.Content("~/assets/images/users/avatar-1.jpg"))"
+                                         alt="user-img"
+                                         class="rounded-circle shadow-sm"
+                                         style="width:120px; height:120px; object-fit:cover;"
+                                         onerror="this.onerror=null; this.src='@Url.Content("~/assets/images/users/avatar-1.jpg")';" />
+                                </div>
+                                <h5 class="mb-1 ms-4">@Model.FullName</h5>
+                                <p class="text-muted mb-2 ms-4">@Model.Role</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Information -->
+                    <div class="col-md-8">
+                        <div class="card shadow-sm border-0 rounded-3">
+                            <div class="card-header bg-light border-bottom-0 d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-6">
+                                        <span class="text-dark fw-bold">Full Name</span>
+                                        <div class="fw-semibold">@Model.FullName</div>
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="text-dark fw-bold">E-mail</span>
+                                        <div class="fw-semibold">@Model.Email</div>
+                                    </div>
+
+                                    @if (!string.IsNullOrEmpty(Model.SecondaryEmail))
+                                    {
+                                        <div class="col-6">
+                                            <span class="text-dark fw-bold">Secondary Email</span>
+                                            <div class="fw-semibold">@Model.SecondaryEmail</div>
+                                        </div>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(Model.PhoneNumber))
+                                    {
+                                        <div class="col-6">
+                                            <span class="text-dark fw-bold">Mobile</span>
+                                            <div class="fw-semibold">@Model.PhoneNumber</div>
+                                        </div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(Model.PhoneNumber2))
+                                    {
+                                        <div class="col-6">
+                                            <span class="text-dark fw-bold">Secondary Mobile</span>
+                                            <div class="fw-semibold">@Model.PhoneNumber2</div>
+                                        </div>
+                                    }
+
+                                    @if (Model.Role == "Driver")
+                                    {
+                                        if (Model.BirthDate != null)
+                                        {
+                                            <div class="col-6">
+                                                <span class="text-dark fw-bold">Birth Date</span>
+                                                <div class="fw-semibold">@Model.BirthDate?.ToString("dd/MMM/yyyy")</div>
+                                            </div>
+                                        }
+                                        if (!string.IsNullOrEmpty(Model.EmploymentType))
+                                        {
+                                            <div class="col-6">
+                                                <span class="text-dark fw-bold">Employment Type</span>
+                                                <div class="fw-semibold">@Model.EmploymentType</div>
+                                            </div>
+                                        }
+                                        if (!string.IsNullOrEmpty(Model.LicenseNumber))
+                                        {
+                                            <div class="col-6">
+                                                <span class="text-dark fw-bold">License Number</span>
+                                                <div class="fw-semibold">@Model.LicenseNumber</div>
+                                            </div>
+                                        }
+                                        if (!string.IsNullOrEmpty(Model.LicenseProvince))
+                                        {
+                                            <div class="col-6">
+                                                <span class="text-dark fw-bold">License Province</span>
+                                                <div class="fw-semibold">@Model.LicenseProvince</div>
+                                            </div>
+                                        }
+                                    }
+
+                                    <div class="col-6">
+                                        <span class="text-dark fw-bold">Joining Date</span>
+                                        <div class="fw-semibold">@Model.CreatedAt</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--end row-->
+            </div>
+            <!--end tab-pane-->
+            <div class="tab-pane fade" id="documents" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex align-items-center mb-4">
+                            <h5 class="card-title flex-grow-1 mb-0">Documents</h5>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- License Details -->
+                        <div class="row">
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label fw-bold">License Number</label>
+                                <p>@Model.LicenseNumber</p>
+                            </div>
+
+                            <div class="col-lg-6 mb-3">
+                                <label class="form-label fw-bold">License Province</label>
+                                <p>@Model.LicenseProvince</p>
+                            </div>
+                        </div>
+
+                        <!-- Document Images -->
+                        <div class="row">
+                            <div class="col-lg-4 text-center">
+                                <label class="form-label fw-bold">Driver Image</label><br />
+                                @if (!string.IsNullOrEmpty(Model.PhotoUrl))
+                                {
+                                    <img src="@Model.PhotoUrl" alt="Driver Image" class="img-fluid rounded shadow-sm" style="max-height:200px;" />
+                                }
+                                else
+                                {
+                                    <p class="text-muted">No image uploaded</p>
+                                }
+                            </div>
+
+                            <div class="col-lg-4 text-center">
+                                <label class="form-label fw-bold">License Front</label><br />
+                                @if (!string.IsNullOrEmpty(Model.LicenseFrontUrl))
+                                {
+                                    <img src="@Model.LicenseFrontUrl" alt="License Front" class="img-fluid rounded shadow-sm" style="max-height:200px;" />
+                                }
+                                else
+                                {
+                                    <p class="text-muted">No document uploaded</p>
+                                }
+                            </div>
+
+                            <div class="col-lg-4 text-center">
+                                <label class="form-label fw-bold">License Back</label><br />
+                                @if (!string.IsNullOrEmpty(Model.LicenseBackUrl))
+                                {
+                                    <img src="@Model.LicenseBackUrl" alt="License Back" class="img-fluid rounded shadow-sm" style="max-height:200px;" />
+                                }
+                                else
+                                {
+                                    <p class="text-muted">No document uploaded</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--end tab-pane-->
+        </div>
+        <!--end tab-content-->
+    </div>
+    <!--end col-->
+</div>
+<!--end row-->

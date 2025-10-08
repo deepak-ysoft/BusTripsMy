@@ -1,0 +1,114 @@
+﻿@using BusTrips.Web.Models
+@model List<OrgListItemVm>
+
+<div class="row">
+    <div class="col-md-12">
+
+        @if (Model.Any())
+        {
+            @foreach (var org in Model)
+            {
+                var isExpanded = org.IsPrimary;
+                var collapseId = $"orgBody_{org.Id}";
+                <div class="col-12 mb-3">
+                    <div class="card border-0 shadow-sm rounded-3">
+                        <!-- Header -->
+                        <div class="card-header bg-light border-bottom-0 d-flex justify-content-between align-items-center py-3">
+                            <div class="d-flex align-items-center">
+                                <h6 class="mb-0 fw-bold">
+                                    @org.OrgName <small class="text-muted">(@org.ShortName)</small>
+                                </h6>
+                                @if (org.IsPrimary)
+                                {
+                                    <span class="badge bg-success ms-3">Primary</span>
+                                }
+                                <span class="badge ms-3 @(org.IsActive ? "bg-primary" : "bg-danger")">
+                                    @(org.IsActive ? "Active" : "Inactive")
+                                </span>
+                            </div>
+                            <div>
+                                <a href="javascript:void(0);"
+                                   class="btn btn-sm btn-soft-success editOrgBtn me-2"
+                                   data-id="@org.Id">
+                                    <i class="ri-edit-2-line"></i>
+                                </a>
+                                <button class="btn btn-sm btn-outline-secondary"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#@collapseId"
+                                            aria-expanded="@(isExpanded.ToString().ToLower())">
+                                    <i class="ri-arrow-down-s-line"></i>
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <!-- Collapsible Body -->
+                        <div id="@collapseId" class="collapse @(isExpanded ? "show" : "")">
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <div class="d-flex flex-column">
+                                            <small class="text-dark text-uppercase fw-bold mb-1">Creator</small>
+                                            <span class="fw-semibold text-muted">@org.CreatorName</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="d-flex flex-column">
+                                            <small class="text-dark text-uppercase fw-bold mb-1">Member Type</small>
+                                            <span class="fw-semibold text-muted">@org.MemberType</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="d-flex flex-column">
+                                            <small class="text-dark text-uppercase fw-bold mb-1">Created On</small>
+                                            <span class="fw-semibold text-muted">@org.CreatedDate.ToString("dd-MMM-yyyy")</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="d-flex flex-column">
+                                            <small class="text-dark text-uppercase fw-bold mb-1">Groups</small>
+                                            <span class="fw-semibold text-primary">@org.groupCount</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="d-flex flex-column">
+                                            <small class="text-dark text-uppercase fw-bold mb-1">Trips</small>
+                                            <span class="fw-semibold text-primary">@org.tripCount</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="d-flex flex-column">
+                                            <small class="text-dark text-uppercase fw-bold mb-1">Primary Organization</small>
+                                            <span class="fw-semibold text-muted">@(org.IsPrimary ? "Yes" : "No")</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="d-flex flex-column">
+                                            <small class="text-dark text-uppercase fw-bold mb-1">Status</small>
+                                            <span class="fw-bold @(org.IsActive ? "text-success" : "text-danger")">
+                                                @(org.IsActive ? "Active" : "Inactive")
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="alert alert-light text-center border shadow-sm">
+                No organizations created by this user.
+            </div>
+        }
+    </div>
+</div>
+

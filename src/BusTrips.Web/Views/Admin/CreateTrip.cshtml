@@ -1,0 +1,28 @@
+﻿@using BusTrips.Web.Models
+@model CreateTripVm
+@{
+    ViewData["Title"] = ViewData["Title"] ?? (Model.Id != Guid.Empty ? "Edit Trip" : "Create Trip");
+    var isEdit = @Html.Raw(Json.Serialize(ViewBag.IsEdit ?? false));
+
+}
+
+<div class="row">
+    <div class="col-xxl-12">
+        <div class="card">
+            <div class="card-header align-items-center d-flex">
+                <h4 class="card-title mb-0 flex-grow-1"> Partial @ViewData["Title"]</h4>
+            </div>
+
+            <div class="card-body">
+                <div class="live-preview">
+                    @await Html.PartialAsync("~/Views/Trips/_TripFormPartial.cshtml", Model)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script src="~/assets/CustomJs/tripJs/addEditTrip.js"></script>
+}

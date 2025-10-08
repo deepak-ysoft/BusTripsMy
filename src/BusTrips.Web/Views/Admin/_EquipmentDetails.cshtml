@@ -1,0 +1,130 @@
+﻿@model BusTrips.Web.Models.EquipmentVM
+
+<div class="card shadow-sm mt-1">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="card-title mb-0">Equipment Details</h4>
+    </div>
+
+    <div class="card-body">
+        <div class="row g-3">
+            <!-- Left Column -->
+            <div class="col-md-6">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">@Html.DisplayNameFor(m => m.BusNumber)</dt>
+                    <dd class="col-sm-7">@Model.BusNumber</dd>
+                    <dt class="col-sm-5">@Html.DisplayNameFor(m => m.VehicleType)</dt>
+                    <dd class="col-sm-7">@Model.VehicleType</dd>
+                    <dt class="col-sm-5">@Html.DisplayNameFor(m => m.Vin)</dt>
+                    <dd class="col-sm-7">@Model.Vin</dd>
+                    <dt class="col-sm-5">@Html.DisplayNameFor(m => m.LicensePlate)</dt>
+                    <dd class="col-sm-7">@Model.LicensePlate</dd>
+                    <dt class="col-sm-5">@Html.DisplayNameFor(m => m.IssuingProvince)</dt>
+                    <dd class="col-sm-7">@Model.IssuingProvince</dd>
+                    <dt class="col-sm-5">@Html.DisplayNameFor(m => m.Manufacturer)</dt>
+                    <dd class="col-sm-7">@Model.Manufacturer</dd>
+                    <dt class="col-sm-5">@Html.DisplayNameFor(m => m.Model)</dt>
+                    <dd class="col-sm-7">@Model.Model</dd>
+                </dl>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-md-6">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">@Html.DisplayNameFor(m => m.Year)</dt>
+                    <dd class="col-sm-7">@Model.Year</dd>
+                    <dt class="col-sm-5">@Html.DisplayNameFor(m => m.Color)</dt>
+                    <dd class="col-sm-7">@Model.Color</dd>
+                    <dt class="col-sm-5">@Html.DisplayNameFor(m => m.SeatingCapacity)</dt>
+                    <dd class="col-sm-7">@Model.SeatingCapacity</dd>
+                    <dt class="col-sm-5">@Html.DisplayNameFor(m => m.Length)</dt>
+                    <dd class="col-sm-7">@Model.Length</dd>
+                    <dt class="col-sm-5">@Html.DisplayNameFor(m => m.Height)</dt>
+                    <dd class="col-sm-7">@Model.Height</dd>
+                    <dt class="col-sm-5">@Html.DisplayNameFor(m => m.GrossVehicleWeight)</dt>
+                    <dd class="col-sm-7">@Model.GrossVehicleWeight</dd>
+                    <dt class="col-sm-5">@Html.DisplayNameFor(m => m.IsActive)</dt>
+                    <dd class="col-sm-7">@(Model.IsActive ? "Yes" : "No")</dd>
+
+                    @if (!Model.IsActive)
+                    {
+                        <dt class="col-sm-5">@Html.DisplayNameFor(m => m.DeactivationReason)</dt>
+                        <dd class="col-sm-7">@Model.DeactivationReason</dd>
+                        <dt class="col-sm-5">@Html.DisplayNameFor(m => m.DeactivatedAt)</dt>
+                        <dd class="col-sm-7">@Model.DeactivatedAt?.ToString("yyyy-MM-dd")</dd>
+                    }
+                </dl>
+            </div>
+        </div>
+
+        <hr />
+
+        <!-- Vehicle Documents -->
+        <div class="mb-5 mt-2">
+            <h5 class="mb-3 fw-bold">Vehicle Documents</h5>
+            @if (Model.Documents != null && Model.Documents.Any())
+            {
+                <ul class="list-group" id="documentsList">
+                    @foreach (var doc in Model.Documents)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center document-item mb-2 p-3 rounded shadow-sm" id="doc-@doc.Id">
+                            <div class="d-flex align-items-center">
+                                <i class="ri-file-text-line text-primary me-3 fs-4"></i>
+                                <span class="fw-medium">@doc.Description</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <a href="@Url.Content(doc.FilePath)"
+                                   class="btn btn-sm btn-outline-primary me-2"
+                                   download data-bs-toggle="tooltip" title="Download">
+                                    <i class="ri-download-line"></i>
+                                </a>
+                                <button class="btn btn-sm btn-outline-danger delete-item"
+                                        data-url="/Admin/DeleteEquipmentDocument?id=@doc.Id"
+                                        data-name="@doc.Description"
+                                        data-reload-container="#equipmentDetailsContainer"
+                                        data-bs-toggle="tooltip" title="Delete">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="text-muted fst-italic">No documents uploaded.</p>
+            }
+        </div>
+
+        <!-- Vehicle Images -->
+        <div class="mb-4">
+            <h5 class="mb-2">Vehicle Images</h5>
+            <div class="row" id="vehicleImagesContainer">
+                @if (!string.IsNullOrEmpty(Model.VehicleUrl))
+                {
+                    var images = Model.VehicleUrl.Split(",", StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var img in images)
+                    {
+                        var path = img.StartsWith("/") ? img : "/" + img;
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="position-relative border rounded overflow-hidden">
+                                <img src="@path"
+                                     class="img-fluid rounded w-100 preview-image"
+                                     alt="Vehicle Image"
+                                     style="height:250px; object-fit:cover; cursor:pointer; transition: transform 0.3s ease-in-out;"
+                                     data-bs-toggle="modal"
+                                     data-bs-target="#imageModal"
+                                     data-bs-img="@path" 
+                                     onmouseover="this.style.transform='scale(1.1)'"
+                                     onmouseout="this.style.transform='scale(1)'" />
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted">No images uploaded.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

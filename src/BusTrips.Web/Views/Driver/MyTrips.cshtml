@@ -1,0 +1,23 @@
+@model IEnumerable<dynamic>
+
+    @{
+    ViewData["Title"] = "My Trips";
+}
+}
+
+<h2>My Trips</h2>
+<div class="d-flex gap-2 mb-3">
+  <a class="btn btn-outline-secondary" href="/Driver/MyTrips">All</a>
+  <a class="btn btn-outline-secondary" href="/Driver/MyTrips?bucket=Upcoming">Upcoming</a>
+  <a class="btn btn-outline-secondary" href="/Driver/MyTrips?bucket=InProgress">In Progress</a>
+  <a class="btn btn-outline-secondary" href="/Driver/MyTrips?bucket=Past">Past</a>
+</div>
+<table class=" table table-bordered table-hover ">
+  <thead><tr><th>TripId</th><th>Status</th></tr></thead>
+  <tbody>
+@foreach (var t in Model) {
+  <tr><td>@t.TripId</td><td>@t.Status</td></tr>
+}
+  </tbody>
+</table>
+<p><a class="btn btn-primary" href="/Driver/Unassigned">Browse Unassigned Trips</a></p>

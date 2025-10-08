@@ -1,0 +1,35 @@
+@using BusTrips.Web.Models
+@model BusTrips.Web.Models.InviteManagerVm
+
+@{
+    ViewBag.Title = "Invite Member";
+}
+
+@await Html.PartialAsync("_Alert", new AlertViewModel { IsSuccess = ViewBag.IsSuccess ?? false, Message = ViewBag.Message as string })
+
+<div class="row">
+    <div class="col-xxl-12">
+        <div class="card">
+            <div class="card-header align-items-center d-flex">
+                <h4 class="card-title mb-0 flex-grow-1">Invite Member</h4>
+            </div><!-- end card header -->
+
+            <div class="card-body">
+                <div class="live-preview">
+                    <form method="post">
+                        <input type="hidden" asp-for="OrganizationId" />
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" placeholder="Please enter an email to invite a user" required />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-sm btn-primary">Invite</button>
+                            <a href="/Organizations/OrganizationDetails?id=@Model.OrganizationId" class="btn btn-sm btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> <!-- end col -->

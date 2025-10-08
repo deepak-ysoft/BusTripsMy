@@ -1,0 +1,180 @@
+﻿@model BusTrips.Web.Models.EquipmentVM
+@{
+    var isEdit = ViewBag.IsEdit != null && (bool)ViewBag.IsEdit;
+    ViewData["Title"] = isEdit ? "Edit Equipment" : "Create Equipment";
+}
+
+<div class="row">
+    <div class="col-xxl-12">
+        <div class="card">
+            <div class="card-header align-items-center d-flex">
+                <h4 class="card-title mb-0 flex-grow-1">@ViewData["Title"]</h4> 
+                @if (isEdit)
+                {
+                    <div class="custom-status-toggle">
+                        <span class="custom-label-active">Active</span>
+
+                        <label class="custom-toggle-switch">
+                            <!-- bind IsActive directly -->
+                            <input type="checkbox" id="IsActiveToggle" @(Model.IsActive ? "checked" : "") />
+                            <span class="custom-slider">
+                                <span class="custom-on">✔</span>
+                                <span class="custom-off">✖</span>
+                            </span>
+                        </label>
+
+                        <span class="custom-label-inactive">Inactive</span>
+                    </div>
+                }
+            </div>
+
+            <div class="card-body">
+                <div class="live-preview">
+                    <form id="equipmentForm" 
+                          method="post" 
+                          asp-action="@(isEdit ? "EditEquipment" : "AddEquipment")" 
+                          enctype="multipart/form-data">
+                            <div id="validationSummary" class="text-danger mt-2"></div>
+                        @if (isEdit)
+                        {
+                            <input type="hidden" asp-for="Id" />
+                        }
+
+                        <div class="row g-3">
+                             <!-- Bus Info -->
+                        <div class="col-md-4">
+                            <label asp-for="BusNumber" class="form-label"></label>
+                            <input asp-for="BusNumber" type="number" class="form-control" placeholder="Enter Bus Number" />
+                            <span asp-validation-for="BusNumber" class="text-danger"></span>
+                        </div>
+
+                          <div class="col-md-4">
+                            <label asp-for="VehicleType" class="form-label"></label>
+                            <select asp-for="VehicleType" class="form-select">
+                                <option value="">-- Select Bus Type --</option>
+                                <option value="Bus">Bus</option>
+                                <option value="Mini Bus">Mini Bus</option>
+                                <option value="Coach">Coach</option>
+                                <option value="School Bus">School Bus</option>
+                                <option value="Double Decker">Double Decker</option>
+                            </select>
+                            <span asp-validation-for="VehicleType" class="text-danger"></span>
+                        </div>
+
+                            <div class="col-md-4">
+                            <label asp-for="Vin" class="form-label"></label>
+                            <input asp-for="Vin" class="form-control" placeholder="Enter VIN" />
+                            <span asp-validation-for="Vin" class="text-danger"></span>
+                        </div>
+
+                                 <div class="col-md-4">
+                            <label asp-for="LicensePlate" class="form-label"></label>
+                            <input asp-for="LicensePlate" class="form-control" placeholder="Enter License Plate" />
+                            <span asp-validation-for="LicensePlate" class="text-danger"></span>
+                        </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="IssuingProvince" class="form-label"></label>
+                                <input asp-for="IssuingProvince" class="form-control" placeholder="Enter Issuing Province" />
+                                <span asp-validation-for="IssuingProvince" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="VehicleImages" class="form-label">Upload Vehicle Images</label>
+                                <input asp-for="VehicleImages"
+                                       class="form-control"
+                                       type="file"
+                                       multiple
+                                       accept=".jpg,.jpeg,.png,.gif,.webp" />
+                                <span asp-validation-for="VehicleImages" class="text-danger"></span>
+                            </div>
+
+
+                            <div class="col-md-3">
+                                <label asp-for="Manufacturer" class="form-label"></label>
+                                <input asp-for="Manufacturer" class="form-control" placeholder="Enter Manufacturer" />
+                                <span asp-validation-for="Manufacturer" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label asp-for="Model" class="form-label"></label>
+                                <input asp-for="Model" class="form-control" placeholder="Enter Model" />
+                                <span asp-validation-for="Model" class="text-danger"></span>
+                            </div>
+
+                               <div class="col-md-3">
+                            <label asp-for="Year" class="form-label"></label>
+                            <input asp-for="Year"
+                                   class="form-control"
+                                   type="number"
+                                   min="1900"
+                                   max="@DateTime.Now.Year"
+                                   placeholder="e.g. 2024" />
+                            <span asp-validation-for="Year" class="text-danger"></span>
+                        </div>
+
+                            <div class="col-md-3">
+                                <label asp-for="Color" class="form-label"></label>
+                                <input asp-for="Color" class="form-control" placeholder="Enter Color" />
+                                <span asp-validation-for="Color" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label asp-for="SeatingCapacity" class="form-label"></label>
+                                <input asp-for="SeatingCapacity" class="form-control" placeholder="Enter Seating Capacity" />
+                                <span asp-validation-for="SeatingCapacity" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label asp-for="Length" class="form-label"></label>
+                                <input asp-for="Length" class="form-control" placeholder="Enter Length" />
+                                <span asp-validation-for="Length" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label asp-for="Height" class="form-label"></label>
+                                <input asp-for="Height" class="form-control" placeholder="Enter Height" />
+                                <span asp-validation-for="Height" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label asp-for="GrossVehicleWeight" class="form-label"></label>
+                                <input asp-for="GrossVehicleWeight" class="form-control" placeholder="Enter GVW" />
+                                <span asp-validation-for="GrossVehicleWeight" class="text-danger"></span>
+                            </div>
+
+                            @if (isEdit)
+                            {
+                                <input type="hidden" asp-for="IsActive" id="IsActive" />
+
+                               <div class="col-md-12 inactive-fields" style="display:none;">
+                                <label asp-for="DeactivationReason" class="form-label">Deactivation Reason <sup class='required-asterisk'>*</sup></label>
+                                <textarea asp-for="DeactivationReason" class="form-control" placeholder="Enter Deactivation Reason"></textarea>
+                                <span asp-validation-for="DeactivationReason" class="text-danger"></span>
+                            </div>
+                            }
+
+                      <!-- Documents -->
+                        <div class="col-md-12">
+                            <label class="form-label">Upload Vehicle Documents</label>
+                            <div id="documentsContainer"></div>
+                            <button type="button" id="addDocumentBtn" class="btn btn-sm btn-primary mt-2">Add Document</button>
+                            <span asp-validation-for="Documents" class="text-danger"></span>
+                        </div>
+                        
+                        </div>
+
+                       <div class="d-flex justify-content-end gap-3 mt-3">
+                        <button class="btn btn-sm btn-primary" type="submit">@(isEdit ? "Update" : "Create")</button>
+                        <a asp-action="Equipments" class="btn btn-sm btn-secondary">Cancel</a>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/assets/CustomJs/equipmentJs/addEditequipment.js"></script>
+}

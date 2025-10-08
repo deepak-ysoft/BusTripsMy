@@ -1,0 +1,23 @@
+﻿@using BusTrips.Web.Models
+@model AlertViewModel
+
+@if (!string.IsNullOrEmpty(Model?.Message))
+{
+    <div id="shared-alert"
+         class="alert @(Model.IsSuccess ? "alert-success" : "alert-danger") alert-dismissible fade show position-fixed bottom-0 end-0 m-3 shadow mx-5 px-5"
+         role="alert"
+         style="z-index: 10000 !important;">
+        @Model.Message
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <script>
+        setTimeout(() => {
+            const alertEl = document.getElementById('shared-alert');
+            if (alertEl) {
+                const bsAlert = bootstrap.Alert.getOrCreateInstance(alertEl);
+                bsAlert.close();
+            }
+        }, 5000);
+    </script>
+}

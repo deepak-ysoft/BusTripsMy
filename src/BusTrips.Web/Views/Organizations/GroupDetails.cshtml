@@ -1,0 +1,113 @@
+﻿@using BusTrips.Web.Models;
+@model GroupDetailsResponseVM
+
+@{
+    ViewData["Title"] = "Group Details";
+}
+
+@await Html.PartialAsync("_Alert", new AlertViewModel { IsSuccess = ViewBag.IsSuccess ?? false, Message = ViewBag.Message as string })
+
+@await Html.PartialAsync("_BackButton")
+
+<div class="pt-2 mb-4 mb-lg-3 pb-lg-4 ">
+    <div class="row g-4">
+        <!--end col-->
+        <div class="col-xxl-4">
+            <div class="card">
+                <div class=" card-header">Organization  </div>
+                <div class="card-body">
+                    <h3 class=" mb-1 d-flex justify-content-between">
+                        @Model.Org.OrgName (@Model.Org.ShortName)
+                        @if (@Model.Org.IsActive)
+                        {
+                            <span class="ms-5 border border-1 border-warning px-3 rounded-pill "> Active</span>
+                        }
+                        else
+                        {
+                            <span class="ms-5  border border-1 border-danger px-3 rounded-pill">Inactive</span>
+                        }
+                    </h3>
+                    <div class="hstack  gap-3 mt-2">
+                        <div class="me-2">
+                            Total Groups :<span class="text-muted"> @Model.Org.groupCount</span>
+                        </div>
+                        <div>
+                            Total Trips : <span class="text-muted">@Model.Org.tripCount</span>
+                        </div>
+                    </div>
+                    <div class="hstack gap-1 mt-2">Created :  <span class="text-muted">@Model.Org.CreatedDate.ToString("dd-MMM-yyyy")</span></div>
+                    <div class="hstack  gap-1 mt-2">
+                        @if (Model.Org.MemberType == "Creator")
+                        {
+                            <div class="me-2">
+                                <span class="border border-1 border-success px-3 rounded-pill text-success fw-semibold">Creator</span>
+                            </div>
+                        }
+                        else if (Model.Org.MemberType == "Admin")
+                        {
+                            <div class="me-2">
+                                <span class="border border-1 border-primary px-3 rounded-pill text-primary fw-semibold">Admin</span>
+                            </div>
+                        }
+                        else if (Model.Org.MemberType == "Member")
+                        {
+                            <div class="me-2">
+                                <span class="border border-1 border-info px-3 rounded-pill text-info fw-semibold">Member</span>
+                            </div>
+                        }
+                        else if (Model.Org.MemberType == "ReadOnly")
+                        {
+                            <div class="me-2">
+                                <span class="border border-1 border-secondary px-3 rounded-pill text-secondary fw-semibold">Read Only</span>
+                            </div>
+                        }
+                        @if (Model.Org.IsPrimary)
+                        {
+                            <div>
+                                <span class=" border border-1 border-warning px-3 rounded-pill ">Primary</span>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xxl-8">
+            <div class="card">
+                <div class=" card-header">Group  </div>
+                <div class="card-body">
+                    <h3 class=" mb-1 d-flex justify-content-between">
+                       @Model.Group.GroupName (@Model.Group.ShortName)
+                        @if (@Model.Group.IsActive)
+                        {
+                            <span class="ms-5 border border-1 border-warning px-3 rounded-pill "> Active</span>
+                        }
+                        else
+                        {
+                            <span class="ms-5  border border-1 border-danger px-3 rounded-pill">Inactive</span>
+                        }
+                    </h3>
+                    <div class="hstack gap-1 mt-2">Created : @Model.Group.CreatedDate.ToString("dd-MMM-yyyy")</div>
+                    <div class="hstack  gap-3 mt-2">
+                        <div>
+                            Description :  <span class="text-muted">@Model.Group.Description</span>
+                        </div>
+                    </div>
+                    @if (!Model.Group.IsActive)
+                    {
+                        <div class="hstack gap-1 mt-2">
+
+                            <div class="me-2">
+                                <span class="">  Inactive Description :  <span class="text-muted">@Model.Group.DeActiveDiscription</span></span>
+                            </div>
+
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end row-->
+</div>
+
+

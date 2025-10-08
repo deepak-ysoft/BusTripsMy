@@ -1,0 +1,32 @@
+﻿@using BusTrips.Web.Models
+@{
+    ViewData["Title"] = "Users";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header"><h5>Manage Users</h5></div>
+            <div class="card-body">
+                <table id="usersTable" class="table table-bordered  table-hover dt-responsive nowrap customTable" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Profile</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th class="text-center">Email Confirmed</th>
+                            <th class="text-center">Active Status</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/assets/CustomJs/userJs/users.js"></script>
+}

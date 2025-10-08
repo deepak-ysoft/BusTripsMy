@@ -1,0 +1,284 @@
+﻿@using BusTrips.Web.Models
+@model UserRequestVm
+
+@using Microsoft.AspNetCore.Identity
+@using BusTrips.Domain.Entities
+@inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager
+
+@{
+    string? role = "";
+
+    if (SignInManager.IsSignedIn(User))
+    {
+        var user = await UserManager.FindByEmailAsync(Model.Email);
+        if (user != null)
+        {
+            var roles = await UserManager.GetRolesAsync(user);
+            role = roles.FirstOrDefault() ?? "";
+        }
+    }
+    ViewData["Title"] = "Edit User";
+}
+<div class="profile-foreground position-relative mt-1 mx-n4">
+    <div class="profile-wid-bg">
+        <img src="~/assets/images/profile-bg.jpg" alt="" class="profile-wid-img" />
+    </div>
+</div>
+<div class="pt-4 mb-4 mb-lg-3 pb-lg-4 mx-3 profile-wrapper">
+    <div class="card w-25">
+        <div class="card-body p-4">
+            <div class="text-center">
+                <h5 class="fs-16 mb-1">Name: @Model.FullName</h5>
+                <p class="text-muted mb-0">Role: @role</p>
+            </div>
+        </div>
+    </div>
+    <!--end row-->
+</div>
+
+<div class="row">
+    <!--end col-->
+    <div class="col-xxl-12">
+        <div class="card ">
+            <div class="card-header">
+                <h5> Update User</h5>
+                
+            </div>
+            <div class="card-body p-4">
+                <div class="tab-content">
+                    <form id="editUserForm2" enctype="multipart/form-data">
+                        <!-- keep return url so after save we know where to redirect -->
+                        <input type="hidden" asp-for="UserId" />
+
+                        <div class="row">
+                            <div class="col-lg-12 text-center">
+
+                                <!-- Clickable round avatar -->
+                                <div style="position: relative; display: inline-block; cursor: pointer;">
+                                    <img id="userImgPreview"
+                                         src="~/assets/images/users/avatar-1.jpg"
+                                         alt="Profile Image"
+                                         class="rounded-circle border"
+                                         style="width: 120px; height: 120px; object-fit: cover;">
+                                    <div style="position: absolute; bottom: 0; right: 0; background: #0d6efd; color: #fff;
+                                            border-radius: 50%; width: 30px; height: 30px; display: flex;
+                                            align-items: center; justify-content: center; font-size: 16px;">
+                                        <i class="fas fa-camera"></i>
+                                    </div>
+                                </div>
+
+                                <!-- Hidden file input -->
+                                <input type="file" asp-for="UserImg" accept="image/*"
+                                       style="display: none;" id="userImgInput" onchange="previewUserImg(event)">
+
+                                <span asp-validation-for="UserImg" class="text-danger d-block mt-2"></span>
+                            </div>
+                            <!--end col-->
+                            <div class="col-lg-6">
+                                <div class="mb-3">
+                                    <label asp-for="FirstName" class="form-label"></label>
+                                    <input type="text" class="form-control" asp-for="FirstName" placeholder="Enter your firstname">
+                                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <!--end col-->
+                            <div class="col-lg-6">
+                                <div class="mb-3">
+                                    <label asp-for="LastName" class="form-label"></label>
+                                    <input type="text" class="form-control" asp-for="LastName" placeholder="Enter your lastname">
+                                    <span asp-validation-for="LastName" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!--end col-->
+                            <div class="col-lg-6">
+                                <div class="mb-3">
+                                    <label asp-for="Email" class="form-label"></label>
+                                    <input type="text" class="form-control" asp-for="Email" placeholder="Enter your email">
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <!--end col-->
+                            <div class="col-lg-6">
+                                <div class="mb-3">
+                                    <label asp-for="SecondaryEmail" class="form-label"></label>
+                                    <input type="text" class="form-control" asp-for="SecondaryEmail" placeholder="Enter your secondary email">
+                                    <span asp-validation-for="SecondaryEmail" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <!--end col-->
+                            <div class="col-lg-6">
+                                <div class="mb-3">
+                                    <label asp-for="PhoneNumber" class="form-label"></label>
+                                    <input type="number" class="form-control" asp-for="PhoneNumber" placeholder="Enter your phone number">
+                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <!--end col-->
+                            <div class="col-lg-6">
+                                <div class="mb-3">
+                                    <label asp-for="PhoneNumber2" class="form-label"></label>
+                                    <input type="number" class="form-control" asp-for="PhoneNumber2" placeholder="Enter your secondary phone number">
+                                    <span asp-validation-for="PhoneNumber2" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <!--end col-->
+                            @if (role == "Driver")
+                            {
+                                <div class="col-lg-6 mb-3">
+                                    <label asp-for="LicenseNumber" class="form-label">
+                                    </label>
+                                    <input type="text" class="form-control" asp-for="LicenseNumber" placeholder="Enter your license number">
+                                    <span asp-validation-for="LicenseNumber" class="text-danger"></span>
+                                </div>
+                                <!--end col-->
+                                <div class="col-lg-6 mb-3">
+                                    <label asp-for="LicenseProvince" class="form-label">
+                                    </label>
+                                    <input type="text" class="form-control" asp-for="LicenseProvince" placeholder="Enter your License Province">
+                                    <span asp-validation-for="LicenseProvince" class="text-danger"></span>
+                                </div>
+                                <!--end col-->
+                                <div class="col-lg-6 mb-3">
+                                    <label asp-for="BirthDate" class="form-label">
+                                    </label>
+                                    <input type="date" class="form-control" asp-for="BirthDate" placeholder="Enter your birthday date">
+                                    <span asp-validation-for="BirthDate" class="text-danger"></span>
+                                </div>
+                                <!--end col-->
+                                <div class="col-lg-6 mb-3">
+                                    <label asp-for="EmploymentType" class="form-label">
+                                    </label>
+                                    <input type="text" class="form-control" asp-for="EmploymentType" placeholder="Enter employment type">
+                                    <span asp-validation-for="EmploymentType" class="text-danger"></span>
+                                </div>
+                                <!--end col-->
+                                <div class="col-lg-6 mb-3">
+                                    <label asp-for="LicenseFrontImg" class="form-label">
+                                    </label>
+                                    <input type="file" class="form-control" asp-for="LicenseFrontImg" placeholder="Enter your license front image">
+                                    <span asp-validation-for="LicenseFrontImg" class="text-danger"></span>
+                                </div>
+                                <!--end col-->
+                                <div class="col-lg-6 mb-3">
+                                    <label asp-for="LicenseBackImg" class="form-label">
+                                    </label>
+                                    <input type="file" class="form-control" asp-for="LicenseBackImg" placeholder="Enter your license back image">
+                                    <span asp-validation-for="LicenseBackImg" class="text-danger"></span>
+                                </div>
+                            }
+                                <input type="hidden" asp-for="IsActive" id="IsActive" />
+
+                                <div class="col-md-12 inactive-fields" style="display:none;">
+                                <label asp-for="DeActiveDiscription" class="form-label">Deactive Reason <sup class='required-asterisk'>*</sup></label>
+                                    <textarea asp-for="DeActiveDiscription" class="form-control" placeholder="Enter Deactivation Reason"></textarea>
+                                    <span asp-validation-for="DeActiveDiscription" class="text-danger"></span>
+                                </div>
+                            <!--end col-->
+                            <div class="col-lg-6 mt-4">
+                                <div class="custom-status-toggle">
+                                    <span class="custom-label-active">Active</span>
+
+                                    <label class="custom-toggle-switch">
+                                        <!-- bind IsActive directly -->
+                                        <input type="checkbox" id="IsActiveToggle" @(Model.IsActive ? "checked" : "") />
+                                        <span class="custom-slider">
+                                            <span class="custom-on">✔</span>
+                                            <span class="custom-off">✖</span>
+                                        </span>
+                                    </label>
+
+                                    <span class="custom-label-inactive">Inactive</span>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 mt-4">
+                                <div class="hstack gap-2 justify-content-end">
+                                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                                    <a class="btn btn-sm btn-soft-secondary" asp-action="users" asp-controller="Admin">Cancel</a>
+                                </div>
+                            </div>
+                            <!--end col-->
+                        </div>
+                        <!--end row-->
+                    </form>
+                    <!--end tab-pane-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end col-->
+</div>
+<!--end row-->
+
+@section Scripts {
+    <script>
+         $(document).ready(function() {
+            const avatar = document.getElementById('userImgPreview');
+            const inputFile = document.getElementById('userImgInput');
+
+            // Click on avatar triggers file select
+            avatar.parentElement.addEventListener('click', () => inputFile.click());
+
+            // Preview selected image
+            inputFile.addEventListener('change', function (event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        avatar.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+                // Clear validation message for this field
+                $('[data-valmsg-for="UserImg"]').text('');
+            });
+
+            const toggleCheckbox = $("#IsActiveToggle");
+            const hiddenInput = $("#IsActive");
+            const inactiveFields = $(".inactive-fields");
+
+            function updateInactiveFieldVisibility() {
+                hiddenInput.val(toggleCheckbox.is(":checked"));
+                inactiveFields.toggle(!toggleCheckbox.is(":checked"));
+            }
+
+            updateInactiveFieldVisibility();
+            toggleCheckbox.change(updateInactiveFieldVisibility);
+
+            $("#editUserForm2").on("submit", function (e) {
+                e.preventDefault();
+
+                // Clear previous validation messages
+                $("#editUserForm2").find("span[data-valmsg-for]").text("").removeClass("field-validation-error").removeClass("field-validation-valid");
+
+                var formData = new FormData(this);
+
+                $.ajax({
+                    url: '/Admin/EditUser',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (res) {
+                        if (res.isSuccess) {
+                            window.location.href = '/Admin/Users';
+                        }else {
+                            focusFirstInvalidField(res.errors, "#editUserForm2");
+
+                            if (res.message) {
+                                showAlert(res.message, false);
+                            }
+                        }
+                    },
+                    error: function () {
+                       showAlert("Error submitting form "+res.message,res.isSuccess);
+                    }
+                });
+            });
+
+        });
+
+    </script>
+
+}

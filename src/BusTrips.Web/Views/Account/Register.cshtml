@@ -1,0 +1,261 @@
+﻿@model BusTrips.Web.Models.RegisterVm
+@{
+    Layout = "~/Views/Shared/_Auth_Layout.cshtml";
+    string heading = ViewBag.Role switch
+    {
+        "Driver" => "Driver Registration",
+        "Admin" => "Administrator Registration",
+        _ => "User Registration"
+    };
+
+    string ActionMethod = ViewBag.Role switch
+    {
+        "Driver" => "RegisterDriver",
+        "Admin" => "RegisterAdmin",
+        _ => "RegisterUser"
+    };
+    string LoginPage = ViewBag.Role switch
+    {
+        "Driver" => "LoginDriver",
+        "Admin" => "LoginAdmin",
+        _ => "LoginUser"
+    };
+    ViewData["Title"] = heading;
+}
+
+<style>
+    /* Background overlay */
+    #overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background: rgba(0,0,0,0.5);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease;
+        z-index: 1040;
+    }
+
+        #overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+    /* Floating modal box */
+    #floatingDiv {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.9);
+        width: 600px;
+        max-height: 80vh;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 5px 25px rgba(0,0,0,0.4);
+        padding: 20px;
+        overflow-y: auto;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 1050;
+        /* Hide scrollbar but keep scrolling */
+        scrollbar-width: none; /* Firefox */
+    }
+
+        #floatingDiv::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Edge */
+        }
+
+        #floatingDiv.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* Close button */
+        #floatingDiv .close-btn {
+            position: absolute;
+            top: 12px;
+            right: 18px;
+            cursor: pointer;
+            font-size: 22px;
+            color: #666;
+        }
+</style>
+
+<div class="row justify-content-center">
+    <div class="col-md-12 col-lg-11 col-xl-10">
+        <div class="card mt-4">
+            <div class="card-body p-4">
+                <div class="text-center mt-2">
+                    <span class="badge badge-soft-success mb-1 fs-24">@heading</span>
+                    <p class="text-muted">Create your Chartered Bus account and start booking today </p>
+                </div>
+                <div class="p-2 mt-4">
+                    <form id="registerForm" method="post" novalidate>
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="role" value="@ViewBag.Role" />
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="FirstName" class="form-label"></label>
+                                <input asp-for="FirstName" class="form-control" placeholder="Enter First Name" />
+                                <span asp-validation-for="FirstName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="LastName" class="form-label"></label>
+                                <input asp-for="LastName" class="form-control" placeholder="Enter Last Name" />
+                                <span asp-validation-for="LastName" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label"></label>
+                                <input asp-for="Email" class="form-control" placeholder="Enter Email" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Password" class="form-label"></label>
+                                <div class="position-relative auth-pass-inputgroup">
+                                    <input asp-for="Password" class="form-control pe-5 password-input" placeholder="Enter Password" oncopy="return false;"
+                                           oncut="return false;"
+                                           onpaste="return false;" />
+                                    <button class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon" type="button" id="password-addon">
+                                        <i class="ri-eye-fill align-middle"></i>
+                                    </button>
+                                    <span asp-validation-for="Password" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="PhoneNumber" class="form-label"></label>
+                                <input asp-for="PhoneNumber" type="number" class="form-control" placeholder="Enter Phone Number" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
+                            @if (ViewBag.Role == "Driver")
+                            {
+                                <div class="col-md-6">
+                                    <label asp-for="LicenseNumber" class="form-label"></label>
+                                    <input asp-for="LicenseNumber" class="form-control" placeholder="Enter License Number" />
+                                    <span asp-validation-for="LicenseNumber" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="LicenseProvince" class="form-label"></label>
+                                    <input asp-for="LicenseProvince" class="form-control" placeholder="Enter License Province" />
+                                    <span asp-validation-for="LicenseProvince" class="text-danger"></span>
+                                </div>
+                            }
+                        </div>
+                        <div class="form-check pt-2">
+                            <input class="form-check-input" asp-for="AcceptedUserTerms" type="checkbox" id="auth-remember-check">
+                            <label class="form-check-label" asp-for="AcceptedUserTerms" for="auth-remember-check">
+                                <p class="mb-0 fs-12 text-muted fst-italic">
+                                    By registering you agree to the Chartered Bus
+                                    <a href="javascript:void(0)" onclick="openFloatingDiv()"
+                                       class="text-primary text-decoration-underline fst-normal fw-medium">
+                                        Terms of Use
+                                    </a>
+                                </p>
+                            </label><br />
+                            <span asp-validation-for="AcceptedUserTerms" class="text-danger"></span>
+                        </div>
+
+                        <div id="password-contain" class="p-3 bg-light mb-2 rounded">
+                            <h5 class="fs-13 fw-semibold">Password must contain:</h5>
+                            <p id="pass-length" class="invalid fs-12 mb-2">Minimum <b>8 characters</b></p>
+                            <p id="pass-lower" class="invalid fs-12 mb-2">At <b>lowercase</b> letter (a-z)</p>
+                            <p id="pass-upper" class="invalid fs-12 mb-2">At least <b>uppercase</b> letter (A-Z)</p>
+                            <p id="pass-number" class="invalid fs-12 mb-0">A least <b>number</b> (0-9)</p>
+                        </div>
+
+                        <div class="mt-4">
+                            <button class="btn btn-success w-100" id="signupBtn" type="submit">Sign Up</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+            <!-- end card body -->
+        </div>
+        <!-- end card -->
+
+        <div class="mt-4 text-center">
+            <p class="mb-0">Already have an account ? <a href="/Account/@LoginPage" class="fw-semibold text-primary text-decoration-underline"> Signin </a> </p>
+        </div>
+
+    </div>
+</div>
+
+<!-- Overlay -->
+<div id="overlay" onclick="closeFloatingDiv()"></div>
+
+<!-- Floating Modal-Like Div -->
+<div id="floatingDiv">
+    <span class="close-btn" onclick="closeFloatingDiv()">&times;</span>
+    <div>
+        @Html.Partial("_TermsAndCondition")
+    </div>
+</div>
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        function openFloatingDiv() {
+            document.getElementById("overlay").classList.add("show");
+            document.getElementById("floatingDiv").classList.add("show");
+        }
+        function closeFloatingDiv() {
+            document.getElementById("overlay").classList.remove("show");
+            document.getElementById("floatingDiv").classList.remove("show");
+        }
+
+        // Clear field-specific validation on input/change
+        $("#registerForm").on("input", "input", function () {
+            var fieldName = $(this).attr("name");
+            $('[data-valmsg-for="' + fieldName + '"]').text('');
+        });
+
+        $("#registerForm").submit(function(e){
+            e.preventDefault();
+            let form = $(this);
+
+            $.ajax({
+                url: `/Account/@ActionMethod`,
+                type: "POST",
+                data: form.serialize(),
+                success: function(res){
+                    // clear previous errors
+                    $("span[data-valmsg-for]").text("");
+                    $(".validation-summary").empty();
+
+                    if(res.success){
+                        showAlert(res.message, res.success);
+
+                        setTimeout(() => {
+                            window.location.href = res.redirectUrl || "/";
+                        }, 4000);
+                    }
+                    else if(res.errors){
+                        for(const key in res.errors){
+                            const errorMessages = res.errors[key];
+                            const errorSpan = $(`span[data-valmsg-for='${key}']`);
+                            if(errorSpan.length){
+                                errorSpan.text(errorMessages[0]);
+                            } else {
+                                errorMessages.forEach(err => {
+                                    $(".validation-summary").append("<div>" + err + "</div>");
+                                });
+                            }
+                        }
+                    }
+                    else {
+                        showAlert(res.message, res.success);
+                    }
+                },
+                error: function(){
+                    showAlert("Something went wrong. Please try again.", false);
+                }
+            });
+        });
+    </script>
+}

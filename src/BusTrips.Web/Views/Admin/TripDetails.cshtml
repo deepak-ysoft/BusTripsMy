@@ -1,0 +1,129 @@
+﻿@using BusTrips.Web.Models;
+@model TripDetailsResponseVm
+
+@{
+    ViewBag.Title = "Trip Details";
+
+    var reqFrom = Context.Request.Query["reqFrom"].FirstOrDefault() ?? "/";
+    var returnUrl = "";
+
+    if (reqFrom == "Trips")
+    {
+        returnUrl = "/Admin/Trips";
+    }
+    else
+    {
+        // Concatenate the model values properly
+        returnUrl = "/Admin/GroupDetails?groupId=" + Model.GourpId + "&userId=" + Model.UserId;
+    }
+}
+<a class="text-dark mb-2 cursor-pointer" href="@returnUrl">⬅ Back</a>
+
+
+<div class="profile-foreground position-relative mx-n4 mt-1">
+    <div class="profile-wid-bg">
+        <img src="~/assets/images/profile-bg.jpg" alt="" class="profile-wid-img" />
+    </div>
+</div>
+
+<div class="pt-4 mb-4 mb-lg-3 pb-lg-4 profile-wrapper">
+    <div class="row g-4">
+        @* <div class="col-auto">
+            <div class="avatar-lg">
+                <img src="assets/images/users/avatar-1.jpg" alt="user-img" class="img-thumbnail rounded-circle" />
+            </div>
+        </div> *@
+        <!--end col-->
+        <div class="col">
+            <div class="p-2">
+                <h3 class="text-white mb-1">@Model.TripName</h3>
+                <p class="text-white-75">@Model.Id</p>
+                <div class="hstack text-white-50 gap-1">
+                    <div class="d-flex gap-3">
+                        <div class="ps-0"> Approval Status :</div>
+                        @if (Model.Status == "Approved")
+                        {
+                            <div class=" fw-bold border-1 border-white bg-info px-2 py-1 text-white rounded">@Model.Status</div>
+                        }
+                        else
+                        {
+                            <div class=" fw-bold border-1 border-white bg-danger px-2 py-1 text-white rounded">@Model.Status</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end row-->
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <!-- Tab panes -->
+        <div class="tab-content pt-4 text-muted">
+            <div class="tab-pane active" id="overview-tab" role="tabpanel">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row mb-3">
+
+                                    <div class="col-3 mt-4 text-dark fw-bold"> Trip Name :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.TripName</div>
+                                    <div class="col-3 mt-4 text-dark fw-bold"> Organization Name :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.OrganizationName</div>
+                                    @* <div class="col-3 mt-4 text-dark fw-bold"> User Name :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.UserName</div> *@
+                                    @* <div class="col-3 mt-4 text-dark fw-bold"> E-mail :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.Email</div> *@
+                                    <div class="col-3 mt-4 text-dark fw-bold"> Status :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.Status</div>
+                                    <div class="col-3 mt-4 text-dark fw-bold"> Number Of Passengers :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.NumberOfPassengers</div>
+                                    <div class="col-3 mt-4 text-dark fw-bold"> Departure Date :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.DepartureDate</div>
+                                    <div class="col-3 mt-4 text-dark fw-bold"> Departure Time :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.DepartureTime</div>
+                                    <div class="col-3 mt-4 text-dark fw-bold"> Start City :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.StartCity</div>
+                                    <div class="col-3 mt-4 text-dark fw-bold"> Start Location :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.StartLocation</div>
+                                    <div class="col-3 mt-4 text-dark fw-bold"> DestinationCity :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.DestinationCity</div>
+                                    <div class="col-3 mt-4 text-dark fw-bold"> Destination Location :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.DestinationLocation</div>
+                                    <div class="col-3 mt-4 text-dark fw-bold"> Destination Arrival Date :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.DestinationArrivalDate</div>
+                                    <div class="col-3 mt-4 text-dark fw-bold"> Destination Arrival Time :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.DestinationArrivalTime</div>
+                                    <div class="col-3 mt-4 text-dark fw-bold"> Notes :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.Notes</div>
+                                </div>
+                                @if (Model.Status == "Quoted" || Model.Status == "Draft" || Model.Status == "Rejected")
+                                {
+                                    <a href="/Admin/ApproveOrRejectTrip?tripId=@Model.Id&status=Approve&reqFrom=@reqFrom"  class="btn btn-primary btn-label waves-effect waves-light rounded-pill">
+                                        <i class="ri-user-smile-line label-icon align-middle rounded-pill fs-16 me-2"></i>
+                                        Approve
+                                    </a>
+                                }
+                                @if (Model.Status == "Quoted" || Model.Status == "Draft" || Model.Status == "Approved")
+                                {
+                                    <a href="/Admin/ApproveOrRejectTrip?tripId=@Model.Id&status=Reject&reqFrom=@reqFrom" class="btn btn-success btn-label waves-effect right waves-light rounded-pill">
+                                        <i class="ri-error-warning-line label-icon align-middle rounded-pill fs-16 me-2"></i>
+                                        Reject
+                                    </a>
+                                }
+                            </div><!-- end card body -->
+                        </div><!-- end card -->
+                    </div>
+                    <!--end col-->
+                </div>
+                <!--end row-->
+            </div>
+            <!--end tab-pane-->
+        </div>
+        <!--end tab-content-->
+    </div>
+    <!--end col-->
+</div>
+<!--end row-->

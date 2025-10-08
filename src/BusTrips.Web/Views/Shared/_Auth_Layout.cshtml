@@ -1,0 +1,364 @@
+@using Microsoft.AspNetCore.Identity
+@using BusTrips.Domain.Entities
+@inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager
+<!doctype html>
+@inject IHttpContextAccessor HttpContextAccessor;
+
+@{
+    // Retrieve the layout mode from the cookie, defaulting to "light" if no cookie is found
+    string layoutMode = HttpContextAccessor.HttpContext.Request.Cookies["layoutMode"] ?? "light";
+}
+<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="light" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable">
+
+<head>
+    @Html.Partial("~/Views/Shared/_title_meta.cshtml")
+    @RenderSection("styles", required: false)
+    @Html.Partial("~/Views/Shared/_head_css.cshtml")
+
+    <style>
+        .CharterBusLogo {
+            color: white;
+            font-weight: 600;
+            font-size: 1.25rem;
+            text-decoration: none;
+        }</style>
+</head>
+
+<body>
+
+    <div class="auth-page-wrapper pt-5">
+        <!-- auth page bg -->
+        <div class="auth-one-bg-position auth-one-bg" id="auth-particles">
+            <div class="bg-overlay"></div>
+
+            <div class="shape">
+                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1440 120">
+                    <path d="M 0,36 C 144,53.6 432,123.2 720,124 C 1008,124.8 1296,56.8 1440,40L1440 140L0 140z"></path>
+                </svg>
+            </div>
+        </div>
+
+        <!-- auth page content -->
+        <div class="auth-page-content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="text-center mt-sm-5 mb-4 text-white-50">
+                            <div>
+                                <a href="/Home/FirstAccessPage" class="d-inline-block auth-logo">
+                                    @* <img src="~/img/logo.png" alt="" height="80"> *@
+                                    <span class="CharterBusLogo"> Chartered Bus Trip</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end row -->
+                @RenderBody()        <!-- end row -->
+            </div>
+            <!-- end container -->
+        </div>
+        <!-- end auth page content -->
+        <footer class="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="text-center">
+                            <p class="mb-0 text-muted">
+                                2025 © Chartered Bus.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- end Footer -->
+    </div>
+    <!-- end auth-page-wrapper -->
+
+    <!-- Global Page Loader -->
+    <div id="global-loader" class="loader-hidden">
+        <div class="loader-overlay">
+            <div class="modern-loader">
+                <div class="loader-ring"></div>
+                <div class="loader-text">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* ===== Modern Light Loader ===== */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0); /* lighter than 0.6 */
+            backdrop-filter: blur(2px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            transition: background 0.3s ease;
+        }
+
+        .modern-loader {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .loader-ring {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top-color: #0d6efd;
+            animation: spin 0.8s linear infinite;
+            box-shadow: 0 0 10px rgba(13, 110, 253, 0.2);
+        }
+
+        .loader-text {
+            font-family: "Inter", sans-serif;
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            opacity: 0.9;
+        }
+
+        /* Animations */
+        @@keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Loader state control */
+        #global-loader {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease-in-out;
+        }
+
+            #global-loader.active {
+                opacity: 1;
+                pointer-events: all;
+            }
+
+        .loader-hidden {
+            display: none;
+        }
+
+        /* Optional dark-mode variant */
+        [data-layout-mode="dark"] .loader-overlay {
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        [data-layout-mode="dark"] .loader-text {
+            color: #f8f9fa;
+        }
+
+        [data-layout-mode="dark"] .loader-ring {
+            border-color: rgba(255, 255, 255, 0.1);
+            border-top-color: #66b2ff;
+            box-shadow: 0 0 12px rgba(102, 178, 255, 0.3);
+        }
+    </style>
+    ```
+
+
+
+    <!-- JAVASCRIPT -->
+    @Html.Partial("~/Views/Shared/_vendor_scripts.cshtml")
+    <script src="~/assets/js/pages/form-validation.init.js"></script>
+    <script src="~/assets/js/pages/password-addon.init.js"></script>
+
+    @RenderSection("scripts", required: false)
+
+    <script>
+        const loader = document.getElementById('global-loader');
+            let loaderTimeout = null;
+
+            // ---------------- Loader Functions ----------------
+            function showLoader(immediate = false) {
+                clearTimeout(loaderTimeout);
+                loader.classList.remove('loader-hidden');
+                if (immediate) {
+                    loader.classList.add('active');
+                } else {
+                    loaderTimeout = setTimeout(() => loader.classList.add('active'), 50);
+                }
+            }
+
+            function hideLoader() {
+                clearTimeout(loaderTimeout);
+                loader.classList.remove('active');
+                loaderTimeout = setTimeout(() => loader.classList.add('loader-hidden'), 250);
+            }
+
+            // ---------------- Page Navigation ----------------
+            window.addEventListener('load', () => hideLoader());
+            window.addEventListener('beforeunload', () => showLoader(true));
+
+            document.addEventListener('click', function (e) {
+                const el = e.target.closest('a');
+                if (!el) return;
+
+                const href = el.getAttribute('href');
+                if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
+                if (el.target === '_blank' || el.hasAttribute('download')) return;
+                if (el.classList.contains('no-loader')) return;
+
+                showLoader(true);
+            });
+
+            // ---------------- Form Submission (Global) ----------------
+            document.addEventListener('submit', function (e) {
+                const form = e.target;
+
+                if (form.classList.contains('no-loader')) return;
+
+                // Check HTML5 / jQuery validation before showing loader
+                if (form.checkValidity && !form.checkValidity()) return; // invalid HTML5
+                if (window.jQuery && $(form).valid && !$(form).valid()) return; // jQuery validate
+
+                showLoader(true);
+            });
+
+            // ---------------- Global AJAX Loader ----------------
+            if (window.jQuery) {
+                let ajaxTimer;
+
+                $(document).ajaxStart(() => {
+                    clearTimeout(ajaxTimer);
+                    ajaxTimer = setTimeout(showLoader, 150); // prevent flicker for fast calls
+                });
+
+                $(document).ajaxStop(() => {
+                    clearTimeout(ajaxTimer);
+                    hideLoader();
+                });
+
+                $(document).ajaxError(() => {
+                    clearTimeout(ajaxTimer);
+                    hideLoader();
+                });
+            }
+
+            // ---------------- Toast Notifications ----------------
+            window.showToast = function (message, type) {
+                Toastify({
+                    text: message,
+                    duration: 3000,
+                    close: true,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor:
+                        type === "success"
+                            ? "linear-gradient(to right, #00b09b, #96c93d)"
+                            : type === "error"
+                                ? "linear-gradient(to right, #e74c3c, #e67e22)"
+                                : "linear-gradient(to right, #3498db, #2980b9)",
+                    stopOnFocus: true
+                }).showToast();
+            };
+
+        // Set Cookie Function
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                let date = new Date();
+                date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = `${name}=${value || ""}${expires}; path=/`;
+        }
+
+        // Toggle Color Mode
+        function changeColourMode() {
+            const html = document.documentElement;
+            const currentMode = html.getAttribute("data-layout-mode");
+
+            const newMode = currentMode === "dark" ? "light" : "dark";
+            html.setAttribute("data-layout-mode", newMode);
+            html.setAttribute("data-topbar", newMode);
+            html.setAttribute("data-sidebar", newMode);
+            setCookie("layoutMode", newMode, 7);
+
+            fetch(`/Home/UpdateLayoutMode?mode=${newMode}`, { method: "GET" });
+        }
+
+        // Apply Theme on Page Load
+        window.onload = function () {
+            const html = document.documentElement;
+            const currentMode = "@layoutMode";
+            html.setAttribute("data-layout-mode", currentMode);
+            html.setAttribute("data-topbar", currentMode);
+            html.setAttribute("data-sidebar", currentMode);
+        };
+        // });
+        $(document).ready(function () {
+            $("#equipmentForm").submit(function (e) {
+                e.preventDefault(); // stop full reload
+
+                if (!$(this).valid()) {
+                    return false; // client validation failed
+                }
+
+                $.ajax({
+                    url: $(this).attr("action"),
+                    type: $(this).attr("method"),
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            alert(response.message);
+
+                            // Close modal
+                            $("#equipmentModal").modal("hide");
+
+                            // Refresh list (example table reload)
+                            $("#equipmentTable").load("/Equipment/GetList");
+                        }
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 400) {
+                            // rebind validation summary errors
+                            var errors = JSON.parse(xhr.responseText);
+                            var summary = $("#equipmentForm").find("[asp-validation-summary='All']");
+                            summary.empty();
+                            $.each(errors, function (key, messages) {
+                                $.each(messages, function (i, msg) {
+                                    summary.append("<div>" + msg + "</div>");
+                                });
+                            });
+                        } else {
+                            alert("Something went wrong!");
+                        }
+                    }
+                });
+            });
+        });
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+    </script>
+</body>
+
+</html>

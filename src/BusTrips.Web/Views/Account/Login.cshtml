@@ -1,0 +1,129 @@
+﻿@using BusTrips.Web.Models
+@model BusTrips.Web.Models.LoginVm
+@{
+    Layout = "~/Views/Shared/_Auth_Layout.cshtml";
+    string heading = ViewBag.Role switch
+    {
+        "Driver" => "Driver Login",
+        "Admin" => "Administrator Login",
+        _ => "User Login"
+    };
+    string ActionMethod = ViewBag.Role switch
+    {
+        "Driver" => "LoginDriver",
+        "Admin" => "LoginAdmin",
+        _ => "LoginUser"
+    };
+
+    string RegisterPage = ViewBag.Role switch
+    {
+        "Driver" => "RegisterDriver",
+        "Admin" => "RegisterAdmin",
+        _ => "RegisterUser"
+    };
+    ViewData["Title"] = heading;
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6 col-xl-5">
+        <div class="card mt-4">
+            <div class="card-body p-4">
+                <div class="text-center mt-2">
+                    <h5 class="text-primary">Welcome Back !</h5>
+                    <span class="badge badge-soft-success mb-1 fs-24">@heading</span>
+                    <p class="text-muted">Sign in to continue to BusTrip @heading</p>
+                </div>
+                <div class="p-2 mt-4">
+                    <form id="loginForm" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="role" value="@ViewBag.Role" />
+
+                        <div asp-validation-summary="ModelOnly" class="validation-summary text-danger mb-3 d-flex ">
+                            <i class="mdi mdi-alert-circle-outline me-2"></i>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">Email</label>
+                            <input type="text" class="form-control" asp-for="Email" tabindex="1" placeholder="Enter your email">
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label class="form-label" asp-for="Password">Password</label>
+                            <div class="position-relative auth-pass-inputgroup">
+                                <input type="password" class="form-control pe-5 password-input" placeholder="Enter password" asp-for="Password" tabindex="2"
+                                       oncopy="return false;"
+                                       oncut="return false;"
+                                       onpaste="return false;">
+                                <button class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon" type="button" id="password-addon"><i class="ri-eye-fill align-middle"></i></button>
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <div class="float-end">
+                                <a href="/Account/ForgotPassword?message=" class="fw-semibold text-primary text-decoration-underline">Forgot password?</a>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <button class="btn btn-success w-100" type="submit">Sign In</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 text-center">
+            <p class="mb-0">Don't have an account ? <a href="/Account/@RegisterPage" class="fw-semibold text-primary text-decoration-underline"> Signup </a> </p>
+        </div>
+
+    </div>
+</div>
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+        // Clear field-specific validation on input/change
+        $("#loginForm").on("input", "input", function () {
+            var fieldName = $(this).attr("name");
+            $('[data-valmsg-for="' + fieldName + '"]').text('');
+        });
+
+
+        $("#loginForm").submit(function (e) {
+            e.preventDefault(); // stop normal form submission
+            let form = $(this);
+
+            $.ajax({
+                url: `/Account/@ActionMethod`,
+                type: "POST",
+                data: form.serialize(), // serialize form inputs
+                success: function (res) {
+                    if (res.success) {
+                        // Login successful → redirect or show message
+                        window.location.href = res.redirectUrl || "/";
+                    } else if (res.errors) {
+                        for (const key in res.errors) {
+                            const errorMessages = res.errors[key];
+                            const errorSpan = $(`span[data-valmsg-for='${key}']`);
+                            if (errorSpan.length) {
+                                errorSpan.text(errorMessages[0]); // show first error
+                            } else {
+                                // fallback: show in validation summary
+                                errorMessages.forEach(err => {
+                                    $("#validationSummary").append("<div>" + err + "</div>");
+                                });
+                            }
+                        }
+                    } else {
+                        showAlert(res.message, false);
+                    }
+                },
+                error: function () {
+                    showAlert("Something went wrong. Please try again.", false);
+                }
+            });
+        });
+    </script>
+}

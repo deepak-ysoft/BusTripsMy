@@ -1,0 +1,62 @@
+﻿@using BusTrips.Web.Models
+@model List<UserVM>
+
+<table class=" table table-bordered table-hover  dt-responsive nowrap align-middle groupTable customTable" style="width:100%">
+    <thead>
+        <tr>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Email Confirmed</th>
+            <th>Active Status</th>
+            <th class="text-center">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var user in Model)
+            {
+                <tr id="user-row-@user.UserId">
+                    <td>@user.FirstName @user.LastName</td>
+                    <td>@user.Email</td>
+                    <td>@user.PhoneNumber</td>
+                    <td>
+                        @if (user.EmailConfirmed)
+                        {
+                            <span class="text-success">🟢 Confirmed</span>
+                        }
+                        else
+                        {
+                            <span class="text-danger">🔴 Not Confirmed</span>
+                        }
+                    </td>
+                    <td>
+                        @if (user.isActive)
+                        {
+                            <span class="text-success">🟢 Active</span>
+                        }
+                        else
+                        {
+                            <span class="text-danger">🔴 Inactive</span>
+                        }
+                    </td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-soft-primary edit-user" data-user-id="@user.UserId">
+                            <i class="ri-edit-2-line"></i>
+                        </button>
+                        <button class="btn btn-sm btn-soft-danger delete-user" data-user-id="@user.UserId">
+                            <i class="ri-delete-bin-5-line"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="6" class="text-center text-muted">No users found</td>
+            </tr>
+        }
+    </tbody>
+</table>

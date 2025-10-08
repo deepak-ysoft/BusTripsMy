@@ -1,0 +1,173 @@
+﻿@{
+    ViewData["Title"] = "Dashboard - Admin";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="row">
+            <!-- Sidebar: Events & Upcoming Events -->
+            <!-- Calendar -->
+            <div class="col-xl-12">
+                <div class="card card-h-100">
+                    <div class="row ">
+                        <div class="mt-4 col-xl-3 ">
+                            <div class="ps-4">
+                                <h5 class="mb-1">Upcoming Trips</h5>
+                                <p class="text-muted">Don't miss scheduled trips</p>
+                                <div class="pe-2 me-n1 mb-3" data-simplebar style="height: 700px;">
+                                    <div id="upcoming-event-list"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body col-xl-9">
+                            <div id="calendar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="clear:both;"></div>
+
+        <!-- Event Details Modal -->
+        <div class="modal fade modal-xl" id="event-modal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow">
+                    <!-- Header -->
+                    <div class="modal-header bg-light border-bottom">
+                        <h5 class="modal-title" id="modal-title">Trip Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="modal-body p-4">
+                        <div id="event-details" class="container-fluid">
+                            <!-- Trip Overview Card -->
+                            <div class="row">
+                                <div class="col">
+                                    <div class="card mb-3 shadow-sm">
+                                        <div class="card-body">
+                                            <h5 class="fw-bold text-info mb-1" id="detail-trip-name">Trip Name</h5>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <p class="text-muted mb-0 small">Status</p>
+                                                    <p id="detail-status" class="fw-semibold fs-6"></p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p class="text-muted mb-0 small">Passengers</p>
+                                                    <p id="detail-passengers" class="fw-semibold fs-6"></p>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <p class="text-muted mb-0 small">Trip Days</p>
+                                                    <p id="detail-trip-days" class="fw-semibold fs-6  mb-0"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <!-- Organization & Group Card -->
+                                    <div class="card mb-3 shadow-sm">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <p class="text-muted mb-1 small">Organization</p>
+                                                    <p id="detail-organization" class="fw-semibold fs-6"></p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p class="text-muted mb-1 small">Organization Creator</p>
+                                                    <p id="detail-organizationCreatorName" class="fw-semibold fs-6"></p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p class="text-muted mb-1 small">Group</p>
+                                                    <p id="detail-group" class="fw-semibold fs-6"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <!-- Departure Card -->
+                                    <div class="card mb-3 shadow-sm">
+                                        <div class="card-body">
+                                            <h6 class="fw-bold text-primary mb-3">Departure</h6>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <p class="text-muted mb-1 small">Date</p>
+                                                    <p id="detail-departure-date" class="fw-semibold fs-6"></p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p class="text-muted mb-1 small">Time</p>
+                                                    <p id="detail-departure-time" class="fw-semibold fs-6"></p>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <p class="text-muted mb-1 small">Start Location</p>
+                                                    <p id="detail-start-location" class="fw-semibold fs-6"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <!-- Destination Card -->
+                                    <div class="card mb-3 shadow-sm">
+                                        <div class="card-body">
+                                            <h6 class="fw-bold text-success mb-3">Destination</h6>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <p class="text-muted mb-1 small">Date</p>
+                                                    <p id="detail-destination-date" class="fw-semibold fs-6"></p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p class="text-muted mb-1 small">Time</p>
+                                                    <p id="detail-destination-time" class="fw-semibold fs-6"></p>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <p class="text-muted mb-1 small">Destination Location</p>
+                                                    <p id="detail-destination-location" class="fw-semibold fs-6"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bus & Driver Card -->
+                            <div class="card mb-3 shadow-sm">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="card shadow-sm">
+                                                <div class="card-body driver-card">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="card shadow-sm">
+                                                <div class="card-body equipment-card">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Notes Card -->
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <p class="text-muted mb-1 small">Notes</p>
+                                    <p id="detail-notes" class="fw-normal fs-6 text-muted" style="white-space: pre-wrap;"></p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- End Modal -->
+    </div>
+</div>

@@ -1,0 +1,177 @@
+﻿@model IEnumerable<BusTrips.Web.Models.OrgListItemVm>
+
+<div class="row">
+    @if (Model == null || !Model.Any())
+    {
+        <div class="col-12 mt-4">
+            <div class="alert alert-warning text-center">
+                <i class="ri-information-line"></i> No Organizations found.
+            </div>
+        </div>
+    }
+    else
+    {
+        @foreach (var org in Model)
+        {
+            var isExpanded = org.IsPrimary; // default: primary expanded
+                                            <div class="col-12  mb-3">
+                                                <div class="card shadow-lg border-0 mx-n3">
+                                                    <!-- Header -->
+                                                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                                        <div class="d-flex align-items-center">
+                                                            <span class="badge rounded-pill @(org.IsActive ? "bg-primary" : "bg-danger") px-3 py-2 me-3">
+                                                                @(org.IsActive ? "Active" : "Inactive")
+                                                            </span>
+                                                            <h4 class="mb-0 text-primary">@org.OrgName <small class="text-muted">(@org.ShortName)</small></h4>
+                            @if (org.IsPrimary && !org.IsInvited)
+                            {
+                                <span class="active-status badge rounded-pill bg-success ms-3 px-3 py-2">Primary</span>
+                            }
+                        </div>
+                        <button class="btn btn-sm btn-outline-secondary toggleOrgBtn"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#orgBody_@org.Id"
+                                aria-expanded="@(isExpanded.ToString().ToLower())">
+                            <i class="ri-arrow-down-s-line"></i>
+                        </button>
+                    </div>
+
+                    <!-- Collapsible Body -->
+                    <div id="orgBody_@org.Id" class="collapse @(isExpanded ? "show" : "")">
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-2">
+                                    <p><strong>Member Type:</strong> @org.MemberType</p>
+                                </div>
+                                <div class="col-md-2">
+                                    <p><strong>Creater Name</strong> @org.CreatorName</p>
+                                </div>
+                                <div class="col-md-3 text-end">
+                                    <p><strong>Created:</strong> @org.CreatedDate.ToString("dd-MMM-yyyy")</p>
+                                </div>
+                                <div class="col-md-2 text-end">
+                                    <p><strong>Trips:</strong> @org.tripCount</p>
+                                </div>
+                                <div class="col-md-3 text-end">
+                                    @if (org.Permissions.MemberType == "Creator" || org.Permissions.IsView)
+                                    {
+                                        <a href="/Organizations/OrganizationDetails?id=@org.Id" class="btn btn-sm btn-outline-primary">
+                                            <i class="ri-eye-fill"></i> View Details
+                                        </a>
+                                    }
+                                    @if (org.Permissions.MemberType == "Creator" || org.Permissions.IsEdit)
+                                    {
+                                        <a href="javascript:void(0);" class="btn btn-sm btn-soft-success editOrgBtn" data-id="@org.Id">
+                                            <i class="ri-edit-2-line"></i> Edit
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Groups -->
+                            <div class="mt-3 p-3 border rounded">
+                                <div class="d-flex justify-content-between">
+                                    <h5 class="text-secondary">Groups</h5>
+                                    @if (org.MemberType == "Creator" || org.Permissions.IsCreate)
+                                    {
+                                        if (org.IsActive)
+                                        {
+                                            <button type="button" class="btn btn-sm btn-primary createGroupBtn" data-orgid="@org.Id">
+                                                Create Group
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <span data-bs-toggle="tooltip" title="You cannot create a group in an inactive organization">
+                                                <button type="button" class="btn btn-sm btn-soft-secondary" disabled>
+                                                    Create Group
+                                                </button>
+                                            </span>
+                                        }
+                                    }
+                                </div>
+                                @if (org.Groups.Any())
+                                {
+                                    <div class="table-responsive mt-2">
+                                        <table class=" table table-bordered table-hover  align-middle groupTable customTable" style="width:100%">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Short Name</th>
+                                                    <th>Description</th>
+                                                    <th>Status</th>
+                                                    <th>Creator</th>
+                                                    <th>Trips</th>
+                                                    <th class="text-center">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var g in org.Groups)
+                                                {
+                                                    <tr>
+                                                        <td>@g.GroupName</td>
+
+                                                        <td>@g.ShortName</td>
+                                                        <td title="@g.Description">
+                                                            @g.Description
+
+                                                        </td>
+                                                        <td>
+                                                            @if (@g.Status == "Inactive")
+                                                            {
+                                                                <span class="badge badge-soft-danger px-4 py-1 rounded-pill">@g.Status</span>
+                                                            }
+                                                            else
+                                                            {
+
+                                                                <span class="badge badge-soft-primary px-4 py-1 rounded-pill">@g.Status</span>
+                                                            }
+                                                        </td>
+                                                        <td>@(g.IsCreator ? "Yes" : "No")</td>
+                                                        <td>
+                                                            <span class="badge badge-soft-success px-4  py-1 rounded-pill">@g.TripsCount</span>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            @if (org.MemberType == "Creator" || org.Permissions.IsView)
+                                                            {
+                                                                <a href="/Trips/Index?groupId=@g.Id" class="btn btn-sm btn-soft-primary">
+                                                                    <i class="ri-eye-fill"></i>
+                                                                </a>
+                                                            }
+                                                            @if (org.MemberType == "Creator" || org.Permissions.IsEdit)
+                                                            {
+                                                                if (org.IsActive)
+                                                                {
+                                                                    <a class="btn btn-sm btn-soft-success editGroupBtn" data-id="@g.Id">
+                                                                        <i class="ri-edit-2-line"></i>
+                                                                    </a>
+                                                                }
+                                                                else
+                                                                {
+
+                                                                    <span data-bs-toggle="tooltip" title="You cannot edit groups in an inactive organization">
+                                                                        <button type="button" class="btn btn-sm btn-soft-secondary" disabled>
+                                                                            <i class="ri-edit-2-line"></i>
+                                                                        </button>
+                                                                    </span>
+                                                                }
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <p class="text-muted mt-2">No groups available</p>
+                                }
+                            </div>
+                        </div>
+                    </div> <!-- collapse -->
+                </div>
+            </div>
+        }
+    }
+</div>

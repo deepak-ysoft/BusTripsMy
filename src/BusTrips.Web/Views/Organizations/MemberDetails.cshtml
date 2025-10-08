@@ -1,0 +1,198 @@
+﻿@using BusTrips.Web.Models;
+@model OrgMemberDetailsResponseVM
+@using Microsoft.AspNetCore.Identity
+@using BusTrips.Domain.Entities
+@inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager
+
+@{
+    Guid? userId = null; // Make it nullable
+
+    if (SignInManager.IsSignedIn(User))
+    {
+        var user = await UserManager.GetUserAsync(User);
+        if (user != null)
+        {
+            userId = user.Id;
+        }
+    }
+
+    ViewData["Title"] = "Member Details";
+}
+
+
+@await Html.PartialAsync("_Alert", new AlertViewModel { IsSuccess = ViewBag.IsSuccess ?? false, Message = ViewBag.Message as string })
+
+@await Html.PartialAsync("_BackButton")
+<div class="profile-foreground position-relative mx-n4 mt-1">
+    <div class="profile-wid-bg">
+        <img src="~/assets/images/profile-bg.jpg" alt="" class="profile-wid-img" />
+    </div>
+</div>
+
+<div class="pt-4  mb-lg-3  profile-wrapper">
+    <div class="row">
+        <div class="card w-25 border border-primary bg-transparent shadow-none">
+            <div class="card-header bg-transparent text-light fw-bold">
+                Organization
+            </div>
+            <div class="card-body">
+                <h3 class="text-light mb-1">@Model.Org.OrgName</h3>
+                <p class="text-white-50">@Model.Org.Id</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-4">
+        <!-- Tab panes -->
+        <div class="tab-content pt-4">
+            <div class="tab-pane active" id="overview-tab" role="tabpanel">
+                <div class="row">
+                    <div class="col-xxl-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">Info</h5>
+                                <div class="row mb-3">
+                                    <div class="col-6 mt-4 fw-medium" scope="row">Member Name :</div>
+                                    <div class="col-6 mt-4 text-muted">@Model.Member.UserName</div>
+                                    <div class="col-6 mt-4 fw-medium" scope="row">E-mail :</div>
+                                    <div class="col-6 mt-4 text-muted">@Model.Member.Email</div>
+                                    <div class="col-6 mt-4 fw-medium" scope="row">Phone Number :</div>
+                                    <div class="col-6 mt-4 text-muted">@Model.Member.PhoneNumber</div>
+                                    <div class="col-6 mt-4 fw-medium" scope="row">Member Type :</div>
+                                    <div class="col-6 mt-4 text-muted">@Model.Member.MemberType</div>
+                                </div>
+                                <!-- Swiper -->
+                                @if (
+                                                                (Model.Org.Permissions.MemberType == "Creator" ||
+                                                                (Model.Org.Permissions.MemberType == "Admin" && Model.Org.Permissions.IsEdit)) &&
+                                                                userId.HasValue &&
+                                                                userId.Value != Model.Member.AppUserId
+                                                                )
+                                {
+                                    <div class="swiper-wrapper gap-4">
+                                        @if (Model.Member.MemberType != "Admin")
+                                        {
+                                            if (Model.Org.IsActive)
+                                            {
+                                                <!-- Remove Member Button -->
+                                                <button class="btn btn-sm btn-soft-primary waves-effect waves-light confirm-action"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#confirmActionModal"
+                                                        data-url="/Organizations/RemoveMember?userId=@Model.Member.AppUserId&orgId=@Model.Org.Id"
+                                                        data-title="Remove Member"
+                                                        data-message="Are you sure you want to remove this member from the organization?">
+                                                    Remove Member
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <span data-bs-toggle="tooltip" title="You cannot remove member in an inactive organization">
+                                                    <button type="button" class="btn btn-sm btn-soft-secondary" disabled>
+                                                        Remove Member
+                                                    </button>
+                                                </span>
+                                            }
+
+                                        }
+                                        <!-- Admin Controls (Only Creator can see these) -->
+                                        @if (Model.Org.MemberType == "Creator")
+                                        {
+                                            if (Model.Org.IsActive)
+                                            {
+                                                <button class="btn btn-sm btn-soft-secondary waves-effect confirm-action"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#confirmActionModal"
+                                                        data-url="/Organizations/MakeRemoverAdmin?userId=@Model.Member.AppUserId&orgId=@Model.Org.Id"
+                                                        data-title="@(Model.Member.MemberType == "Admin" ? "Remove Admin" : "Make Admin")"
+                                                        data-message="Are you sure you want to @(Model.Member.MemberType == "Admin" ? "remove admin rights from" : "make admin") this member?">
+                                                    @(Model.Member.MemberType == "Admin" ? "Remove Admin" : "Make Admin")
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <span data-bs-toggle="tooltip" title="You cannot remove or make admin in an inactive organization">
+                                                    <button type="button" class="btn btn-sm btn-soft-secondary" disabled>
+                                                        @(Model.Member.MemberType == "Admin" ? "Remove Admin" : "Make Admin")
+                                                    </button>
+                                                </span>
+                                            }
+
+                                            if (Model.Org.IsActive)
+                                            {
+                                                <button class="btn btn-sm btn-soft-success waves-effect waves-light confirm-action"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#confirmActionModal"
+                                                        data-url="/Organizations/MakeCreator?userId=@Model.Member.AppUserId&orgId=@Model.Org.Id"
+                                                        data-title="Make Creator"
+                                                        data-message="Are you sure you want to transfer creator rights to this member?">
+                                                    Make Creator
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <span data-bs-toggle="tooltip" title="You cannot make creator in an inactive organization">
+                                                    <button type="button" class="btn btn-sm btn-soft-secondary" disabled>
+                                                        Make Creator
+                                                    </button>
+                                                </span>
+                                            }
+                                        }
+                                    </div>
+                                }
+
+                            </div><!-- end card body -->
+                        </div><!-- end card -->
+                    </div>
+                    <!--end col-->
+                </div>
+                <!--end row-->
+            </div>
+            <!--end tab-pane-->
+        </div>
+        <!--end tab-content-->
+    </div>
+    <!--end col-->
+</div>
+<!--end row-->
+<div class="modal fade" id="confirmActionModal" tabindex="-1" aria-labelledby="confirmActionLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center">
+            <div class="modal-header border-0 justify-content-end">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Icon -->
+                <div class="mx-auto mb-3"
+                     style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid orange; display: flex; align-items: center; justify-content: center;">
+                    <span style="color: orange; font-size: 32px; font-weight: bold;">!</span>
+                </div>
+
+                <h5 class="mb-2" id="modalActionTitle">Are you sure?</h5>
+                <p class="text-muted" id="modalActionMessage">You won’t be able to undo this action.</p>
+
+                <div class="d-flex justify-content-center gap-2 mt-4">
+                    <a id="confirmModalActionBtn" href="#" class="btn btn-sm btn-primary">Yes, continue</a>
+                    <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const actionModal = document.getElementById('confirmActionModal');
+        actionModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const url = button.getAttribute('data-url');
+            const title = button.getAttribute('data-title');
+            const message = button.getAttribute('data-message');
+
+            document.getElementById('modalActionTitle').innerText = title || "Are you sure?";
+            document.getElementById('modalActionMessage').innerText = message || "You won’t be able to undo this action.";
+            document.getElementById('confirmModalActionBtn').setAttribute('href', url);
+        });
+    });
+</script>

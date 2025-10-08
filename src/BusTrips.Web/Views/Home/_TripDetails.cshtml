@@ -1,0 +1,258 @@
+﻿@using BusTrips.Web.Models;
+@model TripDetailsResponseVm
+
+@{
+    ViewData["Title"] = "Trip Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using Microsoft.AspNetCore.Identity
+@using BusTrips.Domain.Entities
+@inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager
+
+@{
+    string? role = "";
+
+    if (SignInManager.IsSignedIn(User))
+    {
+        var user = await UserManager.GetUserAsync(User);
+        if (user != null)
+        {
+            var roles = await UserManager.GetRolesAsync(user);
+            role = roles.FirstOrDefault() ?? "";
+
+        }
+    }
+}
+
+@await Html.PartialAsync("_Alert", new AlertViewModel { IsSuccess = ViewBag.IsSuccess ?? false, Message = ViewBag.Message as string })
+
+@await Html.PartialAsync("_BackButton")
+<div class="profile-foreground position-relative mx-n4 mt-1">
+    <div class="profile-wid-bg">
+        <img src="~/assets/images/profile-bg.jpg" alt="" class="profile-wid-img" />
+    </div>
+</div>
+<div class="pt-4 mb-4 mb-lg-3 pb-lg-4  profile-wrapper">
+    <div class="row g-4">
+        <!--end col-->
+        <div class="col">
+            <div class="p-2 text-white">
+                <h3 class=" mb-1 text-white">
+                    Organization Name: @Model.OrganizationName (@Model.OrgShortName)
+                    @if (Model.IsPrimary)
+                    {
+                        <br />
+                        <br />
+                        <span class="border border-1 border-warning px-3 rounded-pill "> Primary</span>
+                    }
+                </h3>
+            </div>
+        </div>
+        <div class="col">
+            <div class="p-2 d-flex justify-content-end">
+                <div>
+                    <h3 class="text-white mb-1 ">
+                        Group : @Model.GroupName (@Model.ShortName)
+                        @if (Model.IsActive)
+                        {
+                            <span class="ms-5 border border-1 border-warning px-3 rounded-pill "> Active</span>
+                        }
+                        else
+                        {
+                            <span class="ms-5  border border-1 border-danger px-3 rounded-pill">Inactive</span>
+                        }
+                    </h3>
+                    <div class="hstack text-white  gap-3 mt-2">
+                        <div class="me-2">
+                            Creator : @Model.Creator
+                        </div>
+                    </div>
+                    <div class="hstack text-white  gap-3 mt-2">
+                        <div>
+                            Created : @Model.CreatedAt
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end row-->
+</div>
+<div class="row ">
+    <div class="col-xxl-4">
+        <div class="card border card-border-primary">
+            <div class="card-header">
+                <h6 class="card-title mb-0">Driver Information </h6>
+            </div>
+            <div class="card-body">
+                @if (Model.DriverName != null)
+                {
+                    <div class="row mb-3">
+                        <div class="col-6 mt-1 fw-medium"> Driver Id :</div>
+                        <div class="col-6 mt-1 text-muted">@Model.DriverId</div>
+                        <div class="col-6 mt-1 fw-medium"> Driver Name :</div>
+                        <div class="col-6 mt-1 text-muted">@Model.DriverName</div>
+                        <div class="col-6 mt-1 fw-medium"> Employment Type :</div>
+                        <div class="col-6 mt-1 text-muted">@Model.EmploymentType</div>
+                        <div class="col-6 mt-1 fw-medium"> License Number :</div>
+                        <div class="col-6 mt-1 text-muted">@Model.LicenseNumber</div>
+                        <div class="col-6 mt-1 fw-medium"> License Province :</div>
+                        <div class="col-6 mt-1 text-muted">@Model.LicenseProvince</div>
+
+                    </div>
+                }
+                else
+                {
+                    <span class="h-50"> Waiting for approval</span>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-xxl-4">
+        <div class="card border card-border-primary">
+            <div class="card-header">
+                <h6 class="card-title mb-0">Secondary Driver Information </h6>
+            </div>
+            <div class="card-body">
+                @if (Model.DriverName != null)
+                {
+                    <div class="row mb-3">
+                        <div class="col-6 mt-1 fw-medium"> Driver Id :</div>
+                        <div class="col-6 mt-1 text-muted">@Model.DriverId</div>
+                        <div class="col-6 mt-1 fw-medium"> Driver Name :</div>
+                        <div class="col-6 mt-1 text-muted">@Model.DriverName</div>
+                        <div class="col-6 mt-1 fw-medium"> Employment Type :</div>
+                        <div class="col-6 mt-1 text-muted">@Model.EmploymentType</div>
+                        <div class="col-6 mt-1 fw-medium"> License Number :</div>
+                        <div class="col-6 mt-1 text-muted">@Model.LicenseNumber</div>
+                        <div class="col-6 mt-1 fw-medium"> License Province :</div>
+                        <div class="col-6 mt-1 text-muted">@Model.LicenseProvince</div>
+
+                    </div>
+                }
+                else
+                {
+                    <span class="h-50"> Waiting for approval</span>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-xxl-4">
+        <div class="card border card-border-primary">
+            <div class="card-header">
+                <h6 class="card-title mb-0">Equipment </h6>
+            </div>
+            <div class="card-body">
+
+                @if (Model.Manufacturer != null)
+                {
+                    <div class="row mb-3">
+                        <div class="col-6 mt-1 fw-medium"> Manufacturer :</div>
+                        <div class="col-6 mt-1 text-muted">@Model.Manufacturer</div>
+                        <div class="col-6 mt-1 fw-medium"> Model :</div>
+                        <div class="col-6 mt-1 text-muted">@Model.Model</div>
+                        <div class="col-6 mt-1 fw-medium"> License Plate :</div>
+                        <div class="col-6 mt-1 text-muted">@Model.LicensePlate</div>
+                        <div class="col-6 mt-1 fw-medium"> Seating Capacity :</div>
+                        <div class="col-6 mt-1 text-muted">@Model.SeatingCapacity</div>
+                        <div class="col-6 mt-1 fw-medium"> Year :</div>
+                        <div class="col-6 mt-1 text-muted">@Model.Year</div>
+                    </div>
+                }
+                else
+                {
+                    <span class="h-50"> Waiting for approval</span>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <!-- Tab panes -->
+        <div class="tab-content pt-4 ">
+            <div class="tab-pane active" id="overview-tab" role="tabpanel">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between">
+                                <span class="fw-medium fs-15">Trip Details</span>
+                                @if (Model.Status == "Approved")
+                                {
+                                    <div class=" fw-medium border-1 border-white bg-info px-2 py-1 text-white rounded">@Model.Status</div>
+                                }
+                                else
+                                {
+                                    <div class=" fw-medium border-1 border-white bg-danger px-2 py-1 text-white rounded">@Model.Status</div>
+                                }
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-3 mt-4 fw-medium"> Trip Name :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.TripName</div>
+                                    @* <div class="col-3 mt-4 fw-medium"> User Name :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.UserName</div>
+                                    <div class="col-3 mt-4 fw-medium"> E-mail :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.Email</div> *@
+                                    <div class="col-3 mt-4 fw-medium"> Status :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.Status</div>
+                                    <div class="col-3 mt-4 fw-medium"> Number Of Passengers :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.NumberOfPassengers</div>
+                                    <div class="col-3 mt-4 fw-medium"> Departure Date :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.DepartureDate</div>
+                                    <div class="col-3 mt-4 fw-medium"> Departure Time :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.DepartureTime</div>
+                                    <div class="col-3 mt-4 fw-medium"> Start City :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.StartCity</div>
+                                    <div class="col-3 mt-4 fw-medium"> Start Location :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.StartLocation</div>
+                                    <div class="col-3 mt-4 fw-medium"> Destination City :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.DestinationCity</div>
+                                    <div class="col-3 mt-4 fw-medium"> Destination Location :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.DestinationLocation</div>
+                                    <div class="col-3 mt-4 fw-medium"> Destination Arrival Date :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.DestinationArrivalDate</div>
+                                    <div class="col-3 mt-4 fw-medium"> Destination Arrival Time :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.DestinationArrivalTime</div>
+                                    <div class="col-3 mt-4 fw-medium"> QuotedPrice :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.QuotedPrice</div>
+                                    <div class="col-3 mt-4 fw-medium"> Estimate Link Url :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.EstimateLinkUrl</div>
+                                    <div class="col-3 mt-4 fw-medium"> Invoice Link Url :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.InvoiceLinkUrl</div>
+                                    <div class="col-3 mt-4 fw-medium"> Created At :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.TripCreatedAt </div>
+                                    <div class="col-3 mt-4 fw-medium"> Notes :</div>
+                                    <div class="col-3 mt-4 text-muted">@Model.Notes</div>
+                                </div>
+
+                                @if ((Model.Status == "Quoted" || Model.Status == "Draft" || Model.Status == "Rejected") && role == "Admin")
+                                {
+                                    <a href="/Admin/ApproveOrRejectTrip?tripId=@Model.Id&status=Approve" class="btn btn-primary btn-label waves-effect waves-light rounded-pill">
+                                        <i class="ri-user-smile-line label-icon align-middle rounded-pill fs-16 me-2"></i>
+                                        Approve
+                                    </a>
+                                }
+                                @if ((Model.Status == "Quoted" || Model.Status == "Draft" || Model.Status == "Approved") && role == "Admin")
+                                {
+                                    <a href="/Admin/ApproveOrRejectTrip?tripId=@Model.Id&status=Reject" class="btn btn-success btn-label waves-effect right waves-light rounded-pill">
+                                        <i class="ri-error-warning-line label-icon align-middle rounded-pill fs-16 me-2"></i>
+                                        Reject
+                                    </a>
+                                }
+                            </div><!-- end card body -->
+                        </div><!-- end card -->
+                    </div>
+                    <!--end col-->
+                </div>
+                <!--end row-->
+            </div>
+            <!--end tab-pane-->
+        </div>
+        <!--end tab-content-->
+    </div>
+    <!--end col-->
+</div>
+<!--end row-->

@@ -1,0 +1,29 @@
+﻿@{
+    Layout = "_Layout";
+    ViewBag.Title = ViewBag.Title ?? "Page Not Ready";
+   var Response = 503;
+    var homeUrl = Url.Action("Index", "Home");
+    var supportEmail = "support@example.com";
+    var note = ViewBag.Note as string;
+}
+
+<section class="pnr-wrapper" role="status" aria-live="polite">
+    <div class="pnr-card  shadow-xl">
+        <div class="pnr-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="56" height="56" fill="currentColor">
+                <path d="M6 2h12a1 1 0 0 1 0 2h-1v2a5 5 0 0 1-2.2 4.17L12 12l2.8 1.83A5 5 0 0 1 17 18v2h1a1 1 0 1 1 0 2H6a1 1 0 1 1 0-2h1v-2a5 5 0 0 1 2.2-4.17L12 12l-2.8-1.83A5 5 0 0 1 7 6V4H6a1 1 0 1 1 0-2Zm3 4a3 3 0 0 0 1.32 2.5L12 10l1.68-1.5A3 3 0 0 0 15 6V4H9v2Zm6 10a3 3 0 0 0-1.32-2.5L12 14l-1.68 1.5A3 3 0 0 0 9 16v2h6v-2Z" />
+            </svg>
+        </div>
+
+        <h1 class="pnr-title">Page not ready</h1>
+        <p class="pnr-lead">We’re still working on this page. Please check back soon.</p>
+
+        <div class="pnr-actions">
+            <a class="pnr-btn pnr-btn-primary" href="@homeUrl">Go to Home</a>
+            <a class="pnr-btn pnr-btn-outline" href="mailto:@supportEmail">Contact Support</a>
+        </div>
+
+        <p class="pnr-tiny">HTTP @Response • Last updated @DateTime.Now</p>
+    </div>
+</section>
+

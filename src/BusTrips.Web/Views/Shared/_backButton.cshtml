@@ -1,0 +1,24 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using BusTrips.Domain.Entities
+@inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager
+
+@{
+    string? role = "";
+
+    if (SignInManager.IsSignedIn(User))
+    {
+        var user = await UserManager.GetUserAsync(User);
+        if (user != null)
+        {
+            var roles = await UserManager.GetRolesAsync(user);
+            role = roles.FirstOrDefault() ?? "";
+        }
+    }
+
+    var fallbackUrl = role == "User" ? Url.Action("Index", "Home") : Url.Action("IndexAdmin", "Home");
+}
+<a  class="text-dark mb-2 cursor-pointer"
+        onclick="if(document.referrer){ window.history.back(); } else { window.location.href='@fallbackUrl'; }">
+    ⬅ Back
+</a>

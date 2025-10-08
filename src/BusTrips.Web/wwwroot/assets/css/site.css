@@ -1,0 +1,290 @@
+/*body { background-color: #f8fafc; }
+.card { border-radius: 1rem; }
+
+*/
+
+.page-content {
+    padding-top: 53px !important
+}
+
+/* Booking widget polish + hero alignment */
+.booking-card.card {
+    border-radius: 1rem;
+}
+
+#busBookingForm .form-control, #busBookingForm .form-select {
+    border-radius: .75rem;
+}
+
+.booking-card.glass {
+    background: rgba(255,255,255,.82);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+/* keep the widget compact on lg+ while full-width on mobile */
+.booking-wrap {
+    max-width: 1140px;
+    margin-left: auto;
+    margin-right: auto;
+}
+/* icon-only rounded button size aligned with inputs */
+.btn-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+/* tighten labels like your screenshot */
+#busBookingForm .form-label {
+    font-weight: 600;
+    color: var(--vz-heading-color);
+}
+/* space hero title + widget nicely */
+.hero-section .booking-wrap {
+    margin-top: 20px;
+}
+
+@media (min-width: 992px) {
+    .hero-section .booking-wrap {
+        margin-top: 28px;
+    }
+}
+
+
+/* Remove bullet points */
+.validation-summary ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.validation-summary li {
+    margin: 0;
+}
+
+/* Hide the whole block (icon + text) when no errors */
+.validation-summary-valid {
+    display: none;
+}
+
+@keyframes rotateOnce {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(-5000deg);
+    }
+}
+
+.rotate-once {
+    animation: rotateOnce 5s linear; /* duration & speed */
+}
+
+
+
+.customTable {
+    table-layout: auto; /* let table adjust naturally */
+    width: 100%; /* fit container */
+}
+
+    .customTable thead {
+        background-color: #eff5ff;
+    }
+
+    .customTable th, .customTable td {
+        max-width: 20ch; /* limit cell width */
+        white-space: nowrap; /* single line */
+        overflow: hidden;
+        text-overflow: ellipsis; /* show ... */
+    }
+
+
+#logoutConfirmModal .modal-content {
+    border-radius: 12px;
+    padding: 20px;
+}
+
+#logoutConfirmModal .modal-body h5 {
+    font-weight: 600;
+}
+
+#logoutConfirmModal .modal-body p {
+    font-size: 14px;
+    margin-top: 0;
+    color: #6c757d;
+}
+
+#logoutConfirmModal .btn-primary {
+    background-color: #6f42c1;
+    border-color: #6f42c1;
+}
+
+#logoutConfirmModal .btn-danger {
+    background-color: #fd625e;
+    border-color: #fd625e;
+}
+
+button[disabled].btn,
+.btn.disabled,
+.btn:disabled {
+    cursor: not-allowed !important;
+    pointer-events: all !important; /* so tooltip still works */
+}
+
+/* Allow caret only for input and textarea */
+input, textarea {
+    caret-color: auto !important;
+}
+
+/* Hide caret for all other elements */
+*:not(input):not(textarea) {
+    caret-color: transparent !important;
+}
+
+.custom-caret {
+    caret-color: transparent !important;
+}
+/* Unique wrapper */
+.custom-status-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Switch container */
+.custom-toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 25px;
+}
+
+    /* Hide checkbox */
+    .custom-toggle-switch input {
+        display: none;
+    }
+
+/* Background track */
+.custom-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #e5e5e5;
+    border-radius: 30px;
+    transition: 0.4s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 6px;
+    font-size: 14px;
+    color: #999;
+}
+
+    /* Icons */
+    .custom-slider .custom-on {
+        color: white;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .custom-slider .custom-off {
+        color: #666;
+        opacity: 1;
+        transition: opacity 0.3s;
+    }
+
+/* Active state */
+.custom-toggle-switch input:checked + .custom-slider {
+    background-color: #28a745; /* green when active */
+}
+
+    .custom-toggle-switch input:checked + .custom-slider .custom-on {
+        opacity: 1;
+    }
+
+    .custom-toggle-switch input:checked + .custom-slider .custom-off {
+        opacity: 0;
+    }
+
+/* Knob */
+.custom-slider:before {
+    content: "";
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.4s;
+}
+
+.custom-toggle-switch input:checked + .custom-slider:before {
+    transform: translateX(30px);
+}
+
+/* Labels */
+.custom-label-active,
+.custom-label-inactive {
+    font-size: 14px;
+    color: #888;
+}
+
+.custom-toggle-switch input:checked ~ .custom-label-active {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.custom-toggle-switch input:not(:checked) ~ .custom-label-inactive {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+.required-asterisk {
+    color: red;
+    margin-left: 2px;
+}
+
+.fc-event {
+    cursor: pointer;
+}
+
+/* Ensure delete modal is always on top */
+#deleteConfirmModal {
+    z-index: 2000 !important; /* higher than Bootstrap modal (default 1050) */
+}
+
+/* Optional: overlay to ensure it covers everything */
+#deleteConfirmModal .modal-backdrop {
+    z-index: 1999 !important;
+}
+
+
+/* Disable text selection for the whole page */
+body {
+    user-select: none; /* Standard */
+    -webkit-user-select: none; /* Chrome/Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE/Edge */
+}
+
+/* Allow selection for dynamic content */
+.selectable {
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+}
+/* Always allow selection in table headers and cells */
+td, th {
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+}
+

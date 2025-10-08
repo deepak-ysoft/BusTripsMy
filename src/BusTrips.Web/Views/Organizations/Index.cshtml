@@ -1,0 +1,416 @@
+@using BusTrips.Web.Models
+@model OrganizationLists
+
+@{
+    ViewData["Title"] = "Organizations";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <!-- Nav tabs -->
+        <div class=" d-flex justify-content-between align-items-center profile-wrapper bg-light p-2 border rounded">
+            <ul class="nav nav-pills animation-nav gap-2 gap-lg-3 flex-grow-1" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link fs-14 active" data-bs-toggle="tab" href="#own-org-tab" role="tab">
+                        <i class="ri-airplay-fill d-inline-block d-md-none"></i>
+                        <span class="d-none d-md-inline-block">My Organization</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fs-14" data-bs-toggle="tab" href="#invited-org-tab" role="tab">
+                        <i class="ri-airplay-fill d-inline-block d-md-none"></i>
+                        <span class="d-none d-md-inline-block">Invited</span>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Button aligned at end -->
+            <button type="button" class="btn btn-sm btn-primary createOrgBtn me-3" id="createOrgBtn">
+                Create New Organization
+            </button>
+        </div>
+
+        <div class="tab-content mt-2">
+            <div class="tab-pane fade show active" id="own-org-tab" role="tabpanel">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card border-0">
+                            <div class="card-body  pt-0">
+                                <div id="myOrganizationsContainer">
+                                    @await Html.PartialAsync("_OrganizationsList", Model.MyOrg)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="invited-org-tab" role="tabpanel">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card border-0">
+                            <div class="card-body  pt-0">
+                                <div id="invitedOrganizationsContainer">
+                                    @await Html.PartialAsync("_OrganizationsList", Model.InvitedOrg)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Group Modal -->
+<div class="modal fade" id="groupModal" tabindex="-1" aria-labelledby="groupModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-light pb-2">
+                <h5 class="modal-title" id="groupModalLabel">Create Group</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="groupForm" asp-action="AddEditGroup" asp-controller="Organizations" method="post">
+                    <input type="hidden" id="OrgId" name="OrgId" />
+                    <input type="hidden" id="Id" name="Id" />
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="GroupName" class="form-label">Group Name <sup class='required-asterisk'>*</sup></label>
+                            <input type="text" class="form-control" id="GroupName" name="GroupName" placeholder="Enter group name" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="ShortName" class="form-label">Short Name (5 chars) <sup class='required-asterisk'>*</sup></label>
+                            <input type="text" class="form-control" id="ShortName" name="ShortName" placeholder="Enter group short name" maxlength="5" required />
+                        </div>
+                        <div class="col-12">
+                            <label for="Description" class="form-label">Description</label>
+                            <textarea class="form-control" id="Description" name="Description" placeholder="Enter Description" rows="3" required></textarea>
+                        </div>
+                        <div class="col-md-6 show-fields">
+                            <label for="IsActive" class="form-label">Status</label>
+                            <select class="form-select" id="IsActive" name="IsActive">
+                                <option value="true">Active</option>
+                                <option value="false">Inactive</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 show-fields" id="deactiveReasonWrapper" style="display:none;">
+                            <label for="DeActiveDiscription" class="form-label">Inactive Reason</label>
+                            <input type="text" class="form-control" id="DeActiveDiscription" name="DeActiveDiscription" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="groupForm" class="btn btn-sm btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Organization Modal -->
+<div class="modal fade" id="organizationModal" tabindex="-1" aria-labelledby="organizationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-light pb-2">
+                <h5 class="modal-title" id="organizationModalLabel">Create Organization</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="organizationForm" asp-action="AddEditOrg" asp-controller="Organizations" method="post">
+                    <input type="hidden" id="OrganizationId" name="Id" />
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="OrgName" class="form-label">Organization Name <sup class='required-asterisk'>*</sup></label>
+                            <input type="text" class="form-control" id="OrgName" name="OrgName" placeholder="Enter organization name" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="ShortName" class="form-label">Short Name <sup class='required-asterisk'>*</sup></label>
+                            <input type="text" class="form-control" id="OrgShortName" name="ShortName" placeholder="Enter organization short name" maxlength="5" required />
+                        </div>
+                        <div class="col-md-6 show-Org-fields">
+                            <label for="IsActive" class="form-label">Status</label>
+                            <select class="form-select" id="OrgIsActive" name="IsActive">
+                                <option value="true">Active</option>
+                                <option value="false">Inactive</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6" id="deactiveReasonWrapperOrg" style="display:none;">
+                            <label for="DeActiveDiscription" class="form-label">Inactive Reason</label>
+                            <input type="text" class="form-control" id="OrgDeActiveDiscription" placeholder="Enter inactive reason" name="DeActiveDiscription" />
+                        </div>
+
+                        <!-- Primary Org -->
+                        <div class="col-md-12" id="primaryOrgWrapper">
+                            <div class="form-check">
+                                <!-- give it the name -->
+                                <input type="checkbox" class="form-check-input"
+                                       id="OrgIsPrimary" name="IsPrimary" value="true" />
+                                <label class="form-check-label" for="OrgIsPrimary">Primary Organization?</label>
+                            </div>
+                        </div>
+
+                        <!-- Fallback hidden -->
+                        <input type="hidden" name="IsPrimary" value="false" />
+
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="organizationForm" class="btn btn-sm btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+         function initTooltips() {
+            // Select all elements with data-bs-toggle="tooltip"
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        }
+
+        // Run on page load
+        document.addEventListener("DOMContentLoaded", function () {
+            initTooltips();
+        });
+
+        // Also re-run after Ajax loads
+        $(document).ajaxComplete(function () {
+            initTooltips();
+        });
+
+            function togglePrimaryField(show, oldValue) {
+            if (show) {
+                $("#primaryOrgWrapper").show();
+
+                // Sync checkbox state with old value
+                $("#OrgIsPrimary").prop("checked", oldValue === true || oldValue === "true");
+                $("#OrgIsPrimaryHidden").prop("disabled", true); // don’t submit hidden fallback
+            } else {
+                $("#primaryOrgWrapper").hide();
+
+                // Save old value into hidden field
+                $("#OrgIsPrimaryHidden").val(oldValue ? "true" : "false");
+                $("#OrgIsPrimaryHidden").prop("disabled", false); // submit fallback
+            }
+        }
+                // Keep checkbox & hidden field in sync when user toggles manually
+            $("#OrgIsPrimary").on("change", function () {
+            if ($(this).is(":checked")) {
+                $("#OrgIsPrimaryHidden").val("true");
+            } else {
+                $("#OrgIsPrimaryHidden").val("false");
+            }
+        });
+
+            // default: show only for My Organization
+            toggleCreateButton($("#own-org-tab").hasClass("active"));
+
+            $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+                let target = $(e.target).attr("href"); // "#own-org-tab" or "#invited-org-tab"
+                toggleCreateButton(target === "#own-org-tab");
+            });
+
+            function toggleCreateButton(show) {
+                if (show) {
+                    $("#createOrgBtn").show();
+                    $(".active-status").show();
+                } else {
+                    $("#createOrgBtn").hide();
+                    $(".active-status").hide();
+                }
+            }
+
+            // -------------------------
+            // GROUP CREATE / EDIT
+            // -------------------------
+            $("#IsActive").on("change", function () {
+                if ($(this).val() === "false") {
+                    $("#deactiveReasonWrapper").show();
+                } else {
+                    $("#deactiveReasonWrapper").hide();
+                    $("#DeActiveDiscription").val("");
+                }
+            });
+
+            $(document).on("click", ".createGroupBtn", function () {
+                let orgId = $(this).data("orgid");
+                $("#groupModalLabel").text("Create Group");
+                $("#groupForm")[0].reset();
+                $("#Id").val("");
+                $("#OrgId").val(orgId);
+                $(".show-fields").hide();
+                $("#deactiveReasonWrapper").hide();
+                $("#groupModal").modal("show");
+            });
+
+            $(document).on("click", ".editGroupBtn", function () {
+            let groupId = $(this).data("id");
+            $.get("/Organizations/GetGroup", { id: groupId }, function (data) {
+                $("#groupModalLabel").text("Edit Group");
+                $("#Id").val(data.id);
+                $("#OrgId").val(data.orgId);
+                $("#GroupName").val(data.groupName);
+                $("#ShortName").val(data.shortName);
+                $("#Description").val(data.description);
+                $("#IsActive").val(data.isActive.toString()).trigger("change");
+                $("#DeActiveDiscription").val(data.deActiveDiscription);
+
+                // Show fields only in edit mode
+                $(".show-fields").show();
+                if (data.isActive === false) {
+                    $("#deactiveReasonWrapper").show();
+                } else {
+                    $("#deactiveReasonWrapper").hide();
+                }
+
+                $("#groupModal").modal("show");
+            });
+        });
+
+            $("#groupForm").submit(function (e) {
+                e.preventDefault();
+                let currentOrgId = $("#OrgId").val();
+
+                $.ajax({
+                    url: $(this).attr("action"),
+                    type: "POST",
+                    data: $(this).serialize(),
+                    success: function (res) {
+                        if (res.isSuccess) {
+                            $("#groupModal").modal("hide");
+                            showAlert(true, "Group saved successfully!");
+
+                            // detect active tab at time of save
+                            let activeTab = $(".tab-pane.active").attr("id");
+                            if (activeTab === "own-org-tab") {
+                               $("#myOrganizationsContainer").load("/Organizations/GetMyOrganizationsPartial", function () {
+                                $("#orgBody_" + currentOrgId).collapse("show");
+                                initDataTables();
+                            });
+
+                            } else if (activeTab === "invited-org-tab") {
+                                $("#invitedOrganizationsContainer").load("/Organizations/GetInvitedOrganizationsPartial", function () {
+                                    $("#orgBody_" + currentOrgId).collapse("show");
+                                    initDataTables();
+                                });
+                            }
+
+                        } else {
+                            showAlert(false, res.message);
+                        }
+                    },
+                    error: function (err) {
+                        showAlert(false, err.message);
+                    }
+                });
+            });
+
+            // -------------------------
+            // ORGANIZATION CREATE / EDIT
+            // -------------------------
+            $("#OrgIsActive").on("change", function () {
+                if ($(this).val() === "false") {
+                    $("#deactiveReasonWrapperOrg").show();
+                } else {
+                    $("#deactiveReasonWrapperOrg").hide();
+                    $("#OrgDeActiveDiscription").val("");
+                }
+            });
+
+            // In create org
+            $(document).on("click", ".createOrgBtn", function () {
+            $("#organizationModalLabel").text("Create Organization");
+            $("#organizationForm")[0].reset();
+            $("#OrganizationId").val("");
+
+            $(".show-Org-fields").hide();
+            $("#deactiveReasonWrapperOrg").hide();
+
+            let activeTab = $(".tab-pane.active").attr("id");
+            if (activeTab === "own-org-tab") {
+                togglePrimaryField(true, false); // default unchecked
+            } else {
+                togglePrimaryField(false, false); // hide for invited tab
+            }
+
+            $("#organizationModal").modal("show");
+        });
+
+            // In edit org
+            $(document).on("click", ".editOrgBtn", function () {
+            let orgId = $(this).data("id");
+            $.get("/Organizations/GetOrganization", { id: orgId }, function (data) {
+                $("#organizationModalLabel").text("Edit Organization");
+                $("#OrganizationId").val(data.id);
+                $("#OrgName").val(data.orgName);
+                $("#OrgShortName").val(data.shortName);
+                $("#OrgIsActive").val(data.isActive.toString()).trigger("change");
+                $("#OrgDeActiveDiscription").val(data.deActiveDiscription);
+
+                $(".show-Org-fields").show();
+                if (data.isActive === false) {
+                    $("#deactiveReasonWrapperOrg").show();
+                } else {
+                    $("#deactiveReasonWrapperOrg").hide();
+                }
+
+                let activeTab = $(".tab-pane.active").attr("id");
+                togglePrimaryField(activeTab === "own-org-tab", data.isPrimary);
+
+                $("#organizationModal").modal("show");
+            });
+        });
+
+            $("#organizationForm").submit(function (e) {
+                e.preventDefault();
+                let currentOrgId = $("#OrganizationId").val();
+
+                $.ajax({
+                    url: $(this).attr("action"),
+                    type: "POST",
+                    data: $(this).serialize(),
+                    success: function (res) {
+                        if (res.isSuccess) {
+                            $("#organizationModal").modal("hide");
+                            showAlert(true, "Organization saved successfully!");
+
+                            // detect active tab at time of save
+                            let activeTab = $(".tab-pane.active").attr("id");
+                            if (activeTab === "own-org-tab") {
+                               $("#myOrganizationsContainer").load("/Organizations/GetMyOrganizationsPartial", function () {
+                                if (currentOrgId) {
+                                        $("#orgBody_" + currentOrgId).collapse("show");
+                                    }
+                                    initDataTables();
+                                });
+                            } else if (activeTab === "invited-org-tab") {
+                                $("#invitedOrganizationsContainer").load("/Organizations/GetInvitedOrganizationsPartial", function () {
+                                    if (currentOrgId) {
+                                        $("#orgBody_" + currentOrgId).collapse("show");
+                                    }
+                                    initDataTables();
+                                });
+                            }
+
+                        } else {
+                            showAlert(false, res.message);
+                        }
+                    },
+                    error: function () {
+                        showAlert(false, err.message);
+                    }
+                });
+            });
+        });
+    </script>
+}

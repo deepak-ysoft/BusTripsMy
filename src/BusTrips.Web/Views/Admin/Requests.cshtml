@@ -1,0 +1,42 @@
+﻿@using BusTrips.Web.Models
+@model IEnumerable<dynamic>
+
+@{
+    ViewData["Title"] = "Requests";
+}
+
+<h2>Unassigned Trips</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>TripId</th>
+            <th>Assignments</th>
+            <th>Status</th>
+            <th>DriverId</th>
+            <th>DriverName</th>
+            <th>DriverEmail</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var t in Model)
+        {
+            <tr>
+                <td>@t.TripId</td>
+                <td>@t.Assignments</td>
+                <td>@t.Status</td>
+                <td>@t.DriverId</td>
+                <td>@t.DriverName</td>
+                <td>@t.DriverEmail</td>
+                <td class="d-flex gap-3">
+                    <form method="post" asp-action="AssignTrip" asp-controller="Driver" asp-route-id="@t.Id">
+                        <button class="btn btn-sm btn-outline-success">Assign</button>
+                    </form>
+                    <form method="post" asp-action="RequestAssignment" asp-controller="Driver" asp-route-tripId="@t.Id">
+                        <button class="btn btn-sm btn-outline-danger">Reject</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
