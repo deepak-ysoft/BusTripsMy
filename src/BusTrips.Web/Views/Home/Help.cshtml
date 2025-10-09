@@ -1,0 +1,230 @@
+﻿@{
+    ViewBag.Title = "Help & Services";
+}
+
+<h1 class="text-center mb-4">Platform Overview & User Guide</h1>
+<hr class="mb-5" />
+
+<div class="container-fluid my-5">
+
+    <!-- DRIVER SECTION -->
+    <div class="row align-items-center mb-5">
+        <div class="col-md-6">
+            <h2>Driver Dashboard & Responsibilities</h2>
+            <p>
+                <strong>Drivers</strong> are responsible for transporting teams safely and efficiently.
+                Their dashboard provides a comprehensive view of all upcoming and completed trips assigned to them.
+            </p>
+            <ul>
+                <li>View all <strong>upcoming trips</strong> and trip details.</li>
+                <li>Apply for trips that currently have no assigned drivers.</li>
+                <li>Track trips with multiple drivers and ensure coordination with secondary drivers.</li>
+                <li>Receive <strong>real-time notifications</strong> via email and the website for new trip assignments or updates.</li>
+                <li>Update personal profile including contact information and preferences.</li>
+                <li>Use the <strong>Contact Us</strong> tab to reach out to administrators directly; responses are sent via email.</li>
+            </ul>
+            <p>
+                Drivers must request removal from assigned trips if necessary; they cannot remove themselves directly.
+                The system ensures that driver assignments and trip notifications are managed transparently for accountability.
+            </p>
+        </div>
+        <div class="col-md-6">
+            <div class="image-stack">
+                <div class="stack-img-container">
+                    <img src="/assets/images/help-img/dr-1.png" class="stack-img" alt="Driver Dashboard">
+                    <div class="overlay">Driver Dashboard Overview</div>
+                </div>
+                <div class="stack-img-container">
+                    <img src="/assets/images/help-img/dr-2.webp" class="stack-img" alt="Trip Assignments">
+                    <div class="overlay">Trip Assignments & Notifications</div>
+                </div>
+                <div class="stack-img-container">
+                    <img src="/assets/images/help-img/dr-3.jpg" class="stack-img" alt="Profile Management">
+                    <div class="overlay">Profile & Contact Management</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- USER SECTION -->
+    <div class="row align-items-center mb-5 pt-5 bg-light  rounded-5">
+        <div class="col-md-6 order-md-2">
+            <h2>User Dashboard & Organization Management</h2>
+            <p>
+                <strong>Users</strong> manage organizations, teams, and trips within the system.
+                On first login, users are guided through a <strong>wizard-style setup</strong> to define their role:
+            </p>
+            <ul>
+                <li>If managing a <strong>single team</strong>: Only the team is created; a hidden <strong>Default Organization</strong> is assigned in the background.</li>
+                <li>If managing an <strong>organization</strong>: Users can create the organization, define teams under it, and manage multiple trips per team.</li>
+                <li>Create, edit, and view trips with complete trip details (dates, drivers, equipment, and notes).</li>
+                <li>Invite users to organizations and teams, and assign permissions: Creator, Admin, Manager, or Read-Only.</li>
+                <li>Filter and sort trips by date, status, driver, or team for better planning and management.</li>
+                <li>Update personal profile and manage notifications efficiently.</li>
+                <li>Contact support via the <strong>Contact Us</strong> tab; admins respond directly through email.</li>
+            </ul>
+            <p>
+                Users have complete control over trip management, including assigning drivers and equipment, uploading documents, and tracking trip status (To Quote, Draft, Committed, or Cancelled).
+                The dashboard also allows calendar views to visualize trip schedules and avoid conflicts.
+            </p>
+        </div>
+        <div class="col-md-6 order-md-1">
+            <div class="image-stack">
+                <div class="stack-img-container">
+                    <img src="/assets/images/help-img/org-1.png" class="stack-img" alt="User Dashboard">
+                    <div class="overlay">User Dashboard & Trip Overview</div>
+                </div>
+                <div class="stack-img-container">
+                    <img src="/assets/images/help-img/org-2.jpg" class="stack-img" alt="Organization Management">
+                    <div class="overlay">Organization & Team Management</div>
+                </div>
+                <div class="stack-img-container">
+                    <img src="/assets/images/help-img/org-3.png" class="stack-img" alt="Permissions & Invitations">
+                    <div class="overlay">Permissions & Member Roles</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ORGANIZATION / TEAM SECTION -->
+    <div class="row align-items-center mb-5 pt-5">
+        <div class="col-md-6">
+            <h2>Organizations & Teams</h2>
+            <p>
+                <strong>Organizations</strong> are top-level entities that house multiple teams.
+                A <strong>Team</strong> (or Group) is a subset of an organization, each with its own trips, members, and assigned drivers.
+            </p>
+            <ul>
+                <li>Users can create, edit, and manage organizations and teams.</li>
+                <li>Teams inherit their parent organization automatically.</li>
+                <li>Trips are always associated with a team; users can view trip schedules for individual teams or entire organizations.</li>
+                <li>Assign members and roles to ensure proper access and control for each team.</li>
+            </ul>
+            <p>
+                Teams and organizations are fully integrated into the dashboard and calendar views, providing a clear structure for trip planning and member management.
+            </p>
+        </div>
+        <div class="col-md-6">
+            <div class="image-stack">
+                <div class="stack-img-container">
+                    <img src="/assets/images/help-img/tr-1.jpg" class="stack-img" alt="Organization Overview">
+                    <div class="overlay">Organization Overview</div>
+                </div>
+                <div class="stack-img-container">
+                    <img src="/assets/images/help-img/tr-2.jpg" class="stack-img" alt="Team Management">
+                    <div class="overlay">Team Management & Assignments</div>
+                </div>
+                <div class="stack-img-container">
+                    <img src="/assets/images/help-img/tr-3.jpg" class="stack-img" alt="Trip Coordination">
+                    <div class="overlay">Trip Scheduling & Coordination</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    .image-stack {
+        position: relative;
+        height: 250px;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+    }
+
+    .stack-img-container {
+        position: absolute;
+        max-width: 380px;
+        border-radius: 10px;
+        transition: transform 0.4s, z-index 0.4s;
+    }
+
+    .stack-img {
+        width: 100%;
+        border-radius: 10px;
+        box-shadow: 0 15px 25px rgba(0,0,0,0.3);
+    }
+
+    .stack-img-container .overlay {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        color: white;
+        font-weight: bold;
+        background: rgba(0,0,0,0.6);
+        padding: 5px 12px;
+        border-radius: 5px;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .stack-img-container:hover .overlay {
+        opacity: 1;
+    }
+
+    .image-stack .stack-img-container:nth-child(1) {
+        top: 0;
+        left: 0;
+        transform: rotate(-5deg);
+        z-index: 3;
+    }
+
+    .image-stack .stack-img-container:nth-child(2) {
+        top: 20px;
+        left: 199px;
+        transform: rotate(3deg);
+        z-index: 2;
+    }
+
+    .image-stack .stack-img-container:nth-child(3) {
+        top: -50px;
+        left: 40px;
+        transform: rotate(-2deg);
+        z-index: 1;
+    }
+
+    .stack-img-container:hover {
+        transform: scale(1.07) rotate(0deg);
+        z-index: 10;
+    }
+
+    @@media (max-width: 768px) {
+        .image-stack
+
+    {
+        height: 400px;
+    }
+
+    .image-stack .stack-img-container:nth-child(1) {
+        left: 5px;
+        top: 0px;
+    }
+
+    .image-stack .stack-img-container:nth-child(2) {
+        left: 15px;
+        top: 120px;
+    }
+
+    .image-stack .stack-img-container:nth-child(3) {
+        left: 5px;
+        top: 270px;
+    }
+
+    }
+</style>
+
+<script>
+    document.querySelectorAll('.image-stack').forEach(stack => {
+        const items = stack.querySelectorAll('.stack-img-container');
+        items.forEach(item => {
+            item.addEventListener('click', () => {
+                let maxZ = 0;
+                items.forEach(i => maxZ = Math.max(maxZ, parseInt(window.getComputedStyle(i).zIndex)));
+                item.style.zIndex = maxZ + 1;
+                item.style.transform = "scale(1.1) rotate(0deg)";
+                setTimeout(() => item.style.transform = "", 300);
+            });
+        });
+    });
+</script>

@@ -132,7 +132,13 @@ public class HomeController : Controller
     }
 
     [HttpGet]
-    public IActionResult Services() // Contact Us form view
+    public IActionResult Services() // Services view
+    {
+        return View();
+    }
+
+    [HttpGet]
+    public IActionResult Help() // Help view
     {
         return View();
     }
