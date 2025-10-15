@@ -20,12 +20,12 @@
     }
     ViewData["Title"] = "Edit Profile";
 }
-<div class="profile-foreground position-relative mt-n3 mx-n4">
+<div class="profile-foreground position-relative mt-n5 mx-n4">
     <div class="profile-wid-bg">
         <img src="~/assets/images/profile-bg.jpg" alt="" class="profile-wid-img" />
     </div>
 </div>
-<div class="pt-4 mb-4 mb-lg-3 pb-lg-4 mx-3 profile-wrapper">
+<div class="pt-5 mb-4 mb-lg-3 pb-lg-4 mx-3 profile-wrapper">
     <div class="row">
         <div class="card col-12 col-md-3">
             <div class="card-body p-4">
@@ -267,11 +267,11 @@
                             showAlert(res.message, res.isSuccess);
                             window.location.href = '@Url.Action("UserProfileSetting", "Account")';
                         }else {
-                            focusFirstInvalidField(res.errors, "#editUserForm");
-
-                            if (res.message) {
+                             if (res.message) {
                                 showAlert(res.message, false);
-                            }
+                            }else{focusFirstInvalidField(res.errors, "#editUserForm");}
+
+                           
                         }
                     },
                     error: function () {
@@ -306,11 +306,11 @@
                         $("#changePasswordForm")[0].reset();
                     } 
                     else {
-                        focusFirstInvalidField(res.errors, "#changePasswordForm");
-
                         if (res.message) {
                             showAlert(res.message, false);
-                        }
+                        }else{
+                        focusFirstInvalidField(res.errors, "#changePasswordForm");}
+
                     }
                 }).always(function () {
                     const loader = document.getElementById('body-loader');

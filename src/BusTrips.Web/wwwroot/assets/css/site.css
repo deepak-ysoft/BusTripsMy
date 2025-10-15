@@ -100,6 +100,14 @@
         text-overflow: ellipsis; /* show ... */
     }
 
+.table-hover > tbody > tr:hover > * {
+    background-color: #d1ecf1 !important; /* Keep same light blue shade */
+    color: black !important;
+}
+
+.table-info {
+    --vz-table-hover-bg: #d1ecf1;
+}
 
 #logoutConfirmModal .modal-content {
     border-radius: 12px;
@@ -259,10 +267,10 @@ input, textarea {
     z-index: 2000 !important; /* higher than Bootstrap modal (default 1050) */
 }
 
-/* Optional: overlay to ensure it covers everything */
-#deleteConfirmModal .modal-backdrop {
-    z-index: 1999 !important;
-}
+    /* Optional: overlay to ensure it covers everything */
+    #deleteConfirmModal .modal-backdrop {
+        z-index: 1999 !important;
+    }
 
 
 /* Disable text selection for the whole page */
@@ -287,4 +295,14 @@ td, th {
     -moz-user-select: text !important;
     -ms-user-select: text !important;
 }
+.no-scrollbar {
+    height: calc(100vh - 200px);
+    overflow-y: auto;
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
 
+    .no-scrollbar::-webkit-scrollbar {
+        display: none; /* Chrome, Safari and Opera */
+    }

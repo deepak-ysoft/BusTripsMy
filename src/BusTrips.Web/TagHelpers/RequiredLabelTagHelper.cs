@@ -10,7 +10,7 @@ namespace BusTrips.Web.TagHelpers
     public class RequiredLabelTagHelper : TagHelper
     {
         [HtmlAttributeName("asp-for")]
-        public ModelExpression For { get; set; } = default!;
+        public ModelExpression For { get; set; }
 
         // Check if the property has a [Required] attribute and append an asterisk if it does
         public override void Process(TagHelperContext context, TagHelperOutput output)

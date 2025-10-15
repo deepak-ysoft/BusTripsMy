@@ -89,11 +89,11 @@ namespace BusTrips.Web.Models
     public class EquipmentListVm
     {
         public Guid Id { get; set; }
-        public string BusNumber { get; set; } = default!;
-        public string LicensePlate { get; set; } = default!;
-        public string IssuingProvince { get; set; } = default!;
-        public string Manufacturer { get; set; } = default!;
-        public string Model { get; set; } = default!;
+        public string BusNumber { get; set; }
+        public string LicensePlate { get; set; }
+        public string IssuingProvince { get; set; }
+        public string Manufacturer { get; set; }
+        public string Model { get; set; }
         public int Year { get; set; }
         public bool IsActive { get; set; }
     }
@@ -101,16 +101,16 @@ namespace BusTrips.Web.Models
     public class EquipmentDetailVm
     {
         public Guid Id { get; set; }
-        public string BusNumber { get; set; } = default!;
-        public string Vin { get; set; } = default!;
-        public string LicensePlate { get; set; } = default!;
-        public string IssuingProvince { get; set; } = default!;
-        public string Manufacturer { get; set; } = default!;
-        public string Model { get; set; } = default!;
+        public string BusNumber { get; set; }
+        public string Vin { get; set; }
+        public string LicensePlate { get; set; }
+        public string IssuingProvince { get; set; }
+        public string Manufacturer { get; set; }
+        public string Model { get; set; }
         public int Year { get; set; }
-        public string Color { get; set; } = default!;
+        public string Color { get; set; }
         public int SeatingCapacity { get; set; }
-        public string VehicleType { get; set; } = default!;
+        public string VehicleType { get; set; }
         public decimal Length { get; set; }
         public decimal Height { get; set; }
         public decimal GrossVehicleWeight { get; set; }

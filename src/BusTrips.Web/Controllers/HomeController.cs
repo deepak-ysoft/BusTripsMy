@@ -1,20 +1,27 @@
 ﻿using BusTrips.Domain.Entities;
+using BusTrips.Web.Hubs;
 using BusTrips.Web.Interface;
 using BusTrips.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace BusTrips.Web.Controllers;
 
 public class HomeController : Controller
 {
     private readonly ITripService _tripService;
+    private readonly IAccountService _accountService;
+    private readonly INotificationService _notificationService;
 
-    public HomeController(ITripService tripService)
+    public HomeController(ITripService tripService, IAccountService accountService, INotificationService notificationService)
     {
         _tripService = tripService;
+        _accountService = accountService;
+        _notificationService = notificationService;
     }
     private Guid CurrentUserId => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
@@ -114,7 +121,7 @@ public class HomeController : Controller
     }
 
     [HttpPost]
-    public IActionResult SubmitContactUs(ContactUsVM model) // Handle Contact Us form submission
+    public async Task<IActionResult> SubmitContactUs(ContactUsVM model)
     {
         if (!ModelState.IsValid)
         {
@@ -124,11 +131,25 @@ public class HomeController : Controller
                     kvp => kvp.Key,
                     kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
                 );
-
             return Json(new { isSuccess = false, errors });
         }
 
-        return Json(new { isSuccess = true, message = "Thank you! Your message has been sent successfully." });
+        var res = await _accountService.ContactUsAsync(model);
+
+        if (res.IsSuccess)
+        {
+            // Send notification to all admins Group("Users")
+            //await _hubContext.Clients.All.SendAsync("ReceiveNotification", new
+            //{
+            //    Title = "New Contact Message",
+            //    Message = $"{model.Name} sent a message: {model.Subject}",
+            //    Date = DateTime.Now.ToString("g")
+            //});
+
+            await _notificationService.SaveAndSendNotification("New Contact Email",$"{model.Name} sent a email for   {model.Subject}", model.Message, null, "Admin");
+        }
+
+        return Json(new { isSuccess = res.IsSuccess, message = res.Message });
     }
 
     [HttpGet]

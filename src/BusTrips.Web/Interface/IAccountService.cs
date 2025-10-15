@@ -9,8 +9,14 @@ namespace BusTrips.Web.Interface
         Task<ResponseVM<string>> LoginAsync(LoginVm vm, string role);
         Task LogoutAsync();
         Task<ResponseVM<AppUser>> AddUserAsync(AddUserVm vm, Guid userId);
+
+        #region TermsAndCondition
         Task<ResponseVM<List<TermsAndConditionResponseVM>>> GetTermsAndConditionsAsync(string role);
         Task<ResponseVM<string>> AddEditTermsAndConditionAsync(TermsAndConditionRequestVM vm, Guid userId);
-        Task<ResponseVM<string>> DeleteTermsAndConditionAsync(Guid id,Guid userId);
+        Task<ResponseVM<string>> DeleteTermsAndConditionAsync(Guid id, Guid userId);
+
+        #endregion
+
+        Task<ResponseVM<string>> ContactUsAsync(ContactUsVM vm);
     }
 }

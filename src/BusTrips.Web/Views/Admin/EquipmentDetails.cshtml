@@ -3,13 +3,14 @@
 @{
     ViewData["Title"] = "Equipment Details";
 }
+<div class="mt-n1">
+    <a asp-action="Equipments" class="text-dark  cursor-pointer"> ⬅ Back</a>
 
-<a asp-action="Equipments" class="text-dark  cursor-pointer"> ⬅ Back</a>
+    <input type="hidden" id="equipmentId" value="@Model.Id" />
 
-<input type="hidden" id="equipmentId" value="@Model.Id" />
-
-<div id="equipmentDetailsContainer">
-    @await Html.PartialAsync("_EquipmentDetails", Model)
+    <div id="equipmentDetailsContainer">
+        @await Html.PartialAsync("_EquipmentDetails", Model)
+    </div>
 </div>
 
 <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
@@ -22,12 +23,12 @@
                 </button>
             </div>
             <!-- Image -->
-               <!-- Image -->
+            <!-- Image -->
             <div class="modal-body p-0 d-flex justify-content-center align-items-center my-2" style="height:70vh;">
                 <img id="modalImage" src="" class="img-fluid" style="width:70vw; height:70vh; object-fit:contain;" />
             </div>
 
-          <!-- Delete Button -->
+            <!-- Delete Button -->
             <button id="deleteImageBtn" type="button"
                     class="btn btn-danger"
                     style="z-index:1051; font-weight:bold;">

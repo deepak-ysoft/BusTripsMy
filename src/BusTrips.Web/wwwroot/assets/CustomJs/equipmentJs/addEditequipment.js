@@ -72,10 +72,10 @@
                     window.location.href = "/Admin/Equipments";
                 }
                 else {
-                    focusFirstInvalidField(res.errors, "#equipmentForm");
-
                     if (res.message) {
                         showAlert(res.message, false);
+                    } else {
+                        focusFirstInvalidField(res.errors, "#equipmentForm");
                     }
                 }
             },

@@ -7,27 +7,27 @@ namespace BusTrips.Web.Models;
 public class LoginVm
 {
     [Required, EmailAddress]
-    public string Email { get; set; } = default!;
+    public string Email { get; set; }
     [Required, DataType(DataType.Password)]
-    public string Password { get; set; } = default!;
+    public string Password { get; set; }
 }
 
 public class RegisterVm
 {
     [Required]
     [RegularExpression("^[a-zA-Z0-9._%+-]+@[a-zA-Z.-]+\\.[a-zA-Z]{2,}$", ErrorMessage = "Please enter a valid email address.")]
-    public string Email { get; set; } = default!;
+    public string Email { get; set; }
     [DisplayName("Secondary Email")]
     [RegularExpression("^[a-zA-Z0-9._%+-]+@[a-zA-Z.-]+\\.[a-zA-Z]{2,}$", ErrorMessage = "Please enter a valid email address.")]
     [EmailAddress] public string? SecondaryEmail { get; set; }
     [DisplayName("First Name")]
-    [Required] public string FirstName { get; set; } = default!;
+    [Required] public string FirstName { get; set; }
     [DisplayName("Last Name")]
-    [Required] public string LastName { get; set; } = default!;
+    [Required] public string LastName { get; set; }
     [DisplayName("Phone Number")]
     [RegularExpression(@"^(?!\+?(\d)\1{5,14}$)\+?[0-9]{6,15}$",
     ErrorMessage = "Enter a valid mobile number (not all digits the same, with or without country code)")]
-    [Required] public string PhoneNumber { get; set; } = default!;
+    [Required] public string PhoneNumber { get; set; }
     [DisplayName("Secondary Phone Number")]
     [RegularExpression(@"^(?!\+?(\d)\1{5,14}$)\+?[0-9]{6,15}$",
     ErrorMessage = "Enter a valid mobile number (not all digits the same, with or without country code)")]
@@ -35,7 +35,7 @@ public class RegisterVm
 
     [Required, DataType(DataType.Password)]
     [RegularExpression("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*#?&]{8,16}$", ErrorMessage = "Must Enter At Least 8 and Max 16 characters and must include Uppercase, Lowercase, digit and Special character")]
-    public string Password { get; set; } = default!;
+    public string Password { get; set; }
     [DisplayName("License Number")]
     public string? LicenseNumber { get; set; }
     [DisplayName("License Province")]
@@ -46,16 +46,16 @@ public class AddUserVm
 {
     public Guid OrgId { get; set; }
     [RegularExpression("^[a-zA-Z0-9._%+-]+@[a-zA-Z.-]+\\.[a-zA-Z]{2,}$", ErrorMessage = "Please enter a valid email address.")]
-    [Required, EmailAddress] public string Email { get; set; } = default!;
+    [Required, EmailAddress] public string Email { get; set; }
     [DisplayName("First Name")]
-    [Required] public string FirstName { get; set; } = default!;
+    [Required] public string FirstName { get; set; }
     [DisplayName("Last Name")]
-    [Required] public string LastName { get; set; } = default!;
+    [Required] public string LastName { get; set; }
     [DisplayName("Phone Number")]
     [RegularExpression(@"^(?!\+?(\d)\1{5,14}$)\+?[0-9]{6,15}$",
     ErrorMessage = "Enter a valid mobile number (not all digits the same, with or without country code)")]
-    [Required] public string PhoneNumber { get; set; } = default!;
-    [Required, DataType(DataType.Password)] public string Password { get; set; } = default!;
+    [Required] public string PhoneNumber { get; set; }
+    [Required, DataType(DataType.Password)] public string Password { get; set; }
     [Required]
     public MemberTypeEnum? MemberType { get; set; }
     public string? returnUrl { get; set; }
@@ -66,22 +66,22 @@ public class UserRequestVm
     public Guid? UserId { get; set; }
     [Required, EmailAddress]
     [RegularExpression("^[a-zA-Z0-9._%+-]+@[a-zA-Z.-]+\\.[a-zA-Z]{2,}$", ErrorMessage = "Please enter a valid email address.")]
-    public string Email { get; set; } = default!;
+    public string Email { get; set; }
     [DisplayName("Secondary Email")]
     [EmailAddress]
     [RegularExpression("^[a-zA-Z0-9._%+-]+@[a-zA-Z.-]+\\.[a-zA-Z]{2,}$", ErrorMessage = "Please enter a valid email address.")]
     public string? SecondaryEmail { get; set; }
     [DisplayName("First Name")]
     [Required]
-    public string FirstName { get; set; } = default!;
+    public string FirstName { get; set; }
     [DisplayName("Last Name")]
     [Required]
-    public string LastName { get; set; } = default!;
+    public string LastName { get; set; }
     [DisplayName("Phone Number")]
     [Required]
     [RegularExpression(@"^(?!\+?(\d)\1{5,14}$)\+?[0-9]{6,15}$",
     ErrorMessage = "Enter a valid mobile number (not all digits the same, with or without country code)")]
-    public string PhoneNumber { get; set; } = default!;
+    public string PhoneNumber { get; set; }
     [DisplayName("Secondary Phone Number")]
     [RegularExpression(@"^(?!\+?(\d)\1{5,14}$)\+?[0-9]{6,15}$",
     ErrorMessage = "Enter a valid mobile number (not all digits the same, with or without country code)")]
@@ -115,11 +115,11 @@ public class UserRequestVm
 public class UserResponseVm
 {
     public Guid UserId { get; set; }
-    public string Email { get; set; } = default!;
+    public string Email { get; set; }
     public string? SecondaryEmail { get; set; }
-    public string FirstName { get; set; } = default!;
-    public string LastName { get; set; } = default!;
-    public string PhoneNumber { get; set; } = default!;
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string PhoneNumber { get; set; }
     public string? PhoneNumber2 { get; set; }
     public string? LicenseNumber { get; set; }
     public string? LicenseProvince { get; set; }

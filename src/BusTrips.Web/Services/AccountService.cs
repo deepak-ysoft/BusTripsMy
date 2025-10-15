@@ -7,6 +7,7 @@ using BusTrips.Web.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 
 namespace BusTrips.Web.Services
@@ -31,7 +32,7 @@ namespace BusTrips.Web.Services
         }
 
         // Registers a new user with the specified role (default is "User").
-        public async Task<ResponseVM<AppUser>> RegisterAsync(RegisterVm vm, string role = "User") 
+        public async Task<ResponseVM<AppUser>> RegisterAsync(RegisterVm vm, string role = "User")
         {
             if (vm.AcceptedUserTerms == false)
             {
@@ -58,7 +59,7 @@ namespace BusTrips.Web.Services
                     return new ResponseVM<AppUser> { IsSuccess = false, Message = "This phone number is already linked to another account. Please use a different number." };
             }
 
-            var user = new AppUser 
+            var user = new AppUser
             {
                 UserName = vm.Email,
                 Email = vm.Email,
@@ -182,7 +183,7 @@ namespace BusTrips.Web.Services
                 {
                     OrganizationId = vm.OrgId,
                     AppUserId = user.Id,
-                    MemberType = vm.MemberType?? MemberTypeEnum.ReadOnly,
+                    MemberType = vm.MemberType ?? MemberTypeEnum.ReadOnly,
                     IsInvited = true,
                     CreatedBy = userId,
                     UpdatedBy = userId,
@@ -195,7 +196,7 @@ namespace BusTrips.Web.Services
         public async Task<ResponseVM<string>> LoginAsync(LoginVm vm, string pathRole) // pathRole is the role required to access the requested path
         {
             // Find user by email
-            var user = await _users.Users.FirstOrDefaultAsync(u => u.Email == vm.Email); 
+            var user = await _users.Users.FirstOrDefaultAsync(u => u.Email == vm.Email);
 
             if (user is null)
             {
@@ -254,9 +255,11 @@ namespace BusTrips.Web.Services
             await _signIn.SignOutAsync();
         }
 
+        #region TermsAndCondition
+
         public async Task<ResponseVM<List<TermsAndConditionResponseVM>>> GetTermsAndConditionsAsync(string role) // role can be "User" or "Driver"
         {
-            var terms = await _db.TermsAndConditions.OrderByDescending(x=>x.CreatedAt) 
+            var terms = await _db.TermsAndConditions.OrderByDescending(x => x.CreatedAt)
                 .Where(t => !t.IsDeleted && t.TermsFor == role)
                 .Select(t => new TermsAndConditionResponseVM
                 {
@@ -308,7 +311,7 @@ namespace BusTrips.Web.Services
                 await _db.TermsAndConditions.AddAsync(terms);
             }
             await _db.SaveChangesAsync();
-            return new ResponseVM<string> { IsSuccess = true, Message = "Terms and Conditions saved successfully." }; 
+            return new ResponseVM<string> { IsSuccess = true, Message = "Terms and Conditions saved successfully." };
         }
 
         public async Task<ResponseVM<string>> DeleteTermsAndConditionAsync(Guid id, Guid userId) // userId is the admin/creator making the change
@@ -325,5 +328,73 @@ namespace BusTrips.Web.Services
             return new ResponseVM<string> { IsSuccess = true, Message = "Terms and Conditions deleted successfully." };
         }
 
+        #endregion
+        public async Task<ResponseVM<string>> ContactUsAsync(ContactUsVM vm)
+        {
+            if (!new EmailAddressAttribute().IsValid(vm.Email))
+            {
+                return new ResponseVM<string>
+                {
+                    IsSuccess = false,
+                    Message = "Please enter a valid email address."
+                };
+            }
+
+            var adminEmail = _config["AdminContactEmail"];
+            if (string.IsNullOrWhiteSpace(adminEmail))
+            {
+                return new ResponseVM<string>
+                {
+                    IsSuccess = false,
+                    Message = "Unable to send message at this time. Please try again later."
+                };
+            }
+
+            var emailContent = $@"
+            <p><strong>Name:</strong> {System.Net.WebUtility.HtmlEncode(vm.Name)}</p>
+            <p><strong>Email:</strong> {System.Net.WebUtility.HtmlEncode(vm.Email)}</p>
+            <p><strong>Subject:</strong> {System.Net.WebUtility.HtmlEncode(vm.Subject)}</p>
+            <p><strong>Message:</strong></p>
+            <p>{System.Net.WebUtility.HtmlEncode(vm.Message)}</p>";
+
+            try
+            {
+                // Step 1: Try sending the email
+                await _emailSender.SendEmailAsync(
+                    adminEmail,
+                    $"Contact Us Form Submission: {vm.Subject}",
+                    emailContent
+                );
+
+                // Step 2: If email send succeeds, save entry in DB
+                var contactEntry = new ContactUs
+                {
+                    Id = Guid.NewGuid(),
+                    Name = vm.Name,
+                    Email = vm.Email,
+                    Subject = vm.Subject,
+                    Message = vm.Message,
+
+                };
+
+                _db.ContactUsEntries.Add(contactEntry);
+                await _db.SaveChangesAsync();
+
+                // Step 3: Return success
+                return new ResponseVM<string>
+                {
+                    IsSuccess = true,
+                    Message = "Your message has been sent successfully. We will get back to you shortly."
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseVM<string>
+                {
+                    IsSuccess = false,
+                    Message = "There was an error sending your message. Please try again later."
+                };
+            }
+        }
     }
 }

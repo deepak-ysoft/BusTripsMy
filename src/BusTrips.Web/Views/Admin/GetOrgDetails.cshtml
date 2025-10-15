@@ -3,7 +3,7 @@
     ViewData["Title"] = "Organization Details";
 }
 
-<div id="orgDetailsWrapper" data-org-id="@Model.Id">
+<div id="orgDetailsWrapper" class="mt-n1" data-org-id="@Model.Id">
     <a class="text-dark mb-2 cursor-pointer" href="/Admin/Organizations">⬅ Back</a>
 
     <div class="profile-foreground position-relative mx-n4 mt-1">
@@ -175,6 +175,7 @@
                 <div class="modal-body">
                     <input type="hidden" id="Id" name="Id" />
                     <input type="hidden" id="OrgId" name="OrgId" />
+                    <input type="hidden" id="UserId" name="UserId" />
                     <div class="row">
 
                         <div class="mb-3 col-md-6">

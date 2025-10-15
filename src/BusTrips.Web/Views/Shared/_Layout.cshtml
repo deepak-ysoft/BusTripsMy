@@ -60,7 +60,7 @@
 
         <div class="main-content">
             <div class="page-content">
-                <div class="container-fluid">
+                <div class="container-fluid pt-4 mt-2">
 
                     @Html.Partial("~/Views/Shared/_page_title.cshtml")
 
@@ -177,6 +177,7 @@
                     if (settings.noLoader) xhr.noLoader = true;
                 }
             });
+
             // ---------------- Form submission loader ----------------
             document.addEventListener('submit', function (e) {
                 const form = e.target;
@@ -255,7 +256,6 @@
             }
         })();
     </script>
-
     @RenderSection("Scripts", required: false)
 </body>
 </html>

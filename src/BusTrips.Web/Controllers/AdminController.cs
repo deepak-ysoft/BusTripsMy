@@ -3,13 +3,16 @@ using BusTrips.Domain.Entities;
 using BusTrips.Infrastructure.Identity;
 using BusTrips.Web.Interface;
 using BusTrips.Web.Models;
+using BusTrips.Web.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol.Plugins;
 using System.Security.Claims;
@@ -28,6 +31,7 @@ public class AdminController : Controller
     private readonly IOrganizationPermissionService _orgPermissionService;
     private readonly IAccountService _account;
     private readonly IEmailSender _emailSender;
+    private readonly INotificationService _notificationService;
 
     public AdminController(
         IUserService userService,
@@ -35,7 +39,10 @@ public class AdminController : Controller
         IOrganizationService organizationService,
         ITripService tripService,
         IEquipmentService equipmentService,
-        IOrganizationPermissionService orgPermissionService, UserManager<AppUser> users, IAccountService account, IEmailSender emailSender)
+        IOrganizationPermissionService orgPermissionService,
+        UserManager<AppUser> users,
+        IAccountService account,
+        IEmailSender emailSender, INotificationService notificationService)
     {
         _userService = userService;
         _driverService = driverService;
@@ -46,6 +53,7 @@ public class AdminController : Controller
         _users = users;
         _account = account;
         _emailSender = emailSender;
+        _notificationService = notificationService;
     }
 
     private Guid CurrentUserId => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -53,11 +61,15 @@ public class AdminController : Controller
     #region Users
 
     // Users page
-    public IActionResult Users() => View(); // just load the view, data comes via AJAX
-
+    public IActionResult Users() // just load the view, data comes via AJAX
+    {
+        ViewData["ActiveMenu"] = "Users";        // Parent menu
+        ViewData["ActiveChild"] = "Users";     // Child menu you want active
+        return View();
+    }
     // JSON endpoint for DataTable
     [HttpGet]
-    public async Task<IActionResult> GetUsersJson()  
+    public async Task<IActionResult> GetUsersJson()
     {
         var users = await _userService.GetAllUsersAsync();
         users ??= new List<UserVM>();
@@ -87,9 +99,22 @@ public class AdminController : Controller
     public async Task<IActionResult> EditUser(Guid userId)
     {
         var user = await _users.FindByIdAsync(userId.ToString());
+
+
         if (user == null) return RedirectToAction("Users");
 
         var driver = await _driverService.GetDriverByIdAsync(userId);
+
+        if (driver == null)
+        {
+            ViewData["ActiveMenu"] = "Users";        // Parent menu
+            ViewData["ActiveChild"] = "Users";     // Child menu you want active
+        }
+        else
+        {
+            ViewData["ActiveMenu"] = "Users";        // Parent menu
+            ViewData["ActiveChild"] = "Drivers";      // Child menu you want active
+        }
 
         var vm = new UserRequestVm
         {
@@ -224,12 +249,14 @@ public class AdminController : Controller
 
     public async Task<IActionResult> Drivers(string? status = null) // Drivers page
     {
+        ViewData["ActiveMenu"] = "Users";        // Parent menu
+        ViewData["ActiveChild"] = "Drivers";      // Child menu you want active
         var list = await _driverService.GetDriversAsync(status);
         return View(list);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Approve(Guid userId) 
+    public async Task<IActionResult> Approve(Guid userId)
     {
         var response = await _driverService.ApproveDriverAsync(userId); //  approve driver by userId 
         return RedirectToAction(nameof(UserDetails), new { userId = userId, requestFrom = "Drivers" });
@@ -249,6 +276,7 @@ public class AdminController : Controller
     [HttpGet]
     public IActionResult Organizations() // Organizations page
     {
+        ViewData["ActiveMenu"] = "Organizations";        // Parent menu
         return View();
     }
 
@@ -290,7 +318,7 @@ public class AdminController : Controller
     }
 
     // Members
-    [HttpGet("/Admin/OrgMembersJson")] 
+    [HttpGet("/Admin/OrgMembersJson")]
     public async Task<IActionResult> OrgMembersJson(Guid orgId) // AJAX endpoint for members tab data
     {
         var result = await _organizationService.GetOrganizationMembersAsync(orgId); // CurrentUserId is optional here
@@ -322,9 +350,9 @@ public class AdminController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> ChangeMemberRole(Guid memberShipId, MemberTypeEnum newRole) 
+    public async Task<IActionResult> ChangeMemberRole(Guid memberShipId, MemberTypeEnum newRole)
     {
-        var response = await _organizationService.ChangeMemberRoleAsync(memberShipId, newRole); 
+        var response = await _organizationService.ChangeMemberRoleAsync(memberShipId, newRole);
         return Json(new { isSuccess = response.IsSuccess, message = response.Message });
     }
 
@@ -444,17 +472,17 @@ public class AdminController : Controller
         });
     }
 
-    [HttpGet]
-    public async Task<IActionResult> OrganizationDetails(Guid id, Guid userId) // Details page for Razor view
-    {
-        ViewData["ActiveMenu"] = "Users";
-        ViewData["ActiveChild"] = "Users";
+    //[HttpGet]
+    //public async Task<IActionResult> OrganizationDetails(Guid id, Guid userId) // Details page for Razor view
+    //{
+    //    ViewData["ActiveMenu"] = "Users";
+    //    ViewData["ActiveChild"] = "Users";
 
-        var items = await _organizationService.GetUserOrganizationDetailsAsync(id, CurrentUserId);
-        ViewBag.DetailsUserId = userId;
+    //    var items = await _organizationService.GetUserOrganizationDetailsAsync(id, CurrentUserId);
+    //    ViewBag.DetailsUserId = userId;
 
-        return View(items);
-    }
+    //    return View(items);
+    //}
 
     [HttpGet]
     public async Task<IActionResult> GetUserOrganizations(Guid userId) // AJAX endpoint for user's organizations partial
@@ -477,40 +505,57 @@ public class AdminController : Controller
         if (!ModelState.IsValid)
             return Json(new { isSuccess = false, message = "Invalid input" });
         var response = await _organizationService.AddEditOrganizationByAdminAsync(vm, vm.userId.Value); // vm.userId is the admin's userId here
+
+        if (response.IsSuccess)
+        {
+            var message = $"Organization updated by admin : {User.Identity.Name}";
+            var fullMessage = $"Organization Name : {vm.OrgName}, {message}.";
+
+            await _notificationService.SaveAndSendNotification("Organization Updated For You By Admin", message, fullMessage, vm.userId, null); // Notification for specific user
+        }
+
         return Json(new { isSuccess = response.IsSuccess, message = response.Message });
     }
 
     [HttpDelete]
     public async Task<IActionResult> DeleteOrganization(Guid id) // id is orgId here
     {
-        var response = await _organizationService.DeleteOrganizationAsync(id); 
+        var response = await _organizationService.DeleteOrganizationAsync(id);
+
+        if (response.IsSuccess)
+        {
+            var message = $"Organization deleted by admin : {User.Identity.Name}";
+            var fullMessage = $"Organization Name : {response.Data.OrgName}, {message}.";
+
+            await _notificationService.SaveAndSendNotification("A Organization Deleted By Admin", message, fullMessage, response.Data.CreatedBy, null); // Notification for specific user
+        }
         return Json(new { isSuccess = response.IsSuccess, message = response.Message });
     }
 
     #region Org Permissions
 
-    [HttpGet]
-    public async Task<IActionResult> GetPermission(Guid orgId) // Permissions page for Razor view
-    {
-        ViewData["ActiveMenu"] = "Users";
-        ViewData["ActiveChild"] = "Users";
+    //[HttpGet]
+    //public async Task<IActionResult> GetPermission(Guid orgId) // Permissions page for Razor view
+    //{
+    //    ViewData["ActiveMenu"] = "Users";
+    //    ViewData["ActiveChild"] = "Users";
 
-        var permissions = await _orgPermissionService.GetPermissionsAsync(orgId); // get all permissions for this org
+    //    var permissions = await _orgPermissionService.GetPermissionsAsync(orgId); // get all permissions for this org
 
-        // fetch user orgs for dropdown
-        //var userOrgs = await _organizationService.GetUserOrganizationsAsync(CurrentUserId);
+    //    // fetch user orgs for dropdown
+    //    //var userOrgs = await _organizationService.GetUserOrganizationsAsync(CurrentUserId);
 
-        var vm = new PermissionPageVM
-        {
-            OrgId = orgId,
-            OrgName = permissions.FirstOrDefault()?.OrgName ?? string.Empty, // take name from first record
-            Permissions = permissions,
-            //Organizations = userOrgs
-        };
+    //    var vm = new PermissionPageVM
+    //    {
+    //        OrgId = orgId,
+    //        OrgName = permissions.FirstOrDefault()?.OrgName ?? string.Empty, // take name from first record
+    //        Permissions = permissions,
+    //        //Organizations = userOrgs
+    //    };
 
-        ViewData["ActiveMenu"] = "Organizations";
-        return View(vm);
-    }
+    //    ViewData["ActiveMenu"] = "Organizations";
+    //    return View(vm);
+    //}
 
     // AJAX endpoint to load permissions JSON
     [HttpGet]
@@ -591,6 +636,18 @@ public class AdminController : Controller
 
         var response = await _organizationService.AddEditGroupAsync(vm, CurrentUserId); // CurrentUserId is admin's userId here
 
+        if (response.IsSuccess)
+        {
+            var getOrg = await _organizationService.GetOrganizationAsync(vm.OrgId.Value);
+
+            var mess = !vm.Id.HasValue ? "created" : "updated";
+            var title = !vm.Id.HasValue ? "New Group Created For You By Admin" : "Group Updated For You By Admin";
+            var message = $"A Group {mess} for you, Group Name : {vm.GroupName} {mess} by {User.Identity.Name}";
+            var fullMessage = $"{message}. Organization Name is {getOrg.OrgName}.";
+
+            await _notificationService.SaveAndSendNotification(title, message, fullMessage, getOrg.userId, null); // Notification for specific user
+        }
+
         return Json(new
         {
             isSuccess = response.IsSuccess,
@@ -601,7 +658,15 @@ public class AdminController : Controller
     [HttpDelete]
     public async Task<IActionResult> DeleteGroup(Guid id) // id is groupId here
     {
-        var response = await _organizationService.DeleteGroupAsync(id); 
+        var response = await _organizationService.DeleteGroupAsync(id);
+        if (response.IsSuccess)
+        {
+            var message = $"A Group Deleted By Admin, Group Name : {response.Data.groupName} deleted by {User.Identity.Name}";
+            var fullMessage = $"{message}. Organization Name is {response.Data.OrgName}.";
+
+            await _notificationService.SaveAndSendNotification("A Group Deleted By Admin", message, fullMessage, response.Data.userId, null); // Notification for specific user
+        }
+
         return Json(new { isSuccess = response.IsSuccess, message = response.Message });
     }
 
@@ -663,7 +728,7 @@ public class AdminController : Controller
         if (arrivalDateTime <= departureDateTime)
             ModelState.AddModelError(nameof(vm.DestinationArrivalDate), "Arrival date/time must be later than departure date/time.");
 
-        if (!ModelState.IsValid) 
+        if (!ModelState.IsValid)
         {
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
@@ -680,6 +745,17 @@ public class AdminController : Controller
         }
 
         var response = await _tripService.CreateTripAsync(vm, CurrentUserId); // CurrentUserId is admin's userId here 
+
+        if (response.IsSuccess)
+        {
+            var getGroup = await _organizationService.GetGroupAsync(vm.groupId.Value);
+
+            var message = $"Trip of {vm.DestinationCity}, {vm.DestinationLocation} to {vm.DestinationLocation}, {vm.DestinationCity} created by {User.Identity.Name}";
+
+            var fullMessage = $"Trip Name : {vm.TripName}, {message}. Departure: {departureDateTime:g} Arrival: {arrivalDateTime:g} Passengers: {vm.NumberOfPassengers}, Organization Name is {getGroup.Data.OrgName} and Group Name is {getGroup.Data.GroupName}.";
+
+            await _notificationService.SaveAndSendNotification("New Trip Created For You By Admin", message, fullMessage, vm.userId, null); // Notification for specific user
+        }
 
         if (!response.IsSuccess)
         {
@@ -699,7 +775,7 @@ public class AdminController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> EditTrip(Guid id, Guid userId, string returnUrl,string? controller) // GET for Edit Trip page
+    public async Task<IActionResult> EditTrip(Guid id, Guid userId, string returnUrl, string? controller) // GET for Edit Trip page
     {
         if (returnUrl == "/Admin/Trips")
         {
@@ -731,7 +807,7 @@ public class AdminController : Controller
 
     [HttpPost]
     public async Task<IActionResult> EditTrip(Guid id, CreateTripVm vm) // POST for Edit Trip page
-    { 
+    {
         ViewBag.IsEdit = true;
         if (vm.NumberOfPassengers == null || vm.NumberOfPassengers == 0)
             ModelState.AddModelError("NumberOfPassengers", "Number of passengers must be greater than 0.");
@@ -760,6 +836,17 @@ public class AdminController : Controller
 
         var response = await _tripService.UpdateTripAsync(id, vm, vm.userId ?? CurrentUserId); // vm.userId is the target user's ID here
 
+        if (response.IsSuccess)
+        {
+            var message = $"Trip of {vm.DestinationCity}, {vm.DestinationLocation} to {vm.DestinationLocation}, {vm.DestinationCity} updated by {User.Identity.Name}";
+
+            var getGroup = await _organizationService.GetGroupAsync(vm.groupId.Value);
+
+            var fullMessage = $"Trip Name : {vm.TripName}, {message}. Departure: {departureDateTime:g} Arrival: {arrivalDateTime:g} Passengers: {vm.NumberOfPassengers}, Organization Name is {getGroup.Data.OrgName} and Group Name is {getGroup.Data.GroupName}.";
+
+            await _notificationService.SaveAndSendNotification("Your Trip Updated By Admin", message, fullMessage, vm.userId, null); // Notification for specific user
+        }
+
         if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
         {
             return Json(new
@@ -776,7 +863,19 @@ public class AdminController : Controller
     [HttpDelete]
     public async Task<IActionResult> DeleteTrip(Guid id) // id is tripId here
     {
-        var response = await _tripService.DeleteTripAsync(id); 
+        var response = await _tripService.DeleteTripAsync(id);
+
+        if (response.IsSuccess)
+        {
+            var getGroup = await _organizationService.GetGroupAsync(response.Data.Group.Id);
+            var getOrg = await _organizationService.GetOrganizationAsync(response.Data.OrganizationId.Value);
+
+            var message = $"Trip of {response.Data.DestinationCity}, {response.Data.DestinationLocation} to {response.Data.DestinationLocation}, {response.Data.DestinationCity} deleted by {User.Identity.Name}";
+
+            var fullMessage = $"Trip Name : {response.Data.TripName}, {message}. Passengers: {response.Data.NumberOfPassengers}, Organization Name is {getGroup.Data.OrgName} and Group Name is {getGroup.Data.GroupName}.";
+
+            await _notificationService.SaveAndSendNotification("Your Trip Is Deleted By Admin", message, fullMessage, getOrg.userId, null); // Notification for specific user
+        }
 
         return Json(new
         {
@@ -943,12 +1042,11 @@ public class AdminController : Controller
         return Json(new { isSuccess = response.IsSuccess, message = response.Message });
     }
 
-
     [HttpGet]
     public async Task<IActionResult> EditEquipment(Guid id) // GET for Edit Equipment page
     {
         var vm = await _equipmentService.GetEquipmentByIdAsync(id); // fetch equipment details by id
-        if (vm is null) return RedirectToAction(nameof(Equipments)); 
+        if (vm is null) return RedirectToAction(nameof(Equipments));
         ViewBag.IsEdit = true;
         ViewData["ActiveMenu"] = "Equipments";
         return View("AddEquipment", vm);
@@ -1013,6 +1111,7 @@ public class AdminController : Controller
         var response = await _equipmentService.UpdateEquipmentAsync(vm, CurrentUserId); // CurrentUserId is admin's userId here
         return Json(new { isSuccess = response.IsSuccess, message = response.Message });
     }
+
     [HttpDelete]
     public async Task<IActionResult> DeleteEquipment(Guid id) // id is equipmentId here
     {
@@ -1023,14 +1122,14 @@ public class AdminController : Controller
     [HttpDelete]
     public async Task<IActionResult> DeleteEquipmentImage(Guid id, string imgUrl) // id is equipmentId here
     {
-        var response = await _equipmentService.DeleteEquipmentImageAsync(id, imgUrl); 
+        var response = await _equipmentService.DeleteEquipmentImageAsync(id, imgUrl);
         return Json(response);
     }
 
     [HttpDelete]
     public async Task<IActionResult> DeleteEquipmentDocument(Guid id) // id is documentId here
     {
-        var response = await _equipmentService.DeleteEquipmentDocumentAsync(id); 
+        var response = await _equipmentService.DeleteEquipmentDocumentAsync(id);
         return Json(response);
     }
 
@@ -1083,6 +1182,18 @@ public class AdminController : Controller
 
         return true;
     }
+
+    #endregion
+
+    #region Notifications
+
+    //[HttpGet]
+    //public async Task<IActionResult> Notifications() // Notifications page for Razor view
+    //{
+    //    ViewData["ActiveMenu"] = "Notifications";
+    //    var notifications = await _notificationService.GetAllNotificationsAsync(); // fetch all notifications for admin
+    //    return View(notifications);
+    //}
 
     #endregion
 }

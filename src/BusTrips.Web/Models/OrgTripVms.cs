@@ -67,7 +67,7 @@ public class OrgMemberDetailsResponseVM
 
 public class CreateOrganizationVm
 {
-    public Guid? Id { get; set; } = default!;
+    public Guid? Id { get; set; }
     public Guid? userId { get; set; }
 
     [Display(Name ="Organization Name")]
@@ -87,7 +87,7 @@ public class InviteManagerVm
 {
     public Guid OrganizationId { get; set; }
     [RegularExpression("^[a-zA-Z0-9._%+-]+@[a-zA-Z.-]+\\.[a-zA-Z]{2,}$", ErrorMessage = "Please enter a valid email address.")]
-    [Required, EmailAddress] public string Email { get; set; } = default!;
+    [Required, EmailAddress] public string Email { get; set; }
 }
 public class TripListVm
 {
@@ -164,20 +164,20 @@ public class TripFilterVM
 public class TripDetailsResponseVm
 {
     public Guid Id { get; set; }
-    public string UserId { get; set; } = default!;
-    public string UserName { get; set; } = default!;
-    public string Email { get; set; } = default!;
-    public string TripName { get; set; } = default!;
-    public string Status { get; set; } = default!;
-    public string DepartureDate { get; set; } = default!;
-    public string DepartureTime { get; set; } = default!;
-    public string StartCity { get; set; } = default!;
-    public string StartLocation { get; set; } = default!;
+    public string UserId { get; set; }
+    public string UserName { get; set; }
+    public string Email { get; set; }
+    public string TripName { get; set; }
+    public string Status { get; set; }
+    public string DepartureDate { get; set; }
+    public string DepartureTime { get; set; }
+    public string StartCity { get; set; }
+    public string StartLocation { get; set; }
     public int? NumberOfPassengers { get; set; }
-    public string DestinationCity { get; set; } = default!;
-    public string DestinationLocation { get; set; } = default!;
-    public string DestinationArrivalDate { get; set; } = default!;
-    public string DestinationArrivalTime { get; set; } = default!;
+    public string DestinationCity { get; set; }
+    public string DestinationLocation { get; set; }
+    public string DestinationArrivalDate { get; set; }
+    public string DestinationArrivalTime { get; set; }
     public string? Notes { get; set; }
 
     public int? QuotedPrice { get; set; }
@@ -229,15 +229,15 @@ public class CreateTripVm
     [Display(Name = "Departure Time")]
     [Required] public TimeOnly DepartureTime { get; set; } = TimeOnly.FromDateTime(DateTime.Now);
     [Display(Name = "Start City")]
-    [Required] public string StartCity { get; set; } = default!;
+    [Required] public string StartCity { get; set; }
     [Display(Name = "Start Location")]
-    [Required] public string StartLocation { get; set; } = default!;
+    [Required] public string StartLocation { get; set; }
     [Display(Name = "Number Of Passengers")]
     [Required] public int? NumberOfPassengers { get; set; }
     [Display(Name = "Destination City")]
-    [Required] public string DestinationCity { get; set; } = default!;
+    [Required] public string DestinationCity { get; set; }
     [Display(Name = "Destination Location")]
-    [Required] public string DestinationLocation { get; set; } = default!;
+    [Required] public string DestinationLocation { get; set; }
     [Display(Name = "Total Trip Days")]
     [Required]public int? TripDays { get; set; }
     [Display(Name = "Destination Arrival Date")]
@@ -261,7 +261,7 @@ public class OrgDetailsVm
     public string? DeActiveDiscription { get; set; }
     public bool IsPrimary { get; set; }
 
-    public CreatorVm Creator { get; set; } = default!;
+    public CreatorVm Creator { get; set; }
     //public List<GroupListItemVm> Groups { get; set; } = new();
     public List<PermissionResponseVM> Permissions { get; set; } = new();
     //public List<OrgMembersListVM>? Members { get; set; } = new();

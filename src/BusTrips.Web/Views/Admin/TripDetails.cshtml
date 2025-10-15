@@ -17,12 +17,13 @@
         returnUrl = "/Admin/GroupDetails?groupId=" + Model.GourpId + "&userId=" + Model.UserId;
     }
 }
-<a class="text-dark mb-2 cursor-pointer" href="@returnUrl">⬅ Back</a>
+<div class="mt-n1">
+    <a class="text-dark mb-2 cursor-pointer" href="@returnUrl">⬅ Back</a>
 
-
-<div class="profile-foreground position-relative mx-n4 mt-1">
-    <div class="profile-wid-bg">
-        <img src="~/assets/images/profile-bg.jpg" alt="" class="profile-wid-img" />
+    <div class="profile-foreground position-relative mx-n4 mt-1">
+        <div class="profile-wid-bg">
+            <img src="~/assets/images/profile-bg.jpg" alt="" class="profile-wid-img" />
+        </div>
     </div>
 </div>
 
@@ -101,7 +102,7 @@
                                 </div>
                                 @if (Model.Status == "Quoted" || Model.Status == "Draft" || Model.Status == "Rejected")
                                 {
-                                    <a href="/Admin/ApproveOrRejectTrip?tripId=@Model.Id&status=Approve&reqFrom=@reqFrom"  class="btn btn-primary btn-label waves-effect waves-light rounded-pill">
+                                    <a href="/Admin/ApproveOrRejectTrip?tripId=@Model.Id&status=Approve&reqFrom=@reqFrom" class="btn btn-primary btn-label waves-effect waves-light rounded-pill">
                                         <i class="ri-user-smile-line label-icon align-middle rounded-pill fs-16 me-2"></i>
                                         Approve
                                     </a>

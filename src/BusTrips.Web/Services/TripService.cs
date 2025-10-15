@@ -304,7 +304,6 @@ namespace BusTrips.Web.Services
                 newTripName = $"{baseName} ({counter})";
             }
 
-
             return new CreateTripVm
             {
                 groupId = trip.GroupId,
@@ -328,8 +327,8 @@ namespace BusTrips.Web.Services
         // Create a new trip with uniqueness check
         public async Task<ResponseVM<string>> CreateTripAsync(CreateTripVm vm, Guid userId)
         {
-            if (await _db.Trips.AnyAsync(o => o.TripName == vm.TripName && o.GroupId == vm.groupId)) return new ResponseVM<string> { IsSuccess = false, Message = "Trip Name must be unique" };
-            var group = await _db.Groups.FirstOrDefaultAsync(o => o.Id == vm.groupId);
+            if (await _db.Trips.AnyAsync(o => o.TripName == vm.TripName && o.GroupId == vm.groupId && !o.IsDeleted)) return new ResponseVM<string> { IsSuccess = false, Message = "Trip Name must be unique" };
+            var group = await _db.Groups.Include(x => x.Org).FirstOrDefaultAsync(o => o.Id == vm.groupId);
             if (group == null) return new ResponseVM<string> { IsSuccess = false, Message = "Group not found" };
 
             if (vm.TripDays != null || vm.TripDays != 0)
@@ -358,12 +357,13 @@ namespace BusTrips.Web.Services
                 DestinationArrivalTime = vm.DestinationArrivalTime,
                 Notes = vm.Notes,
                 Status = vm.SaveAsDraft ? TripStatus.Draft : TripStatus.Quoted,
+                CreatedForId = group.Org.CreatedForId,
                 CreatedBy = userId,
                 UpdatedBy = userId
             };
-            _db.Trips.Add(trip);
+            await _db.Trips.AddAsync(trip);
             int res = await _db.SaveChangesAsync();
-            if (res > 0) return new ResponseVM<string> { IsSuccess = true, Message = "Trip Created Successfully!" };
+            if (res > 0) return new ResponseVM<string> { IsSuccess = true, Message = "Trip Created Successfully!", Data = group.OrgId.ToString() };
             return new ResponseVM<string> { IsSuccess = false, Message = "Failed to create trip." };
         }
 
@@ -412,14 +412,14 @@ namespace BusTrips.Web.Services
         }
 
         // Soft delete a trip by setting IsDeleted flag
-        public async Task<ResponseVM<string>> DeleteTripAsync(Guid id)
+        public async Task<ResponseVM<Trip>> DeleteTripAsync(Guid id)
         {
             var trip = await _db.Trips.FindAsync(id);
-            if (trip is null || trip.IsDeleted) return new ResponseVM<string> { IsSuccess = false, Message = "Trip Not found" };
+            if (trip is null || trip.IsDeleted) return new ResponseVM<Trip> { IsSuccess = false, Message = "Trip Not found" };
             trip.IsDeleted = true;
             int res = await _db.SaveChangesAsync();
-            if (res > 0) return new ResponseVM<string> { IsSuccess = true, Message = "Trip Deleted Successfully!" };
-            return new ResponseVM<string> { IsSuccess = false, Message = "Failed to delete trip." };
+            if (res > 0) return new ResponseVM<Trip> { IsSuccess = true, Message = "Trip Deleted Successfully!", Data = trip };
+            return new ResponseVM<Trip> { IsSuccess = false, Message = "Failed to delete trip." };
         }
 
         // Cancel a trip by updating its status to Canceled
@@ -472,6 +472,7 @@ namespace BusTrips.Web.Services
                 DestinationArrivalTime = trip.DestinationArrivalTime,
                 Notes = trip.Notes,
                 Status = TripStatus.Quoted,
+                CreatedForId = trip.CreatedForId,
                 CreatedBy = userId,
                 CreatedAt = DateTime.Now
             };

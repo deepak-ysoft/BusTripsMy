@@ -9,13 +9,15 @@
     var returnUrl = Url.Action("GroupDetails", "Admin", new { groupId = Model.Group.Id, userId = safeUserId });
     var createTripUrl = Url.Action("CreateTrip", "Admin", new { groupId = Model.Group.Id, userId = safeUserId, returnUrl, controller = "Admin" });
 }
-<a class="text-dark mb-2 cursor-pointer" href="/Admin/GetOrgDetails?orgId=@Model.Org.Id&tab=more_info">
-    ⬅ Back
-</a>
+<div class="mt-n1">
+    <a class="text-dark mb-2 cursor-pointer" href="/Admin/GetOrgDetails?orgId=@Model.Org.Id&tab=more_info">
+        ⬅ Back
+    </a>
 
-<div class="profile-foreground position-relative mx-n4 mt-1">
-    <div class="profile-wid-bg">
-        <img src="~/assets/images/profile-bg.jpg" alt="" class="profile-wid-img" />
+    <div class="profile-foreground position-relative mx-n4 mt-1">
+        <div class="profile-wid-bg">
+            <img src="~/assets/images/profile-bg.jpg" alt="" class="profile-wid-img" />
+        </div>
     </div>
 </div>
 

@@ -135,15 +135,14 @@ namespace BusTrips.Infrastructure.Migrations
                     b.Property<Guid>("AppUserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ApprovalStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("ApprovalStatus")
+                        .HasColumnType("int");
 
                     b.Property<DateOnly?>("BirthDate")
                         .HasColumnType("date");
 
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -188,15 +187,50 @@ namespace BusTrips.Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UpdatedBy")
+                    b.Property<Guid>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId")
-                        .IsUnique();
+                    b.HasIndex("AppUserId");
 
                     b.ToTable("BusDrivers");
+                });
+
+            modelBuilder.Entity("BusTrips.Domain.Entities.ContactUs", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContactUsEntries");
                 });
 
             modelBuilder.Entity("BusTrips.Domain.Entities.DriverDocument", b =>
@@ -224,7 +258,7 @@ namespace BusTrips.Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UpdatedBy")
+                    b.Property<Guid>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Url")
@@ -301,7 +335,7 @@ namespace BusTrips.Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UpdatedBy")
+                    b.Property<Guid>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("VehicleType")
@@ -352,7 +386,7 @@ namespace BusTrips.Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UpdatedBy")
+                    b.Property<Guid>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("UploadedAt")
@@ -375,6 +409,9 @@ namespace BusTrips.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedForId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("DeActiveDiscription")
@@ -403,14 +440,50 @@ namespace BusTrips.Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UpdatedBy")
+                    b.Property<Guid>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedForId");
+
                     b.HasIndex("OrgId");
 
                     b.ToTable("Groups");
+                });
+
+            modelBuilder.Entity("BusTrips.Domain.Entities.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FullMessage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("BusTrips.Domain.Entities.OrgCreatorLog", b =>
@@ -445,7 +518,7 @@ namespace BusTrips.Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UpdatedBy")
+                    b.Property<Guid>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -469,6 +542,9 @@ namespace BusTrips.Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("CreatedForId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("DeActiveDiscription")
                         .HasColumnType("nvarchar(max)");
 
@@ -482,7 +558,7 @@ namespace BusTrips.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("OrgName")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ShortName")
                         .IsRequired()
@@ -491,14 +567,12 @@ namespace BusTrips.Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UpdatedBy")
+                    b.Property<Guid>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrgName")
-                        .IsUnique()
-                        .HasFilter("[OrgName] IS NOT NULL");
+                    b.HasIndex("CreatedForId");
 
                     b.ToTable("Organizations");
                 });
@@ -533,15 +607,14 @@ namespace BusTrips.Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UpdatedBy")
+                    b.Property<Guid>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AppUserId");
 
-                    b.HasIndex("OrganizationId", "AppUserId")
-                        .IsUnique();
+                    b.HasIndex("OrganizationId");
 
                     b.ToTable("OrganizationMemberships");
                 });
@@ -607,7 +680,7 @@ namespace BusTrips.Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UpdatedBy")
+                    b.Property<Guid>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -625,6 +698,9 @@ namespace BusTrips.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedForId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("DeActiveDiscription")
@@ -694,9 +770,8 @@ namespace BusTrips.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<int?>("TripDays")
                         .HasColumnType("int");
@@ -711,10 +786,12 @@ namespace BusTrips.Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UpdatedBy")
+                    b.Property<Guid>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatedForId");
 
                     b.HasIndex("GroupId");
 
@@ -728,9 +805,6 @@ namespace BusTrips.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("AssignedAt")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -747,9 +821,8 @@ namespace BusTrips.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("TripId")
                         .HasColumnType("uniqueidentifier");
@@ -757,7 +830,7 @@ namespace BusTrips.Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UpdatedBy")
+                    b.Property<Guid>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -802,51 +875,40 @@ namespace BusTrips.Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UpdatedBy")
+                    b.Property<Guid>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ChangedByUserId");
 
                     b.HasIndex("TripId");
 
                     b.ToTable("TripChangeLogs");
                 });
 
-            modelBuilder.Entity("BusTrips.Domain.Entities.TripMembership", b =>
+            modelBuilder.Entity("BusTrips.Domain.Entities.UserNotification", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("AppUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsDeleted")
+                    b.Property<bool>("IsRead")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("TripId")
+                    b.Property<Guid>("NotificationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("UpdatedBy")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId");
+                    b.HasIndex("NotificationId");
 
-                    b.HasIndex("TripId", "AppUserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
-                    b.ToTable("TripMemberships");
+                    b.ToTable("UserNotifications");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
@@ -983,9 +1045,9 @@ namespace BusTrips.Infrastructure.Migrations
             modelBuilder.Entity("BusTrips.Domain.Entities.BusDriver", b =>
                 {
                     b.HasOne("BusTrips.Domain.Entities.AppUser", "AppUser")
-                        .WithOne()
-                        .HasForeignKey("BusTrips.Domain.Entities.BusDriver", "AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithMany()
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("AppUser");
@@ -1015,11 +1077,19 @@ namespace BusTrips.Infrastructure.Migrations
 
             modelBuilder.Entity("BusTrips.Domain.Entities.Group", b =>
                 {
+                    b.HasOne("BusTrips.Domain.Entities.AppUser", "CreatedForUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedForId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("BusTrips.Domain.Entities.Organization", "Org")
                         .WithMany("Groups")
                         .HasForeignKey("OrgId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("CreatedForUser");
 
                     b.Navigation("Org");
                 });
@@ -1029,7 +1099,7 @@ namespace BusTrips.Infrastructure.Migrations
                     b.HasOne("BusTrips.Domain.Entities.AppUser", "AppUser")
                         .WithMany()
                         .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("BusTrips.Domain.Entities.Organization", "Org")
@@ -1043,16 +1113,27 @@ namespace BusTrips.Infrastructure.Migrations
                     b.Navigation("Org");
                 });
 
+            modelBuilder.Entity("BusTrips.Domain.Entities.Organization", b =>
+                {
+                    b.HasOne("BusTrips.Domain.Entities.AppUser", "CreatedForUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedForId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedForUser");
+                });
+
             modelBuilder.Entity("BusTrips.Domain.Entities.OrganizationMembership", b =>
                 {
                     b.HasOne("BusTrips.Domain.Entities.AppUser", "AppUser")
                         .WithMany("OrganizationMemberships")
                         .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("BusTrips.Domain.Entities.Organization", "Organization")
-                        .WithMany("Managers")
+                        .WithMany("Members")
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1075,14 +1156,23 @@ namespace BusTrips.Infrastructure.Migrations
 
             modelBuilder.Entity("BusTrips.Domain.Entities.Trip", b =>
                 {
+                    b.HasOne("BusTrips.Domain.Entities.AppUser", "CreatedForUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedForId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("BusTrips.Domain.Entities.Group", "Group")
                         .WithMany()
-                        .HasForeignKey("GroupId");
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("BusTrips.Domain.Entities.Organization", "Organization")
                         .WithMany("Trips")
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("CreatedForUser");
 
                     b.Navigation("Group");
 
@@ -1094,12 +1184,12 @@ namespace BusTrips.Infrastructure.Migrations
                     b.HasOne("BusTrips.Domain.Entities.AppUser", "Driver")
                         .WithMany()
                         .HasForeignKey("DriverId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("BusTrips.Domain.Entities.Equipment", "Equipment")
                         .WithMany()
                         .HasForeignKey("EquipmentId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("BusTrips.Domain.Entities.Trip", "Trip")
                         .WithMany("BusAssignments")
@@ -1116,32 +1206,40 @@ namespace BusTrips.Infrastructure.Migrations
 
             modelBuilder.Entity("BusTrips.Domain.Entities.TripChangeLog", b =>
                 {
+                    b.HasOne("BusTrips.Domain.Entities.AppUser", "ChangedByUser")
+                        .WithMany()
+                        .HasForeignKey("ChangedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("BusTrips.Domain.Entities.Trip", "Trip")
                         .WithMany("ChangeLogs")
                         .HasForeignKey("TripId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("ChangedByUser");
+
                     b.Navigation("Trip");
                 });
 
-            modelBuilder.Entity("BusTrips.Domain.Entities.TripMembership", b =>
+            modelBuilder.Entity("BusTrips.Domain.Entities.UserNotification", b =>
                 {
-                    b.HasOne("BusTrips.Domain.Entities.AppUser", "AppUser")
-                        .WithMany("TripMemberships")
-                        .HasForeignKey("AppUserId")
+                    b.HasOne("BusTrips.Domain.Entities.Notification", "Notification")
+                        .WithMany("UserNotifications")
+                        .HasForeignKey("NotificationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BusTrips.Domain.Entities.Trip", "Trip")
-                        .WithMany("Managers")
-                        .HasForeignKey("TripId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("BusTrips.Domain.Entities.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("AppUser");
+                    b.Navigation("Notification");
 
-                    b.Navigation("Trip");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -1198,8 +1296,6 @@ namespace BusTrips.Infrastructure.Migrations
             modelBuilder.Entity("BusTrips.Domain.Entities.AppUser", b =>
                 {
                     b.Navigation("OrganizationMemberships");
-
-                    b.Navigation("TripMemberships");
                 });
 
             modelBuilder.Entity("BusTrips.Domain.Entities.BusDriver", b =>
@@ -1212,11 +1308,16 @@ namespace BusTrips.Infrastructure.Migrations
                     b.Navigation("Documents");
                 });
 
+            modelBuilder.Entity("BusTrips.Domain.Entities.Notification", b =>
+                {
+                    b.Navigation("UserNotifications");
+                });
+
             modelBuilder.Entity("BusTrips.Domain.Entities.Organization", b =>
                 {
                     b.Navigation("Groups");
 
-                    b.Navigation("Managers");
+                    b.Navigation("Members");
 
                     b.Navigation("Trips");
                 });
@@ -1226,8 +1327,6 @@ namespace BusTrips.Infrastructure.Migrations
                     b.Navigation("BusAssignments");
 
                     b.Navigation("ChangeLogs");
-
-                    b.Navigation("Managers");
                 });
 #pragma warning restore 612, 618
         }

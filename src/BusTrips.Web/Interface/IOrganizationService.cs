@@ -14,7 +14,7 @@ namespace BusTrips.Web.Interface
         //Task<OrgMemberDetailsResponseVM> GetMemberDetailsAsync(Guid id, Guid orgId, Guid CurrentUserId);
         Task<CreateOrganizationVm> GetOrganizationAsync(Guid id);
         Task<ResponseVM<string>> AddEditOrganizationAsync(CreateOrganizationVm vm, Guid userId);
-        Task<ResponseVM<string>> DeleteOrganizationAsync(Guid id);
+        Task<ResponseVM<Organization>> DeleteOrganizationAsync(Guid id);
         Task<ResponseVM<string>> InviteAsync(InviteManagerVm vm, Guid userId);
         //Task<ResponseVM<string>> RemoveMemberAsync(Guid id, Guid orgId, Guid currentUserId);
         //Task<ResponseVM<string>> MakeRemoverAdminAcync(Guid id, Guid orgId);
@@ -49,7 +49,7 @@ namespace BusTrips.Web.Interface
         Task<ResponseVM<GroupDetailsResponseVM>> GetGroupDetailsAsync(Guid groupId);
         Task<ResponseVM<Group>> AddEditGroupAsync(GroupRequestVM vm, Guid userId);
         Task<ResponseVM<string>> RevertGroupAsync(Guid gId);
-        Task<ResponseVM<string>> DeleteGroupAsync(Guid groupId);
+        Task<ResponseVM<dynamic>> DeleteGroupAsync(Guid groupId);
 
         #endregion
     }

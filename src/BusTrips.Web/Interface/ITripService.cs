@@ -1,4 +1,5 @@
-﻿using BusTrips.Web.Models;
+﻿using BusTrips.Domain.Entities;
+using BusTrips.Web.Models;
 
 namespace BusTrips.Web.Interface
 {
@@ -11,7 +12,7 @@ namespace BusTrips.Web.Interface
         Task<CreateTripVm?> GetTripForCopyAsync(Guid id);
         Task<ResponseVM<string>> CreateTripAsync(CreateTripVm vm, Guid userId);
         Task<ResponseVM<string>> UpdateTripAsync(Guid id, CreateTripVm vm, Guid userId);
-        Task<ResponseVM<string>> DeleteTripAsync(Guid id);
+        Task<ResponseVM<Trip>> DeleteTripAsync(Guid id);
         Task<ResponseVM<string>> CancelTripAsync(Guid id);
         Task<ResponseVM<string>> CopyTripAsync(Guid id, Guid userId);
 

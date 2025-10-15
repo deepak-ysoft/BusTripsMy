@@ -1,0 +1,225 @@
+﻿@model BusTrips.Web.Models.NotificationDto
+
+<div class="notification-card card shadow border-0 mb-3 position-relative overflow-hidden notification-content">
+    <!-- Glow border for unread notifications -->
+    @if (!Model.IsRead)
+    {
+        <div class="unread-glow"></div>
+    }
+
+    <div class="card-body p-0 pt-4">
+        <!-- Title -->
+        <h5 class="card-title gradient-title mb-2 d-flex align-items-center gap-2">
+            <i class="mdi mdi-bell-ring-outline fs-5 text-primary"></i>
+            @Model.Title
+        </h5>
+
+        <!-- Timestamp -->
+        <span class="timestamp-badge text-muted small mb-3 d-inline-flex align-items-center gap-1">
+            <i class="mdi mdi-clock-outline"></i>
+            @Model.Date
+        </span>
+
+        <!-- Message -->
+        @if (!string.IsNullOrWhiteSpace(Model.Message) && Model.Message != Model.FullMessage)
+        {
+            <div class="d-flex align-items-center mb-2">
+                <p id="notificationMessageShort" class="notification-message-short text-secondary mb-0" style="font-size:0.92rem;">
+                    @Model.Message
+                </p>
+                <button type="button" class="btn btn-link btn-copy ms-2 p-0" title="Copy" onclick="copyNotificationText('notificationMessageShort')">
+                    <i class="mdi mdi-content-copy"></i>
+                </button>
+            </div>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.FullMessage))
+        {
+            <div class="notification-full-message-container position-relative mt-1 mb-0">
+                <button type="button" class="btn btn-link btn-copy-top p-0" title="Copy" onclick="copyNotificationText('notificationFullMessage')">
+                    <i class="mdi mdi-content-copy"></i>
+                </button>
+                <p id="notificationFullMessage" class="notification-full-message mb-0">
+                    @Model.FullMessage
+                </p>
+            </div>
+        }
+        else if (!string.IsNullOrWhiteSpace(Model.Message))
+        {
+            <div class="notification-full-message-container position-relative mt-1 mb-0">
+                <button type="button" class="btn btn-link btn-copy-top p-0" title="Copy" onclick="copyNotificationText('notificationFullMessage')">
+                    <i class="mdi mdi-content-copy"></i>
+                </button>
+                <p id="notificationFullMessage" class="notification-full-message mb-0">
+                    @Model.Message
+                </p>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    /* --- Card Base --- */
+    .notification-card {
+        border-radius: 16px;
+        background: linear-gradient(145deg, #ffffff, #f9f9ff);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+        .notification-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+        }
+
+    .notification-content{
+        padding:25px;
+    }
+
+    /* --- Unread Glow --- */
+    .unread-glow {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at top right, rgba(155, 35, 234, 0.15), transparent 70%);
+        z-index: 0;
+        animation: glowPulse 2s infinite alternate;
+    }
+
+    @@keyframes glowPulse {
+        from {
+            opacity: 0.6;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    /* --- Title --- */
+    .gradient-title {
+        background: linear-gradient(90deg, #5f72be, #9b23ea);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 700;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* --- Timestamp --- */
+    .timestamp-badge {
+        background-color: #f1f1f1;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        transition: background 0.3s ease;
+        position: relative;
+        z-index: 1;
+    }
+
+    .notification-card:hover .timestamp-badge {
+        background-color: #e9e9ff;
+    }
+
+    /* --- Message --- */
+    .notification-message-short {
+        color: #888;
+        font-style: italic;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: unset;
+        display: block;
+    }
+
+    .notification-full-message {
+        color: #444;
+        line-height: 1.6;
+        font-size: 0.95rem;
+        position: relative;
+        z-index: 1;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: unset;
+        display: block;
+    }
+
+    .btn-copy {
+        color: #888;
+        font-size: 1.1rem;
+        transition: color 0.2s;
+    }
+
+        .btn-copy:hover {
+            color: #5f72be;
+            text-decoration: none;
+        }
+
+    /* --- Responsive --- */
+    @@media (max-width: 576px) {
+        .notification-card,
+        .card-body,
+        .notification-full-message-container {
+            max-height: none !important;
+            height: auto !important;
+            overflow: visible !important;
+            display: block !important;
+        }
+
+        .notification-full-message {
+            white-space: pre-line;
+            word-break: break-word;
+            overflow: visible;
+            text-overflow: unset;
+            display: block;
+            font-size: 0.9rem;
+            max-width: 100%;
+        }
+
+        .notification-content {
+            padding: 0px;
+        }
+
+        .btn-copy-top {
+            position: absolute;
+            top: 5px !important;
+            right: 10px !important;
+            color: #888;
+            font-size: 1.1rem;
+            z-index: 2;
+            background: none;
+            border: none;
+        }
+
+            .btn-copy-top:hover {
+                color: #5f72be;
+                text-decoration: none;
+            }
+    }
+
+
+
+    /* Additional styles */
+    .notification-full-message-container {
+        position: relative;
+    }
+
+    .btn-copy-top {
+        position: absolute;
+        top: -15px;
+        right: -10px;
+        color: #888;
+        font-size: 1.1rem;
+        z-index: 2;
+        background: none;
+        border: none;
+    }
+
+        .btn-copy-top:hover {
+            color: #5f72be;
+            text-decoration: none;
+        }
+
+    .notification-message-short-container {
+        display: block;
+        width: 100%;
+    }
+</style>

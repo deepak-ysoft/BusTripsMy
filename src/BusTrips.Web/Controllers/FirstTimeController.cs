@@ -39,7 +39,7 @@ public class FirstTimeController : Controller
         string choice = null,
         bool clearValidation = false,
         bool isSubmit = false) // Handles each step of the wizard process 
-    {
+        {
         if (clearValidation) ModelState.Clear(); // Clear old validations
         var existingOrg = await _orgService.GetDefaultOrganizationByUserAsync(CurrentUserId);
         var groupExist = new ResponseVM<GroupRequestVM>();

@@ -86,14 +86,15 @@
                         $("span[data-valmsg-for]").text(""); // clear old errors
 
                         if (res.isSuccess) {
-                            showAlert(res.message, true);
+                            // showAlert(res.message, true);
                             $("#contactForm")[0].reset();
                         }
                         else {
-                            focusFirstInvalidField(res.errors, "#contactForm");
-
                             if (res.message) {
                                 showAlert(res.message, false);
+                            }
+                            else{
+                                focusFirstInvalidField(res.errors, "#contactForm");
                             }
                         }
                     },

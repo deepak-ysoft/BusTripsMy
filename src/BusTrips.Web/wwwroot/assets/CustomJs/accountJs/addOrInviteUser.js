@@ -24,12 +24,11 @@
                         window.location.href = response.redirectTo;
                     }
                 } else {
-                    focusFirstInvalidField(response.errors, "#inviteForm");
-
-
                     // Show alert only if no field errors
                     if (response.message) {
                         showAlert(response.message, false);
+                    } else {
+                        focusFirstInvalidField(response.errors, "#inviteForm");
                     }
                 }
             },
@@ -64,10 +63,10 @@
                         form[0].reset();
                     }
                 } else {
-                    focusFirstInvalidField(response.errors, "#addUserForm");
-
                     if (response.message) {
                         showAlert(response.message, false);
+                    } else {
+                        focusFirstInvalidField(response.errors, "#addUserForm");
                     }
                 }
             },

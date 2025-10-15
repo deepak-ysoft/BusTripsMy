@@ -1,5 +1,6 @@
 ﻿using Azure;
 using BusTrips.Domain.Entities;
+using BusTrips.Infrastructure.Persistence;
 using BusTrips.Web.Interface;
 using BusTrips.Web.Models;
 using BusTrips.Web.Services;
@@ -26,7 +27,9 @@ public class AccountController : Controller
     private readonly UserManager<AppUser> _users;
     private readonly IEmailSender _emailSender;
     private readonly SignInManager<AppUser> _signIn;
-    public AccountController(IAccountService account, UserManager<AppUser> users, IEmailSender emailSender, IUserService usersService, IDriverService driverService, SignInManager<AppUser> signIn, IOrganizationService orgService)
+    private readonly INotificationService _notificationService;
+    private readonly AppDbContext _dbContext;
+    public AccountController(IAccountService account, UserManager<AppUser> users, IEmailSender emailSender, IUserService usersService, IDriverService driverService, SignInManager<AppUser> signIn, IOrganizationService orgService, INotificationService notificationService,AppDbContext dbContext)
     {
         _account = account;
         _users = users;
@@ -35,6 +38,8 @@ public class AccountController : Controller
         _driverService = driverService;
         _signIn = signIn;
         _orgService = orgService;
+        _notificationService = notificationService;
+        _dbContext = dbContext;
     }
 
     private Guid CurrentUserId => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -69,26 +74,52 @@ public class AccountController : Controller
             return View("Register", vm);
         }
 
-        // Service to register user
-        var response = await _account.RegisterAsync(vm, "User");
 
-        if (!response.IsSuccess)
+        // Begin a database transaction
+        using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+        try
         {
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                return Json(new { success = false, message = response.Message });
+            // Register the admin
+            var response = await _account.RegisterAsync(vm, "User");
 
-            ModelState.AddModelError("", response.Message);
+            if (!response.IsSuccess)
+            {
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    return Json(new { success = false, message = response.Message });
+
+                ModelState.AddModelError("", response.Message);
+                ViewBag.Role = "User";
+                return View("Register", vm);
+            }
+
+            // Send confirmation email
+            var emailResult = await SendConfirmationEmailAsync(response.Data);
+
+            // If email fails, throw exception to rollback
+            if (emailResult.StartsWith("Error"))
+                throw new Exception(emailResult);
+
+            // Commit transaction if everything is fine
+            await transaction.CommitAsync();
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                return Json(new { success = true, message = response.Message, redirectUrl = Url.Action("LoginUser", "Account") });
+
+            return RedirectToAction(nameof(LoginUser));
+        }
+        catch (Exception ex)
+        {
+            // Rollback transaction
+            await transaction.RollbackAsync();
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                return Json(new { success = false, message = "Registration failed: " + ex.Message });
+
+            ModelState.AddModelError("", "Registration failed: " + ex.Message);
             ViewBag.Role = "User";
             return View("Register", vm);
         }
-
-        // Send confirmation Email
-        var message = await SendConfirmationEmailAsync(response.Data);
-
-        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            return Json(new { success = true, message = response.Message, redirectUrl = Url.Action("LoginUser", "Account") });
-
-        return RedirectToAction(nameof(LoginUser));
     }
 
     // ===== DRIVER Register=====
@@ -120,26 +151,51 @@ public class AccountController : Controller
             return View("Register", vm);
         }
 
-        // service to register driver
-        var response = await _account.RegisterAsync(vm, "Driver");
+        // Begin a database transaction
+        using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
-        if (!response.IsSuccess)
+        try
         {
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                return Json(new { success = false, message = response.Message });
+            // Register the admin
+            var response = await _account.RegisterAsync(vm, "Driver");
 
-            ModelState.AddModelError("", response.Message);
+            if (!response.IsSuccess)
+            {
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    return Json(new { success = false, message = response.Message });
+
+                ModelState.AddModelError("", response.Message);
+                ViewBag.Role = "Driver";
+                return View("Register", vm);
+            }
+
+            // Send confirmation email
+            var emailResult = await SendConfirmationEmailAsync(response.Data);
+
+            // If email fails, throw exception to rollback
+            if (emailResult.StartsWith("Error"))
+                throw new Exception(emailResult);
+
+            // Commit transaction if everything is fine
+            await transaction.CommitAsync();
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                return Json(new { success = true, message = response.Message, redirectUrl = Url.Action("LoginDriver", "Account") });
+
+            return RedirectToAction(nameof(LoginDriver));
+        }
+        catch (Exception ex)
+        {
+            // Rollback transaction
+            await transaction.RollbackAsync();
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                return Json(new { success = false, message = "Registration failed: " + ex.Message });
+
+            ModelState.AddModelError("", "Registration failed: " + ex.Message);
             ViewBag.Role = "Driver";
             return View("Register", vm);
         }
-
-        // Send confirmation Email
-       var message = await SendConfirmationEmailAsync(response.Data);
-
-        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            return Json(new { success = true, message = response.Message, redirectUrl = Url.Action("LoginDriver", "Account") });
-
-        return RedirectToAction(nameof(LoginDriver));
     }
 
     // ===== ADMIN Register=====
@@ -171,26 +227,51 @@ public class AccountController : Controller
             return View("Register", vm);
         }
 
-        // service to register admin
-        var response = await _account.RegisterAsync(vm, "Admin");
+        // Begin a database transaction
+        using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
-        if (!response.IsSuccess)
+        try
         {
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                return Json(new { success = false, message = response.Message });
+            // Register the admin
+            var response = await _account.RegisterAsync(vm, "Admin");
 
-            ModelState.AddModelError("", response.Message);
+            if (!response.IsSuccess)
+            {
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    return Json(new { success = false, message = response.Message });
+
+                ModelState.AddModelError("", response.Message);
+                ViewBag.Role = "Admin";
+                return View("Register", vm);
+            }
+
+            // Send confirmation email
+            var emailResult = await SendConfirmationEmailAsync(response.Data);
+
+            // If email fails, throw exception to rollback
+            if (emailResult.StartsWith("Error"))
+                throw new Exception(emailResult);
+
+            // Commit transaction if everything is fine
+            await transaction.CommitAsync();
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                return Json(new { success = true, message = response.Message, redirectUrl = Url.Action("LoginAdmin", "Account") });
+
+            return RedirectToAction(nameof(LoginAdmin));
+        }
+        catch (Exception ex)
+        {
+            // Rollback transaction
+            await transaction.RollbackAsync();
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                return Json(new { success = false, message = "Registration failed: " + ex.Message });
+
+            ModelState.AddModelError("", "Registration failed: " + ex.Message);
             ViewBag.Role = "Admin";
             return View("Register", vm);
         }
-
-        // Send confirmation Email
-        var message = await SendConfirmationEmailAsync(response.Data);
-
-        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            return Json(new { success = true, message = response.Message, redirectUrl = Url.Action("LoginAdmin", "Account") });
-
-        return RedirectToAction(nameof(LoginAdmin));
     }
 
     // ===== USER LOGIN =====
@@ -338,7 +419,7 @@ public class AccountController : Controller
         var response = await _account.LoginAsync(vm, "Admin");
         if (!response.IsSuccess)
         {
-            if(response.Message== "Confirm Email")
+            if (response.Message == "Confirm Email")
             {
                 var user = await _users.FindByEmailAsync(vm.Email);
                 var message = await SendConfirmationEmailAsync(user);
@@ -443,13 +524,14 @@ public class AccountController : Controller
 
         var confirmationLink = Url.Action("ConfirmEmail", "Account",
             new { userId = user.Id, token = token, redirectTo }, protocol: Request.Scheme);
+        try
+        {
+            // Build the path to the shared view
+            var logoPath = Path.Combine(Directory.GetCurrentDirectory(), "Views", "Shared", "BusLogo.html");
+            var logoHtml = System.IO.File.ReadAllText(logoPath);
 
-        // Build the path to the shared view
-        var logoPath = Path.Combine(Directory.GetCurrentDirectory(), "Views", "Shared", "BusLogo.html");
-        var logoHtml = System.IO.File.ReadAllText(logoPath);
-
-        // Insert it into the email body
-        var htmlBody = $@"
+            // Insert it into the email body
+            var htmlBody = $@"
             <html>
             <body style='font-family: Arial, sans-serif; color: #333; margin:0; padding:0; width:100%;'>
                 {logoHtml} <!-- Bus Logo here -->
@@ -464,9 +546,14 @@ public class AccountController : Controller
             </body>
             </html>";
 
-        await _emailSender.SendEmailAsync(user.Email, "Confirm your email", htmlBody);
+            await _emailSender.SendEmailAsync(user.Email, "Confirm your email", htmlBody);
 
-        return "Your email is not confirmed. A new confirmation email has been sent to your email address.";
+            return "Your email is not confirmed. A new confirmation email has been sent to your email address.";
+        }
+        catch (Exception ex)
+        {
+            return $"Error sending email: {ex.Message}";
+        }
     }
 
     [HttpGet]
@@ -510,8 +597,8 @@ public class AccountController : Controller
         ViewData["ActiveMenu"] = "Organizations";
 
         ViewBag.MemberTypes = memberTypes;
-        var redirectUrl = Url.Action("OrganizationDetails", "Organizations", new { id = orgId }); 
-        return View(new AddUserVm { OrgId = orgId ,returnUrl = redirectUrl });
+        var redirectUrl = Url.Action("OrganizationDetails", "Organizations", new { id = orgId });
+        return View(new AddUserVm { OrgId = orgId, returnUrl = redirectUrl });
     }
 
     [HttpPost]
@@ -548,7 +635,7 @@ public class AccountController : Controller
         }
 
         var token = await _users.GenerateEmailConfirmationTokenAsync(response.Data); // Generate email confirmation token
-        var confirmationLink = Url.Action("ConfirmEmail", "Account", 
+        var confirmationLink = Url.Action("ConfirmEmail", "Account",
             new { userId = response.Data.Id, token = token, redirectTo = "LoginUser" }, protocol: Request.Scheme); // Build confirmation link
 
         // Build the path to the shared view
@@ -783,7 +870,7 @@ public class AccountController : Controller
                 <hr style='margin:20px 0;'/>
                 <p style='font-size:12px; color:#888; text-align:center;'>This is an automated message, please do not reply.</p>
             </body>
-            </html>"; 
+            </html>";
 
         await _emailSender.SendEmailAsync(model.Email, "Reset Password", htmlBody);
 
@@ -883,4 +970,39 @@ public class AccountController : Controller
         }
         return View(model);
     }
+
+    #region Notifications
+
+    [HttpGet]
+    public async Task<IActionResult> GetNotifications()
+    {
+        var notifications = await _notificationService.GetUserNotificationsAsync(CurrentUserId);
+        return View(notifications);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Notifications()
+    {
+        var notifications = await _notificationService.GetUserNotificationsAsync(CurrentUserId);
+        var unreadCount = notifications.Count(n => !n.IsRead);
+
+        return Json(new
+        {
+            count = unreadCount,
+            data = notifications
+        });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> NotificationDetails(Guid id)
+    {
+        var notification = await _notificationService.NotificationDetailsAsync(id);
+        if (notification == null)
+            return Content("<p>Notification not found.</p>", "text/html");
+
+        // Return partial view or formatted HTML content
+        return PartialView("_NotificationDetails", notification);
+    }
+
+    #endregion
 }

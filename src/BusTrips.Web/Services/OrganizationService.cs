@@ -59,7 +59,7 @@ namespace BusTrips.Web.Services
                     .FirstOrDefaultAsync();
 
                 var groups = await _db.Groups
-                    .Where(g => g.OrgId == m.OrganizationId)
+                    .Where(g => g.OrgId == m.OrganizationId && !g.IsDeleted)
                     .Select(s => new GroupListItemVm
                     {
                         Id = s.Id,
@@ -106,7 +106,7 @@ namespace BusTrips.Web.Services
                     .FirstOrDefaultAsync();
 
                 var groups = await _db.Groups
-                    .Where(g => g.OrgId == m.OrganizationId)
+                    .Where(g => g.OrgId == m.OrganizationId && !g.IsDeleted)
                     .Select(s => new GroupListItemVm
                     {
                         Id = s.Id,
@@ -185,6 +185,7 @@ namespace BusTrips.Web.Services
                 OrgName = user.FirstName + "_" + user.LastName + "_Default",
                 ShortName = UniqueCodeGenerator.GenerateShortName(),
                 IsPrimary = true,
+                CreatedForId = userId,
                 CreatedBy = userId,
                 UpdatedBy = userId,
             };
@@ -225,7 +226,7 @@ namespace BusTrips.Web.Services
         {
             if (vm.Id == null)
             {
-                if (await _db.Organizations.AnyAsync(o => o.OrgName == vm.OrgName && o.CreatedBy == userId)) { return new ResponseVM<string> { IsSuccess = false, Message = "Orgamization name must be unique." }; }
+                if (await _db.Organizations.AnyAsync(o => o.OrgName == vm.OrgName && o.CreatedBy == userId && !o.IsDeleted)) { return new ResponseVM<string> { IsSuccess = false, Message = "Orgamization name must be unique." }; }
 
                 if (vm.IsPrimary == true && await _db.Organizations.AnyAsync(o => o.IsPrimary && o.CreatedBy == userId && !o.IsDeleted))
                 {
@@ -249,6 +250,7 @@ namespace BusTrips.Web.Services
                     ShortName = vm.ShortName,
                     IsPrimary = vm.IsPrimary ?? true,
                     IsActive = true,
+                    CreatedForId = userId,
                     CreatedBy = userId,
                     UpdatedBy = userId,
                 };
@@ -283,7 +285,7 @@ namespace BusTrips.Web.Services
                     };
 
 
-                if (org.OrgName != vm.OrgName && await _db.Organizations.AnyAsync(o => o.OrgName == vm.OrgName && o.CreatedBy == userId))
+                if (org.OrgName != vm.OrgName && await _db.Organizations.AnyAsync(o => o.OrgName == vm.OrgName && o.CreatedBy == userId && !o.IsDeleted))
                     return new ResponseVM<string> { IsSuccess = false, Message = "Orgamization name must be unique." };
 
                 if (vm.IsPrimary == true && !org.IsPrimary && await _db.Organizations.AnyAsync(o => o.IsPrimary && o.CreatedBy == userId && !o.IsDeleted))
@@ -396,16 +398,16 @@ namespace BusTrips.Web.Services
         }
 
         // Soft delete an organization by ID
-        public async Task<ResponseVM<string>> DeleteOrganizationAsync(Guid id)
+        public async Task<ResponseVM<Organization>> DeleteOrganizationAsync(Guid id)
         {
             var org = await _db.Organizations
            .FirstOrDefaultAsync(o => o.Id == id);
 
-            if (org is null) return new ResponseVM<string> { IsSuccess = false, Message = "Organization Not Found" };
+            if (org is null) return new ResponseVM<Organization> { IsSuccess = false, Message = "Organization Not Found" };
             org.IsDeleted = true;
             _db.Organizations.Update(org);
             await _db.SaveChangesAsync();
-            return new ResponseVM<string> { IsSuccess = true, Message = "Organization Deleted Successfully!" };
+            return new ResponseVM<Organization> { IsSuccess = true, Message = "Organization Deleted Successfully!", Data = org };
         }
 
         // Get detailed information about a specific organization, including its members and admins
@@ -594,7 +596,7 @@ namespace BusTrips.Web.Services
                     var organization = await _db.Organizations.FirstOrDefaultAsync(x => x.Id == orgId);
                     if (organization != null)
                     {
-                        organization.CreatedBy = targetUserId;
+                        organization.CreatedForId = targetUserId;
                         organization.UpdatedAt = DateTime.Now;
                         organization.UpdatedBy = currentUserId;
                         _db.Organizations.Update(organization);
@@ -910,6 +912,7 @@ namespace BusTrips.Web.Services
                     ShortName = vm.ShortName,
                     IsPrimary = vm.IsPrimary ?? true,
                     IsActive = true,
+                    CreatedForId = vm.userId.Value,
                     CreatedBy = userId,
                     UpdatedBy = userId,
                 };
@@ -988,14 +991,14 @@ namespace BusTrips.Web.Services
         public async Task<ResponseVM<OrgDetailsVm>> GetOrganizationDetailsAsync(Guid orgId, Guid? userId = null)
         {
             var org = await _db.Organizations
-                .Include(o => o.Managers).ThenInclude(m => m.AppUser)
+                .Include(o => o.Members).ThenInclude(m => m.AppUser)
                 //.Include(o => o.Groups)
                 .FirstOrDefaultAsync(o => o.Id == orgId);
 
             if (org == null)
                 return new ResponseVM<OrgDetailsVm> { IsSuccess = false, Message = "Organization not found" };
 
-            var creator = org.Managers.FirstOrDefault(m => m.MemberType == MemberTypeEnum.Creator);
+            var creator = org.Members.FirstOrDefault(m => m.MemberType == MemberTypeEnum.Creator);
 
             // Permissions async
             var permissions = await _permissionService.GetPermissionsAsync(org.Id);
@@ -1018,7 +1021,7 @@ namespace BusTrips.Web.Services
                 } : null!,
                 Permissions = permissions,
                 MemberType = userId.HasValue
-                             ? org.Managers.FirstOrDefault(m => m.AppUserId == userId.Value)?.MemberType.ToString()
+                             ? org.Members.FirstOrDefault(m => m.AppUserId == userId.Value)?.MemberType.ToString()
                              : null
             };
 
@@ -1034,14 +1037,14 @@ namespace BusTrips.Web.Services
         public async Task<ResponseVM<List<GroupListItemVm>>> GetOrganizationGroupsAsync(Guid orgId)
         {
             var org = await _db.Organizations
-                .Include(o => o.Managers).ThenInclude(m => m.AppUser)
+                .Include(o => o.Members).ThenInclude(m => m.AppUser)
                 .Include(o => o.Groups)
                 .FirstOrDefaultAsync(o => o.Id == orgId);
 
             if (org == null)
                 return new ResponseVM<List<GroupListItemVm>> { IsSuccess = false, Message = "Organization not found" };
 
-            var creator = org.Managers.FirstOrDefault(m => m.MemberType == MemberTypeEnum.Creator);
+            var creator = org.Members.FirstOrDefault(m => m.MemberType == MemberTypeEnum.Creator);
 
             var tripsCounts = await (from g in _db.Groups
                                      join t in _db.Trips on g.Id equals t.GroupId into gt
@@ -1055,7 +1058,7 @@ namespace BusTrips.Web.Services
                                      }).ToListAsync();
 
             // Permissions async
-            var permissions = await _permissionService.GetPermissionsAsync(org.Id); 
+            var permissions = await _permissionService.GetPermissionsAsync(org.Id);
 
             var result = org.Groups.Where(x => !x.IsDeleted).OrderByDescending(x => x.CreatedAt).Select(g => new GroupListItemVm
             {
@@ -1066,7 +1069,7 @@ namespace BusTrips.Web.Services
                 ShortName = g.ShortName,
                 Status = g.IsActive ? "<span class=\"badge badge-soft-success\"> Active</span>" : "<span class=\"badge badge-soft-danger\">  Not Active</span>",
                 TripsCount = tripsCounts.FirstOrDefault(x => x.GroupId == g.Id)?.Count ?? 0,
-                IsCreator = org.Managers.Any(m => m.MemberType == MemberTypeEnum.Creator && m.AppUserId == creator?.AppUserId)
+                IsCreator = org.Members.Any(m => m.MemberType == MemberTypeEnum.Creator && m.AppUserId == creator?.AppUserId)
             }).ToList();
 
             return new ResponseVM<List<GroupListItemVm>>
@@ -1081,7 +1084,7 @@ namespace BusTrips.Web.Services
         public async Task<ResponseVM<List<OrgMembersListVM>>> GetOrganizationMembersAsync(Guid orgId, Guid? CurrentUserId = null)
         {
             var org = await _db.Organizations
-                .Include(o => o.Managers).ThenInclude(m => m.AppUser)
+                .Include(o => o.Members).ThenInclude(m => m.AppUser)
                 .FirstOrDefaultAsync(o => o.Id == orgId);
 
             if (org == null)
@@ -1090,7 +1093,7 @@ namespace BusTrips.Web.Services
             // Permissions async
             var permissions = await _permissionService.GetPermissionsAsync(org.Id);
 
-            var result = org.Managers.Where(x => !x.IsDeleted && x.AppUserId != CurrentUserId).OrderByDescending(x => x.CreatedAt).Select(m => new OrgMembersListVM
+            var result = org.Members.Where(x => !x.IsDeleted && x.AppUserId != CurrentUserId).OrderByDescending(x => x.CreatedAt).Select(m => new OrgMembersListVM
             {
                 Id = m.Id,
                 UserId = org.CreatedBy,
@@ -1356,6 +1359,7 @@ namespace BusTrips.Web.Services
                     ShortName = vm.ShortName,
                     Description = vm.Description,
                     IsActive = true,
+                    CreatedForId = org.CreatedForId,
                     CreatedBy = userId,
                     UpdatedBy = userId,
                 };
@@ -1409,15 +1413,20 @@ namespace BusTrips.Web.Services
         }
 
         // Soft delete a group by setting the deletion flag and saving changes
-        public async Task<ResponseVM<string>> DeleteGroupAsync(Guid groupId)
+        public async Task<ResponseVM<dynamic>> DeleteGroupAsync(Guid groupId)
         {
-            var group = await _db.Groups
+            var group = await _db.Groups.Include(x => x.Org)
            .FirstOrDefaultAsync(o => o.Id == groupId && !o.IsDeleted);
-            if (group is null) return new ResponseVM<string> { IsSuccess = false, Message = "Group Not Found" };
+            if (group is null) return new ResponseVM<dynamic> { IsSuccess = false, Message = "Group Not Found" };
             group.IsDeleted = true;
             _db.Groups.Update(group);
             await _db.SaveChangesAsync();
-            return new ResponseVM<string> { IsSuccess = true, Message = "Group Deleted Successfully!" };
+            return new ResponseVM<dynamic> 
+            { 
+                IsSuccess = true, 
+                Message = "Group Deleted Successfully!",
+                Data = new { groupName = group.GroupName, OrgName = group.Org.OrgName, userId = group.Org.CreatedBy }
+            };
         }
 
         #endregion

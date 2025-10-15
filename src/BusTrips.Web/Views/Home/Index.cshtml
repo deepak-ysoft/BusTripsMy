@@ -54,7 +54,7 @@
                         </select>
                     </div>
 
-                    <div class="col-md-2 d-flex align-items-center">
+                    <div class="col-md-2 d-flex align-items-center  justify-content-end">
                         <i class="las la-undo-alt fs-20" id="clearFilters" style="cursor:pointer;"></i>
                     </div>
                 </form>
@@ -84,9 +84,20 @@
 
         // Auto-submit on dropdown, search, or date
         $("#tripFilterForm").on("change keyup", "input, select", function () {
+            var $input = $(this);
+            var name = $input.attr("name");
+
+            if (name === "TripDate") {
+                var dateVal = $input.val();
+                // Only trigger if date is in full yyyy-mm-dd format
+                var datePattern = /^\d{4}-\d{2}-\d{2}$/;
+                if (!datePattern.test(dateVal)) return;
+            }
+
             $("input[name='Page']").val(1); // reset to first page on filter change
             loadTrips();
         });
+
 
         // Pagination click
         $(document).on("click", ".trip-page-link", function () {

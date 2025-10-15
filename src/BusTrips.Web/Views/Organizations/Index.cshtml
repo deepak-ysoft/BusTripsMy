@@ -85,7 +85,7 @@
                         </div>
                         <div class="col-12">
                             <label for="Description" class="form-label">Description</label>
-                            <textarea class="form-control" id="Description" name="Description" placeholder="Enter Description" rows="3" required></textarea>
+                            <textarea class="form-control" id="Description" name="Description" placeholder="Enter Description" rows="3"></textarea>
                         </div>
                         <div class="col-md-6 show-fields">
                             <label for="IsActive" class="form-label">Status</label>
@@ -288,7 +288,7 @@
                     success: function (res) {
                         if (res.isSuccess) {
                             $("#groupModal").modal("hide");
-                            showAlert(true, "Group saved successfully!");
+                            showAlert( "Group saved successfully!",true);
 
                             // detect active tab at time of save
                             let activeTab = $(".tab-pane.active").attr("id");
@@ -306,11 +306,11 @@
                             }
 
                         } else {
-                            showAlert(false, res.message);
+                            showAlert( res.message,false);
                         }
                     },
                     error: function (err) {
-                        showAlert(false, err.message);
+                        showAlert( err.message,false);
                     }
                 });
             });
@@ -382,7 +382,7 @@
                     success: function (res) {
                         if (res.isSuccess) {
                             $("#organizationModal").modal("hide");
-                            showAlert(true, "Organization saved successfully!");
+                            showAlert( "Organization saved successfully!",true);
 
                             // detect active tab at time of save
                             let activeTab = $(".tab-pane.active").attr("id");
@@ -403,11 +403,11 @@
                             }
 
                         } else {
-                            showAlert(false, res.message);
+                            showAlert(res.message,false);
                         }
                     },
                     error: function () {
-                        showAlert(false, err.message);
+                        showAlert( err.message,false);
                     }
                 });
             });

@@ -3,6 +3,7 @@ using BusTrips.Domain.Entities;
 using BusTrips.Infrastructure.Identity;
 using BusTrips.Web.Interface;
 using BusTrips.Web.Models;
+using BusTrips.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -15,7 +16,14 @@ public class TripsController : Controller
 {
     private readonly ITripService _tripService;
     private readonly IOrganizationService _orgService;
-    public TripsController(ITripService tripService, IOrganizationService orgService) { _tripService = tripService; _orgService = orgService; }
+    private readonly INotificationService _notificationService;
+    public TripsController(ITripService tripService, IOrganizationService orgService, INotificationService notificationService)
+    {
+        _tripService = tripService;
+        _orgService = orgService;
+        _notificationService = notificationService;
+    }
+
     private Guid CurrentUserId => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
     [HttpGet]
@@ -35,7 +43,7 @@ public class TripsController : Controller
         // Return view with model
         //return View(new CreateTripVm { groupId = groupId });
         ViewData["ActiveMenu"] = "Organizations";
-        return View(new CreateTripVm { groupId = groupId ,controller = controller});
+        return View(new CreateTripVm { groupId = groupId, controller = controller });
     }
 
     [HttpPost]
@@ -73,6 +81,18 @@ public class TripsController : Controller
         }
 
         var response = await _tripService.CreateTripAsync(vm, CurrentUserId); // Create trip via service
+
+        if (response.IsSuccess)
+        {
+            var message = $"Trip of {vm.DestinationCity}, {vm.DestinationLocation} to {vm.DestinationLocation}, {vm.DestinationCity} created by {User.Identity.Name}";
+
+            var getOrg = await _orgService.GetOrganizationDetailsAsync(Guid.Parse(response.Data));
+
+            var fullMessage = $"{message}. Departure: {departureDateTime:g} Arrival: {arrivalDateTime:g} Passengers: {vm.NumberOfPassengers}, Organization Name is {getOrg.Data.OrgName}.";
+
+            await _notificationService.SaveAndSendNotification("New Trip Created", message, fullMessage, null, "Admin");  // Notification for Admin
+            await _notificationService.SaveAndSendNotification("New Trip Created", message, fullMessage, null, "Driver"); // Notification for Driver
+        }
 
         return Json(new
         {
@@ -131,23 +151,60 @@ public class TripsController : Controller
     {
         ViewData["ActiveMenu"] = "Organizations";
         ViewBag.IsEdit = true;
-        if (!ModelState.IsValid) return View(new CreateTripVm { groupId = vm.groupId });
+
+        if (vm.NumberOfPassengers == null)
+            ModelState.AddModelError("NumberOfPassengers", "Number of passengers is required.");
+        if (vm.NumberOfPassengers == 0)
+            ModelState.AddModelError("NumberOfPassengers", "Number of passengers must be greater than 0.");
+
+        // Validate that destination arrival is after departure
+        DateTime departureDateTime = vm.DepartureDate.ToDateTime(vm.DepartureTime);
+        DateTime arrivalDateTime = vm.DestinationArrivalDate.ToDateTime(vm.DestinationArrivalTime);
+
+        if (departureDateTime < DateTime.Now)
+            ModelState.AddModelError(nameof(vm.DepartureDate), "Departure date/time must be future date/time.");
+
+        if (arrivalDateTime <= departureDateTime)
+            ModelState.AddModelError(nameof(vm.DestinationArrivalDate), "Arrival date/time must be later than departure date/time.");
+
+        if (!ModelState.IsValid)
+        {
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                var errors = ModelState
+                    .Where(ms => ms.Value.Errors.Count > 0)
+                    .ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                    );
+
+                return Json(new { success = false, errors });
+            }
+            return PartialView("~/Views/Trips/_TripFormPartial.cshtml", vm);
+        }
+
+
         var response = await _tripService.UpdateTripAsync(id, vm, CurrentUserId); // Update trip via service
+
+
+        if (response.IsSuccess)
+        {
+            var message = $"Trip of {vm.DestinationCity}, {vm.DestinationLocation} to {vm.DestinationLocation}, {vm.DestinationCity} created by {User.Identity.Name}";
+
+            var getOrg = await _orgService.GetOrganizationDetailsAsync(vm.OrganizationId.Value);
+
+            var fullMessage = $"Trip Name : {vm.TripName}, {message}. Departure: {departureDateTime:g} Arrival: {arrivalDateTime:g} Passengers: {vm.NumberOfPassengers}, Organization Name is {getOrg.Data.OrgName}.";
+
+            await _notificationService.SaveAndSendNotification("Updated A Trip", message, fullMessage, null, "Admin"); // Notification for Admin
+            await _notificationService.SaveAndSendNotification("Updated A Trip", message, fullMessage, null, "Driver"); // Notification for Driver
+        }
+
         return Json(new
         {
             success = response.IsSuccess,
             message = response.Message,
             redirectUrl = Url.Action(nameof(Index), new { groupId = vm.groupId })
         });
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> Delete(Guid id, Guid groupId) // Delete trip action 
-    {
-        var response = await _tripService.DeleteTripAsync(id); // Delete trip via service
-        TempData["IsSuccess"] = response.IsSuccess;
-        TempData["Message"] = response.Message;
-        return RedirectToAction(nameof(Index), new { groupId = groupId });
     }
 
     [HttpGet]
@@ -169,10 +226,13 @@ public class TripsController : Controller
         }
 
         var vm = await _tripService.GetTripForCopyAsync(id); // Fetch trip data for copying
-        if (vm is null) return View("Index", new { groupId = groupId }); 
+        if (vm is null) return View("Index", new { groupId = groupId });
+        ViewData["Title"] = "Create Trip";
         ViewData["ActiveMenu"] = "Organizations";
 
-        return View(new CreateTripVm { groupId = vm.groupId });
+        vm.groupId = groupId;
+        vm.controller = "Trips";
+        return View("CreateTrip", vm);
     }
 
     [HttpGet]
